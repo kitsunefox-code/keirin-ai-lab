@@ -1,4 +1,4 @@
-const state = {
+﻿const state = {
   today: null,
   bundle: null,
   activeTab: "today",
@@ -16,6 +16,11 @@ const STATIC_API = {
 };
 
 const el = (id) => document.getElementById(id);
+
+function on(id, event, handler) {
+  const node = el(id);
+  if (node) node.addEventListener(event, handler);
+}
 
 async function apiGet(url) {
   try {
@@ -46,137 +51,37 @@ async function apiPost(url, options) {
       ok: true,
       json: async () => ({
         ok: false,
-        error: "公開版では保存・手動学習は使えません。ローカル版で実行してください。",
+        error: "公開版では保存や手動学習は使えません。ローカル版で実行してください。",
       }),
     };
   }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  el("refreshTodayBtn").addEventListener("click", loadToday);
-  el("sampleBtn").addEventListener("click", loadSample);
-  el("fetchBtn").addEventListener("click", fetchRace);
-  el("storeBtn").addEventListener("click", storeCurrentRace);
-  el("recordBtn").addEventListener("click", recordManualResult);
-  el("planBtn").addEventListener("click", loadCapitalPlan);
-  el("autoRollToggle").addEventListener("change", updateCapitalPlanTimer);
-  el("searchInput").addEventListener("input", renderToday);
-  el("confidenceFilter").addEventListener("change", renderToday);
+  on("refreshTodayBtn", "click", loadToday);
+  on("planBtn", "click", loadCapitalPlan);
+  on("autoRollToggle", "change", updateCapitalPlanTimer);
+  on("confidenceFilter", "change", renderToday);
   loadLearnStatus();
   loadToday();
 });
 
 async function loadToday() {
-  setStatus("今日の予想を読み込み中");
+  setStatus("莉頑律縺ｮ莠域Φ繧定ｪｭ縺ｿ霎ｼ縺ｿ荳ｭ");
   try {
     const res = await apiGet("/api/today");
     const payload = await res.json();
     if (!payload.ok) {
-      setStatus(payload.error || "今日の予想を読み込めませんでした");
+      setStatus(payload.error || "莉頑律縺ｮ莠域Φ繧定ｪｭ縺ｿ霎ｼ繧√∪縺帙ｓ縺ｧ縺励◆");
       return;
     }
     state.today = payload;
     state.learning = payload.learning_status || state.learning;
     renderToday();
     renderLearn();
-    setStatus(`${payload.summary?.count || 0}レースを表示中`);
+    setStatus(`${payload.summary?.count || 0}繝ｬ繝ｼ繧ｹ繧定｡ｨ遉ｺ荳ｭ`);
   } catch (error) {
-    setStatus(`今日の予想エラー: ${error.message}`);
-  }
-}
-
-async function loadSample() {
-  setTab("race");
-  setStatus("サンプル読み込み中");
-  const res = await apiGet("/api/sample");
-  const bundle = await res.json();
-  if (!bundle.ok) {
-    setStatus(bundle.error || "読み込み失敗");
-    return;
-  }
-  state.bundle = bundle;
-  renderRace();
-  setStatus("サンプルを表示中");
-}
-
-async function fetchRace() {
-  const url = el("raceUrl").value.trim();
-  if (!url) {
-    setStatus("URLを入力してください");
-    return;
-  }
-  setTab("race");
-  setStatus("取得中");
-  try {
-    const res = await apiGet(`/api/fetch?url=${encodeURIComponent(url)}`);
-    const bundle = await res.json();
-    if (!bundle.ok) {
-      setStatus(bundle.error || "取得失敗");
-      return;
-    }
-    state.bundle = bundle;
-    renderRace();
-    const count = bundle.race?.raw_quality?.entrant_count ?? bundle.race?.entrants?.length ?? 0;
-    setStatus(`${count}選手を取得`);
-  } catch (error) {
-    setStatus(`取得失敗: ${error.message}`);
-  }
-}
-
-async function storeCurrentRace() {
-  const url = el("raceUrl").value.trim();
-  if (!url) {
-    setStatus("URLを入力してください");
-    return;
-  }
-  setTab("race");
-  setStatus("保存中");
-  try {
-    const res = await apiGet(`/api/learn/fetch_store?url=${encodeURIComponent(url)}`);
-    const payload = await res.json();
-    if (!payload.ok) {
-      setStatus(payload.error || "保存失敗");
-      return;
-    }
-    state.bundle = { race: payload.race, prediction: payload.prediction };
-    state.learning = payload.status;
-    state.learnedModel = payload.model;
-    renderRace();
-    renderLearn();
-    setStatus(payload.has_result ? "保存して学習しました" : "保存しました");
-  } catch (error) {
-    setStatus(`保存失敗: ${error.message}`);
-  }
-}
-
-async function recordManualResult() {
-  const url = el("raceUrl").value.trim();
-  const order = el("resultOrder").value.trim();
-  if (!url || !order) {
-    setStatus("URLと着順を入力してください");
-    return;
-  }
-  setTab("race");
-  setStatus("結果学習中");
-  try {
-    const res = await apiPost("/api/learn/manual_result", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url, order }),
-    });
-    const payload = await res.json();
-    if (!payload.ok) {
-      setStatus(payload.error || "学習失敗");
-      return;
-    }
-    state.bundle = { race: payload.race, prediction: payload.prediction };
-    state.learning = payload.status;
-    state.learnedModel = payload.model;
-    renderRace();
-    renderLearn();
-    setStatus(`結果で学習: ${payload.order.join("-")}`);
-  } catch (error) {
-    setStatus(`学習失敗: ${error.message}`);
+    setStatus(`莉頑律縺ｮ莠域Φ繧ｨ繝ｩ繝ｼ: ${error.message}`);
   }
 }
 
@@ -202,8 +107,8 @@ async function loadCapitalPlan() {
     el("planResult").innerHTML = `<div class="empty">元手と目標額を入力してください。</div>`;
     return;
   }
-  setStatus("資金プランを作成中");
-  el("planResult").innerHTML = `<div class="empty">ライブオッズと候補を確認中です。</div>`;
+  setStatus("バンクロール運用プランを作成中");
+  el("planResult").innerHTML = `<div class="empty">候補レースと買い目配分を確認中です。</div>`;
   try {
     const params = new URLSearchParams({
       start: String(start),
@@ -214,16 +119,16 @@ async function loadCapitalPlan() {
     const res = await apiGet(`/api/capital_plan?${params.toString()}`);
     const payload = await res.json();
     if (!payload.ok) {
-      el("planResult").innerHTML = `<div class="empty">${escapeHtml(payload.error || "資金プランを作れませんでした。")}</div>`;
-      setStatus("資金プラン作成エラー");
+      el("planResult").innerHTML = `<div class="empty">${escapeHtml(payload.error || "バンクロール運用プランを作れませんでした。")}</div>`;
+      setStatus("バンクロール運用プラン作成エラー");
       return;
     }
     state.capitalPlan = payload;
     renderCapitalPlan(payload);
-    setStatus(`${payload.plans?.length || 0}件の資金プランを表示中`);
+    setStatus(`${payload.plans?.length || 0}件の運用プランを表示中`);
   } catch (error) {
     el("planResult").innerHTML = `<div class="empty">${escapeHtml(error.message)}</div>`;
-    setStatus("資金プラン作成エラー");
+    setStatus("バンクロール運用プラン作成エラー");
   }
 }
 
@@ -233,12 +138,12 @@ function updateCapitalPlanTimer() {
     state.capitalPlanTimer = null;
   }
   if (!el("autoRollToggle").checked) {
-    setStatus("運用モードを停止しました");
+    setStatus("驕狗畑繝｢繝ｼ繝峨ｒ蛛懈ｭ｢縺励∪縺励◆");
     return;
   }
   loadCapitalPlan();
   state.capitalPlanTimer = setInterval(loadCapitalPlan, 60000);
-  setStatus("運用モードで自動更新中");
+  setStatus("驕狗畑繝｢繝ｼ繝峨〒閾ｪ蜍墓峩譁ｰ荳ｭ");
 }
 
 function setStatus(text) {
@@ -276,13 +181,13 @@ function renderToday() {
   const rows = filterForecasts(payload.forecasts || []);
   el("forecastList").innerHTML = rows.length
     ? renderVenueForecastSections(rows)
-    : `<div class="empty">条件に合うレースがありません。</div>`;
+    : `<div class="empty">譚｡莉ｶ縺ｫ蜷医≧繝ｬ繝ｼ繧ｹ縺後≠繧翫∪縺帙ｓ縲・/div>`;
 }
 
 function renderVenueForecastSections(rows) {
   return groupForecastsByVenue(rows)
     .map((group) => {
-      const strong = group.races.filter((race) => race.confidence?.label === "強").length;
+      const strong = group.races.filter((race) => race.confidence?.label === "蠑ｷ").length;
       const first = group.races[0];
       const last = group.races[group.races.length - 1];
       return `<section class="venue-section">
@@ -325,15 +230,15 @@ function renderCapitalPlan(payload) {
   const planSummary = payload.summary || {};
   const plans = payload.plans || [];
   const summary = `<div class="plan-meta">
-    <span>${escapeHtml(payload.input?.start_amount || 0)}円 → ${escapeHtml(payload.input?.target_amount || 0)}円</span>
-    <span>ライブ ${odds.fetched || 0}/${odds.attempted || 0}</span>
-    <span>対象 ${escapeHtml(planSummary.active_forecast_count ?? 0)}R / 終了除外 ${escapeHtml(planSummary.elapsed_forecast_count ?? 0)}R</span>
-    ${planSummary.next_race_time ? `<span>次 ${escapeHtml(planSummary.next_race_time)}</span>` : ""}
-    <span>${el("autoRollToggle").checked ? "運用モードON" : "手動更新"}</span>
+    <span>${escapeHtml(payload.input?.start_amount || 0)}蜀・竊・${escapeHtml(payload.input?.target_amount || 0)}蜀・/span>
+    <span>繝ｩ繧､繝・${odds.fetched || 0}/${odds.attempted || 0}</span>
+    <span>蟇ｾ雎｡ ${escapeHtml(planSummary.active_forecast_count ?? 0)}R / 邨ゆｺ・勁螟・${escapeHtml(planSummary.elapsed_forecast_count ?? 0)}R</span>
+    ${planSummary.next_race_time ? `<span>谺｡ ${escapeHtml(planSummary.next_race_time)}</span>` : ""}
+    <span>${el("autoRollToggle").checked ? "驕狗畑繝｢繝ｼ繝碓N" : "謇句虚譖ｴ譁ｰ"}</span>
     <span>${escapeHtml((planSummary.data_used || []).slice(0, 4).join(" / "))}</span>
   </div>`;
   if (!plans.length) {
-    el("planResult").innerHTML = `${summary}<div class="empty">条件に近い候補がありません。目標額か最大レース数を調整してください。</div>`;
+    el("planResult").innerHTML = `${summary}<div class="empty">譚｡莉ｶ縺ｫ霑代＞蛟呵｣懊′縺ゅｊ縺ｾ縺帙ｓ縲ら岼讓咎｡阪°譛螟ｧ繝ｬ繝ｼ繧ｹ謨ｰ繧定ｪｿ謨ｴ縺励※縺上□縺輔＞縲・/div>`;
     return;
   }
   el("planResult").innerHTML = `${summary}<div class="plan-grid">${plans.map(renderPlanCard).join("")}</div>`;
@@ -344,12 +249,12 @@ function renderPlanCard(plan) {
   return `<article class="plan-card ${reached}">
     <header class="plan-card-head">
       <div>
-        <span class="status-dot">${escapeHtml(plan.risk)}リスク</span>
+        <span class="status-dot">${escapeHtml(plan.risk)}繝ｪ繧ｹ繧ｯ</span>
         <h4>${escapeHtml(plan.title)}</h4>
       </div>
       <div class="plan-return">
         <strong>${yen(plan.projected_return)}</strong>
-        <span>${escapeHtml(plan.multiplier)}倍 / 的中目安 ${percent(plan.hit_probability)}</span>
+        <span>${escapeHtml(plan.multiplier)}蛟・/ 逧・ｸｭ逶ｮ螳・${percent(plan.hit_probability)}</span>
       </div>
     </header>
     <div class="plan-legs">
@@ -372,11 +277,11 @@ function renderPlanLeg(leg) {
     </div>
     <div class="plan-ticket">
       <b>${escapeHtml(leg.ticket || "")}</b>
-      <span class="${oddsClass}">${escapeHtml(leg.odds_str || leg.odds)}倍 ${leg.odds_source === "live" ? "LIVE" : "推定"}</span>
+      <span class="${oddsClass}">${escapeHtml(leg.odds_str || leg.odds)}倍 / ${leg.odds_source === "live" ? "LIVE" : "推定"}</span>
       ${leg.popularity ? `<span>${escapeHtml(leg.popularity)}人気</span>` : ""}
     </div>
     <div class="plan-money">
-      <span>賭け ${yen(leg.stake)}</span>
+      <span>投資 ${yen(leg.stake)}</span>
       <strong>見込 ${yen(leg.projected_return)}</strong>
       <em class="ev-chip ${evClass}">期待値目安 ${yen(ev)}</em>
     </div>
@@ -410,38 +315,28 @@ function renderVenueBoard(forecasts) {
       current.firstTime = race.start_time || "--:--";
       current.raceNo = race.race_no || "-";
     }
-    if (race.confidence?.label === "強") current.strong += 1;
+    if (race.confidence?.label === "強" || race.confidence?.label === "蠑ｷ") current.strong += 1;
     venues.set(venue, current);
   }
   el("venueBoard").innerHTML = [...venues.values()]
     .sort((a, b) => String(a.firstTime).localeCompare(String(b.firstTime)))
     .map(
       (item) => `<article class="venue-chip">
-        <span class="status-dot">受付中</span>
+        <span class="status-dot">蜿嶺ｻ倅ｸｭ</span>
         <strong>${escapeHtml(item.venue)}</strong>
-        <small>${escapeHtml(item.raceNo)}R 発走 ${escapeHtml(item.firstTime)} / ${item.count}レース</small>
-        <em>強 ${item.strong}</em>
+        <small>${escapeHtml(item.raceNo)}R 逋ｺ襍ｰ ${escapeHtml(item.firstTime)} / ${item.count}繝ｬ繝ｼ繧ｹ</small>
+        <em>蠑ｷ ${item.strong}</em>
       </article>`
     )
     .join("");
 }
 
 function filterForecasts(rows) {
-  const text = el("searchInput").value.trim().toLowerCase();
-  const confidence = el("confidenceFilter").value;
+  const confidenceFilter = el("confidenceFilter");
+  const confidence = confidenceFilter ? confidenceFilter.value : "all";
   return rows.filter((race) => {
     if (confidence !== "all" && race.confidence?.label !== confidence) return false;
-    if (!text) return true;
-    const haystack = [
-      race.venue,
-      race.event,
-      race.race_no,
-      ...(race.top3 || []).map((row) => row.name),
-      ...(race.entries || []).map((row) => row.comment),
-    ]
-      .join(" ")
-      .toLowerCase();
-    return haystack.includes(text);
+    return true;
   });
 }
 
@@ -464,7 +359,7 @@ function renderForecastCard(race) {
       <strong>${escapeHtml(race.race_no || "")}R</strong>
       <span class="ribbon-main">${car(top.car_no)} ${escapeHtml(top.name || "-")} <em>${percent(top.probability)}</em></span>
       <span class="ribbon-tickets">${escapeHtml(primaryTickets || "-")}</span>
-      ${badge(confidence.label || "混戦", "confidence-badge")}
+      ${badge(confidence.label || "豺ｷ謌ｦ", "confidence-badge")}
     </summary>
     <div class="ribbon-body">
       <article class="race-card ribbon-card ${confidenceClass(confidence.label)}">
@@ -475,14 +370,14 @@ function renderForecastCard(race) {
             <p>${escapeHtml(race.event || race.race_class || "")}</p>
           </div>
           <div class="confidence-summary">
-            ${badge(confidence.label || "混戦", "confidence-badge")}
+            ${badge(confidence.label || "豺ｷ謌ｦ", "confidence-badge")}
             <span>${escapeHtml(confidence.reason || "")}</span>
           </div>
         </header>
 
         <div class="prediction-summary">
           <div class="main-pick">
-            <span>本命</span>
+            <span>譛ｬ蜻ｽ</span>
             <strong>${car(top.car_no)} ${escapeHtml(top.name || "-")}</strong>
             <em>${percent(top.probability)}</em>
           </div>
@@ -498,31 +393,31 @@ function renderForecastCard(race) {
 
         <div class="forecast-grid">
           <section class="analysis-block">
-            <h4>展開</h4>
+            <h4>螻暮幕</h4>
             <p class="headline">${escapeHtml(race.scenario?.headline || "")}</p>
             <p>${escapeHtml(race.scenario?.flow || "")}</p>
             <p>${escapeHtml(race.scenario?.watch || "")}</p>
             <p class="risk-text">${escapeHtml(race.scenario?.upset || "")}</p>
           </section>
           <section class="analysis-block">
-            <h4>ライン/関係性</h4>
+            <h4>繝ｩ繧､繝ｳ/髢｢菫よｧ</h4>
             <ul class="line-list">${lines}</ul>
           </section>
         </div>
 
         <details class="details">
-          <summary>コメント根拠と全選手</summary>
+          <summary>繧ｳ繝｡繝ｳ繝域ｹ諡縺ｨ蜈ｨ驕ｸ謇・/summary>
           <div class="detail-grid">
             <section>
-              <h4>コメント・心理シグナル</h4>
+              <h4>繧ｳ繝｡繝ｳ繝医・蠢・炊繧ｷ繧ｰ繝翫Ν</h4>
               <ul class="signal-list">${signals}</ul>
             </section>
             <section>
-              <h4>出走表</h4>
+              <h4>蜃ｺ襍ｰ陦ｨ</h4>
               <div class="mini-table">${renderMiniEntries(race.entries || [])}</div>
             </section>
           </div>
-          <a class="source-link" href="${escapeAttr(race.url || "#")}" target="_blank" rel="noreferrer">WINTICKETで開く</a>
+          <a class="source-link" href="${escapeAttr(race.url || "#")}" target="_blank" rel="noreferrer">WINTICKET縺ｧ髢九￥</a>
         </details>
       </article>
     </div>
@@ -533,11 +428,11 @@ function renderMiniEntries(entries) {
   return `<table class="data-table compact-table">
     <thead>
       <tr>
-        <th>車</th>
-        <th>選手</th>
-        <th>脚質</th>
-        <th>得点</th>
-        <th>コメント</th>
+        <th>霆・/th>
+        <th>驕ｸ謇・/th>
+        <th>閼夊ｳｪ</th>
+        <th>蠕礼せ</th>
+        <th>繧ｳ繝｡繝ｳ繝・/th>
       </tr>
     </thead>
     <tbody>
@@ -554,88 +449,6 @@ function renderMiniEntries(entries) {
         .join("")}
     </tbody>
   </table>`;
-}
-
-function renderRace() {
-  if (!state.bundle) return;
-  const race = state.bundle.race;
-  const prediction = state.bundle.prediction;
-
-  el("sourceLabel").textContent = race.source?.name || "source";
-  el("raceTitle").textContent = race.title || `${race.venue || ""} ${race.race_no || ""}R`;
-  el("raceMeta").innerHTML = [race.date, race.venue, race.event, race.race_class, race.weather]
-    .filter(Boolean)
-    .map((item) => `<span>${escapeHtml(item)}</span>`)
-    .join("");
-
-  const top = prediction.rankings?.[0];
-  el("metricStrip").innerHTML = [
-    ["出走", `${race.entrants?.length || 0}`, "選手"],
-    ["ライン", `${race.lineup?.length || 0}`, "並び"],
-    ["本命", top ? `${top.car_no} ${top.name}` : "-", "最上位"],
-  ]
-    .map(metric)
-    .join("");
-
-  el("modelLabel").textContent = prediction.model?.warning || "";
-  renderRankings(prediction.rankings || []);
-  renderEntries(race.entrants || []);
-  renderTickets(prediction.tickets || []);
-  renderNotes(prediction.race_notes || []);
-  state.learnedModel = prediction.model || state.learnedModel;
-  renderLearn();
-  el("lineupLabel").textContent = formatLineup(race.lineup || []);
-}
-
-function renderRankings(rows) {
-  el("rankingBody").innerHTML = rows
-    .map((row, index) => {
-      const toneClass = isRiskTone(row.emotion?.tone) ? "tone risk" : "tone";
-      return `<tr>
-        <td><span class="mark">${index + 1}</span></td>
-        <td>${car(row.car_no)}</td>
-        <td><strong>${escapeHtml(row.name)}</strong><br><span class="muted">${escapeHtml(row.prefecture || "")} ${escapeHtml(row.class || "")}</span></td>
-        <td class="prob">${percent(row.win_probability)}</td>
-        <td><span class="${toneClass}">${escapeHtml(row.emotion?.tone || "中立")}</span><br>${escapeHtml(row.comment || "")}</td>
-        <td><div class="reason-list">${(row.reasons || []).map((reason) => `<span>${escapeHtml(reason)}</span>`).join("")}</div></td>
-      </tr>`;
-    })
-    .join("");
-}
-
-function renderEntries(rows) {
-  el("entriesBody").innerHTML = rows
-    .map((row) => {
-      const stats = row.stats || {};
-      return `<tr>
-        <td>${car(row.car_no)}</td>
-        <td><strong>${escapeHtml(row.name)}</strong><br><span class="muted">${escapeHtml(row.prefecture || "")} ${row.age || ""}歳 ${row.term || ""}期</span></td>
-        <td>${escapeHtml(row.class || "")}</td>
-        <td>${escapeHtml(row.style || "")}</td>
-        <td>${num(row.racing_score)}</td>
-        <td>${stats.start_count ?? 0}/${stats.home_count ?? 0}/${stats.back_count ?? 0}</td>
-        <td>${num(stats.win_rate)}%</td>
-        <td>${num(stats.two_rate)}%</td>
-        <td>${num(stats.three_rate)}%</td>
-        <td>${escapeHtml(row.comment || "")}</td>
-      </tr>`;
-    })
-    .join("");
-}
-
-function renderTickets(tickets) {
-  el("tickets").innerHTML = tickets
-    .map(
-      (ticket) => `<div class="ticket">
-        <strong>${escapeHtml(ticket.label)}</strong>
-        <span>${ticket.score != null ? score(ticket.score) : ""}</span>
-      </div>`
-    )
-    .join("");
-}
-
-function renderNotes(notes) {
-  el("raceNotes").innerHTML = notes.map((note) => `<li>${escapeHtml(note)}</li>`).join("");
 }
 
 function renderLearn() {
@@ -693,10 +506,10 @@ function ticketChip(ticket) {
 function renderLineDiagram(lines, top3) {
   if (!lines.length) return "";
   const topCars = new Set(top3.map((row) => Number(row.car_no)));
-  return `<div class="line-diagram" aria-label="ライン図">
+  return `<div class="line-diagram" aria-label="繝ｩ繧､繝ｳ蝗ｳ">
     <div class="diagram-title">
-      <span>ライン図</span>
-      <strong>隊列と仕掛けどころ</strong>
+      <span>繝ｩ繧､繝ｳ蝗ｳ</span>
+      <strong>髫雁・縺ｨ莉墓寺縺代←縺薙ｍ</strong>
     </div>
     <div class="line-tracks">
       ${lines.map((line, index) => renderLineTrack(line, index, topCars)).join("")}
@@ -741,8 +554,8 @@ function car(value) {
 }
 
 function confidenceClass(label) {
-  if (label === "強") return "is-strong";
-  if (label === "中") return "is-medium";
+  if (label === "強" || label === "蠑ｷ") return "is-strong";
+  if (label === "中" || label === "荳ｭ") return "is-medium";
   return "is-mixed";
 }
 
