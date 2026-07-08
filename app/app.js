@@ -8,7 +8,49 @@ const state = {
   capitalPlanTimer: null,
 };
 
+const STATIC_API = {
+  "/api/today": "static-api/today.json",
+  "/api/sample": "static-api/sample.json",
+  "/api/learn/status": "static-api/learn-status.json",
+  "/api/capital_plan": "static-api/capital-plan.json",
+};
+
 const el = (id) => document.getElementById(id);
+
+async function apiGet(url) {
+  try {
+    const res = await fetch(url);
+    if (res.ok) {
+      return res;
+    }
+    throw new Error(`HTTP ${res.status}`);
+  } catch (error) {
+    const path = url.split("?")[0];
+    const fallback = STATIC_API[path];
+    if (!fallback) {
+      throw error;
+    }
+    return fetch(fallback);
+  }
+}
+
+async function apiPost(url, options) {
+  try {
+    const res = await fetch(url, options);
+    if (res.ok) {
+      return res;
+    }
+    throw new Error(`HTTP ${res.status}`);
+  } catch (error) {
+    return {
+      ok: true,
+      json: async () => ({
+        ok: false,
+        error: "公開版では保存・手動学習は使えません。ローカル版で実行してください。",
+      }),
+    };
+  }
+}
 
 document.addEventListener("DOMContentLoaded", () => {
   el("refreshTodayBtn").addEventListener("click", loadToday);
@@ -30,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
 async function loadToday() {
   setStatus("今日の予想を読み込み中");
   try {
-    const res = await fetch("/api/today");
+    const res = await apiGet("/api/today");
     const payload = await res.json();
     if (!payload.ok) {
       setStatus(payload.error || "今日の予想を読み込めませんでした");
@@ -49,7 +91,7 @@ async function loadToday() {
 async function loadSample() {
   setTab("race");
   setStatus("サンプル読み込み中");
-  const res = await fetch("/api/sample");
+  const res = await apiGet("/api/sample");
   const bundle = await res.json();
   if (!bundle.ok) {
     setStatus(bundle.error || "読み込み失敗");
@@ -69,7 +111,7 @@ async function fetchRace() {
   setTab("race");
   setStatus("取得中");
   try {
-    const res = await fetch(`/api/fetch?url=${encodeURIComponent(url)}`);
+    const res = await apiGet(`/api/fetch?url=${encodeURIComponent(url)}`);
     const bundle = await res.json();
     if (!bundle.ok) {
       setStatus(bundle.error || "取得失敗");
@@ -93,7 +135,7 @@ async function storeCurrentRace() {
   setTab("race");
   setStatus("保存中");
   try {
-    const res = await fetch(`/api/learn/fetch_store?url=${encodeURIComponent(url)}`);
+    const res = await apiGet(`/api/learn/fetch_store?url=${encodeURIComponent(url)}`);
     const payload = await res.json();
     if (!payload.ok) {
       setStatus(payload.error || "保存失敗");
@@ -120,7 +162,7 @@ async function recordManualResult() {
   setTab("race");
   setStatus("結果学習中");
   try {
-    const res = await fetch("/api/learn/manual_result", {
+    const res = await apiPost("/api/learn/manual_result", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ url, order }),
@@ -143,7 +185,7 @@ async function recordManualResult() {
 
 async function loadLearnStatus() {
   try {
-    const res = await fetch("/api/learn/status");
+    const res = await apiGet("/api/learn/status");
     const payload = await res.json();
     if (payload.ok) {
       state.learning = payload.status;
@@ -172,7 +214,7 @@ async function loadCapitalPlan() {
       max_races: String(maxRaces),
       live_odds: liveOdds,
     });
-    const res = await fetch(`/api/capital_plan?${params.toString()}`);
+    const res = await apiGet(`/api/capital_plan?${params.toString()}`);
     const payload = await res.json();
     if (!payload.ok) {
       el("planResult").innerHTML = `<div class="empty">${escapeHtml(payload.error || "資金プランを作れませんでした。")}</div>`;
