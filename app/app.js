@@ -62,9 +62,6 @@ document.addEventListener("DOMContentLoaded", () => {
   el("autoRollToggle").addEventListener("change", updateCapitalPlanTimer);
   el("searchInput").addEventListener("input", renderToday);
   el("confidenceFilter").addEventListener("change", renderToday);
-  document.querySelectorAll(".tab").forEach((button) => {
-    button.addEventListener("click", () => setTab(button.dataset.tab));
-  });
   loadLearnStatus();
   loadToday();
 });
@@ -250,12 +247,10 @@ function setStatus(text) {
 
 function setTab(tab) {
   state.activeTab = tab;
-  document.querySelectorAll(".tab").forEach((button) => {
-    button.classList.toggle("active", button.dataset.tab === tab);
-  });
-  document.querySelectorAll(".panel").forEach((panel) => {
-    panel.classList.toggle("active", panel.id === `panel-${tab}`);
-  });
+  const panel = document.getElementById(`panel-${tab}`);
+  if (panel) {
+    panel.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 }
 
 function renderToday() {

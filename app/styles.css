@@ -274,11 +274,13 @@ select {
 }
 
 .panel {
-  display: none;
+  display: block;
 }
 
-.panel.active {
-  display: block;
+.panel + .panel {
+  margin-top: var(--space-8);
+  padding-top: var(--space-8);
+  border-top: 1px solid var(--color-border);
 }
 
 .page-header,
