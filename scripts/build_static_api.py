@@ -15,6 +15,7 @@ from keirin_ai.storage import connect, learning_status
 
 DATA_DIR = ROOT / "data"
 OUT_DIR = ROOT / "app" / "static-api"
+APP_DIR = ROOT / "app"
 
 
 def write_json(name: str, payload: dict) -> None:
@@ -23,6 +24,46 @@ def write_json(name: str, payload: dict) -> None:
         json.dumps(payload, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
+
+
+def write_preview(payloads: dict) -> None:
+    html = (APP_DIR / "index.html").read_text(encoding="utf-8")
+    css = (APP_DIR / "styles.css").read_text(encoding="utf-8")
+    js = (APP_DIR / "app.js").read_text(encoding="utf-8")
+    data = json.dumps(payloads, ensure_ascii=False).replace("</", "<\\/")
+    bootstrap = f"""
+    <script id="keirin-static-data" type="application/json">{data}</script>
+    <script>
+      (() => {{
+        const payloads = JSON.parse(document.getElementById("keirin-static-data").textContent);
+        const nativeFetch = window.fetch.bind(window);
+        window.fetch = async (url, options) => {{
+          const href = String(url);
+          const path = href.split("?")[0];
+          if (payloads[path]) {{
+            return new Response(JSON.stringify(payloads[path]), {{
+              status: 200,
+              headers: {{ "Content-Type": "application/json; charset=utf-8" }},
+            }});
+          }}
+          if (href.startsWith("/api/")) {{
+            return new Response(JSON.stringify({{
+              ok: false,
+              error: "プレビュー版ではこの操作は使えません。公開用の保存済み予想を表示しています。",
+            }}), {{
+              status: 200,
+              headers: {{ "Content-Type": "application/json; charset=utf-8" }},
+            }});
+          }}
+          return nativeFetch(url, options);
+        }};
+      }})();
+    </script>
+    <script>{js}</script>
+"""
+    html = html.replace('<link rel="stylesheet" href="styles.css" />', f"<style>\n{css}\n</style>")
+    html = html.replace('<script src="app.js"></script>', bootstrap)
+    (APP_DIR / "preview.html").write_text(html, encoding="utf-8")
 
 
 def main() -> None:
@@ -41,10 +82,17 @@ def main() -> None:
         )
 
     sample_race = json.loads((DATA_DIR / "sample_race.json").read_text(encoding="utf-8"))
-    write_json("today.json", today)
-    write_json("sample.json", {"ok": True, "race": sample_race, "prediction": predict_race(sample_race)})
-    write_json("learn-status.json", {"ok": True, "status": status})
-    write_json("capital-plan.json", capital)
+    payloads = {
+        "/api/today": today,
+        "/api/sample": {"ok": True, "race": sample_race, "prediction": predict_race(sample_race)},
+        "/api/learn/status": {"ok": True, "status": status},
+        "/api/capital_plan": capital,
+    }
+    write_json("today.json", payloads["/api/today"])
+    write_json("sample.json", payloads["/api/sample"])
+    write_json("learn-status.json", payloads["/api/learn/status"])
+    write_json("capital-plan.json", payloads["/api/capital_plan"])
+    write_preview(payloads)
 
 
 if __name__ == "__main__":
