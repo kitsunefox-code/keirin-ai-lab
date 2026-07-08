@@ -67,21 +67,21 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function loadToday() {
-  setStatus("莉頑律縺ｮ莠域Φ繧定ｪｭ縺ｿ霎ｼ縺ｿ荳ｭ");
+  setStatus("今日の予想を読み込み中");
   try {
     const res = await apiGet("/api/today");
     const payload = await res.json();
     if (!payload.ok) {
-      setStatus(payload.error || "莉頑律縺ｮ莠域Φ繧定ｪｭ縺ｿ霎ｼ繧√∪縺帙ｓ縺ｧ縺励◆");
+      setStatus(payload.error || "今日の予想を読み込めませんでした");
       return;
     }
     state.today = payload;
     state.learning = payload.learning_status || state.learning;
     renderToday();
     renderLearn();
-    setStatus(`${payload.summary?.count || 0}繝ｬ繝ｼ繧ｹ繧定｡ｨ遉ｺ荳ｭ`);
+    setStatus(`${payload.summary?.count || 0}レースを表示中`);
   } catch (error) {
-    setStatus(`莉頑律縺ｮ莠域Φ繧ｨ繝ｩ繝ｼ: ${error.message}`);
+    setStatus(`今日の予想エラー: ${error.message}`);
   }
 }
 
@@ -143,7 +143,7 @@ function updateCapitalPlanTimer() {
   }
   loadCapitalPlan();
   state.capitalPlanTimer = setInterval(loadCapitalPlan, 60000);
-  setStatus("驕狗畑繝｢繝ｼ繝峨〒閾ｪ蜍墓峩譁ｰ荳ｭ");
+  setStatus("驕狗畑繝｢繝ｼ繝峨〒自動更新中");
 }
 
 function setStatus(text) {
@@ -181,13 +181,13 @@ function renderToday() {
   const rows = filterForecasts(payload.forecasts || []);
   el("forecastList").innerHTML = rows.length
     ? renderVenueForecastSections(rows)
-    : `<div class="empty">譚｡莉ｶ縺ｫ蜷医≧繝ｬ繝ｼ繧ｹ縺後≠繧翫∪縺帙ｓ縲・/div>`;
+    : `<div class="empty">条件に合うレースがありません。</div>`;
 }
 
 function renderVenueForecastSections(rows) {
   return groupForecastsByVenue(rows)
     .map((group) => {
-      const strong = group.races.filter((race) => race.confidence?.label === "蠑ｷ").length;
+      const strong = group.races.filter((race) => race.confidence?.label === "強").length;
       const first = group.races[0];
       const last = group.races[group.races.length - 1];
       return `<section class="venue-section">
@@ -230,15 +230,15 @@ function renderCapitalPlan(payload) {
   const planSummary = payload.summary || {};
   const plans = payload.plans || [];
   const summary = `<div class="plan-meta">
-    <span>${escapeHtml(payload.input?.start_amount || 0)}蜀・竊・${escapeHtml(payload.input?.target_amount || 0)}蜀・/span>
-    <span>繝ｩ繧､繝・${odds.fetched || 0}/${odds.attempted || 0}</span>
-    <span>蟇ｾ雎｡ ${escapeHtml(planSummary.active_forecast_count ?? 0)}R / 邨ゆｺ・勁螟・${escapeHtml(planSummary.elapsed_forecast_count ?? 0)}R</span>
-    ${planSummary.next_race_time ? `<span>谺｡ ${escapeHtml(planSummary.next_race_time)}</span>` : ""}
-    <span>${el("autoRollToggle").checked ? "驕狗畑繝｢繝ｼ繝碓N" : "謇句虚譖ｴ譁ｰ"}</span>
+    <span>${escapeHtml(payload.input?.start_amount || 0)}冁EↁE${escapeHtml(payload.input?.target_amount || 0)}冁E/span>
+    <span>ライチE${odds.fetched || 0}/${odds.attempted || 0}</span>
+    <span>対象 ${escapeHtml(planSummary.active_forecast_count ?? 0)}R / 邨ゆｺ・勁螟・${escapeHtml(planSummary.elapsed_forecast_count ?? 0)}R</span>
+    ${planSummary.next_race_time ? `<span>次 ${escapeHtml(planSummary.next_race_time)}</span>` : ""}
+    <span>${el("autoRollToggle").checked ? "運用モードON" : "手動更新"}</span>
     <span>${escapeHtml((planSummary.data_used || []).slice(0, 4).join(" / "))}</span>
   </div>`;
   if (!plans.length) {
-    el("planResult").innerHTML = `${summary}<div class="empty">譚｡莉ｶ縺ｫ霑代＞蛟呵｣懊′縺ゅｊ縺ｾ縺帙ｓ縲ら岼讓咎｡阪°譛螟ｧ繝ｬ繝ｼ繧ｹ謨ｰ繧定ｪｿ謨ｴ縺励※縺上□縺輔＞縲・/div>`;
+    el("planResult").innerHTML = `${summary}<div class="empty">条件に近い候補がありません。目標額か最大レース数を調整してください。</div>`;
     return;
   }
   el("planResult").innerHTML = `${summary}<div class="plan-grid">${plans.map(renderPlanCard).join("")}</div>`;
@@ -249,12 +249,12 @@ function renderPlanCard(plan) {
   return `<article class="plan-card ${reached}">
     <header class="plan-card-head">
       <div>
-        <span class="status-dot">${escapeHtml(plan.risk)}繝ｪ繧ｹ繧ｯ</span>
+        <span class="status-dot">${escapeHtml(plan.risk)}リスク</span>
         <h4>${escapeHtml(plan.title)}</h4>
       </div>
       <div class="plan-return">
         <strong>${yen(plan.projected_return)}</strong>
-        <span>${escapeHtml(plan.multiplier)}蛟・/ 逧・ｸｭ逶ｮ螳・${percent(plan.hit_probability)}</span>
+        <span>${escapeHtml(plan.multiplier)}倁E/ 逧・ｸｭ逶ｮ螳・${percent(plan.hit_probability)}</span>
       </div>
     </header>
     <div class="plan-legs">
@@ -315,17 +315,17 @@ function renderVenueBoard(forecasts) {
       current.firstTime = race.start_time || "--:--";
       current.raceNo = race.race_no || "-";
     }
-    if (race.confidence?.label === "強" || race.confidence?.label === "蠑ｷ") current.strong += 1;
+    if (race.confidence?.label === "強" || race.confidence?.label === "強") current.strong += 1;
     venues.set(venue, current);
   }
   el("venueBoard").innerHTML = [...venues.values()]
     .sort((a, b) => String(a.firstTime).localeCompare(String(b.firstTime)))
     .map(
       (item) => `<article class="venue-chip">
-        <span class="status-dot">蜿嶺ｻ倅ｸｭ</span>
+        <span class="status-dot">受付中</span>
         <strong>${escapeHtml(item.venue)}</strong>
-        <small>${escapeHtml(item.raceNo)}R 逋ｺ襍ｰ ${escapeHtml(item.firstTime)} / ${item.count}繝ｬ繝ｼ繧ｹ</small>
-        <em>蠑ｷ ${item.strong}</em>
+        <small>${escapeHtml(item.raceNo)}R 発走 ${escapeHtml(item.firstTime)} / ${item.count}レース</small>
+        <em>強 ${item.strong}</em>
       </article>`
     )
     .join("");
@@ -359,7 +359,7 @@ function renderForecastCard(race) {
       <strong>${escapeHtml(race.race_no || "")}R</strong>
       <span class="ribbon-main">${car(top.car_no)} ${escapeHtml(top.name || "-")} <em>${percent(top.probability)}</em></span>
       <span class="ribbon-tickets">${escapeHtml(primaryTickets || "-")}</span>
-      ${badge(confidence.label || "豺ｷ謌ｦ", "confidence-badge")}
+      ${badge(confidence.label || "混戦", "confidence-badge")}
     </summary>
     <div class="ribbon-body">
       <article class="race-card ribbon-card ${confidenceClass(confidence.label)}">
@@ -370,14 +370,14 @@ function renderForecastCard(race) {
             <p>${escapeHtml(race.event || race.race_class || "")}</p>
           </div>
           <div class="confidence-summary">
-            ${badge(confidence.label || "豺ｷ謌ｦ", "confidence-badge")}
+            ${badge(confidence.label || "混戦", "confidence-badge")}
             <span>${escapeHtml(confidence.reason || "")}</span>
           </div>
         </header>
 
         <div class="prediction-summary">
           <div class="main-pick">
-            <span>譛ｬ蜻ｽ</span>
+            <span>本命</span>
             <strong>${car(top.car_no)} ${escapeHtml(top.name || "-")}</strong>
             <em>${percent(top.probability)}</em>
           </div>
@@ -393,27 +393,27 @@ function renderForecastCard(race) {
 
         <div class="forecast-grid">
           <section class="analysis-block">
-            <h4>螻暮幕</h4>
+            <h4>展開</h4>
             <p class="headline">${escapeHtml(race.scenario?.headline || "")}</p>
             <p>${escapeHtml(race.scenario?.flow || "")}</p>
             <p>${escapeHtml(race.scenario?.watch || "")}</p>
             <p class="risk-text">${escapeHtml(race.scenario?.upset || "")}</p>
           </section>
           <section class="analysis-block">
-            <h4>繝ｩ繧､繝ｳ/髢｢菫よｧ</h4>
+            <h4>ライン/髢｢菫よｧ</h4>
             <ul class="line-list">${lines}</ul>
           </section>
         </div>
 
         <details class="details">
-          <summary>繧ｳ繝｡繝ｳ繝域ｹ諡縺ｨ蜈ｨ驕ｸ謇・/summary>
+          <summary>繧ｳ繝｡繝ｳ繝域ｹ諡と全選扁E/summary>
           <div class="detail-grid">
             <section>
               <h4>繧ｳ繝｡繝ｳ繝医・蠢・炊繧ｷ繧ｰ繝翫Ν</h4>
               <ul class="signal-list">${signals}</ul>
             </section>
             <section>
-              <h4>蜃ｺ襍ｰ陦ｨ</h4>
+              <h4>出走表</h4>
               <div class="mini-table">${renderMiniEntries(race.entries || [])}</div>
             </section>
           </div>
@@ -428,11 +428,11 @@ function renderMiniEntries(entries) {
   return `<table class="data-table compact-table">
     <thead>
       <tr>
-        <th>霆・/th>
-        <th>驕ｸ謇・/th>
-        <th>閼夊ｳｪ</th>
-        <th>蠕礼せ</th>
-        <th>繧ｳ繝｡繝ｳ繝・/th>
+        <th>軁E/th>
+        <th>選扁E/th>
+        <th>脚質</th>
+        <th>得点</th>
+        <th>コメンチE/th>
       </tr>
     </thead>
     <tbody>
@@ -506,9 +506,9 @@ function ticketChip(ticket) {
 function renderLineDiagram(lines, top3) {
   if (!lines.length) return "";
   const topCars = new Set(top3.map((row) => Number(row.car_no)));
-  return `<div class="line-diagram" aria-label="繝ｩ繧､繝ｳ蝗ｳ">
+  return `<div class="line-diagram" aria-label="ライン図">
     <div class="diagram-title">
-      <span>繝ｩ繧､繝ｳ蝗ｳ</span>
+      <span>ライン図</span>
       <strong>髫雁・縺ｨ莉墓寺縺代←縺薙ｍ</strong>
     </div>
     <div class="line-tracks">
@@ -554,8 +554,8 @@ function car(value) {
 }
 
 function confidenceClass(label) {
-  if (label === "強" || label === "蠑ｷ") return "is-strong";
-  if (label === "中" || label === "荳ｭ") return "is-medium";
+  if (label === "強" || label === "強") return "is-strong";
+  if (label === "中" || label === "中") return "is-medium";
   return "is-mixed";
 }
 
