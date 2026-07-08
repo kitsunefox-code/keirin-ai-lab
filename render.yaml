@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: keirin-ai-lab
+    env: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: python server.py
+    envVars:
+      - key: KEIRIN_HOST
+        value: 0.0.0.0

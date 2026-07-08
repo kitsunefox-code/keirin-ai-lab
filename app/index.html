@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Keirin AI Lab</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="メインナビゲーション">
+        <div class="brand">
+          <span class="brand-mark">K</span>
+          <div class="brand-copy">
+            <span class="brand-kicker">Race Intelligence</span>
+            <h1>Keirin AI Lab</h1>
+          </div>
+        </div>
+
+        <div class="status" id="status" role="status">起動中</div>
+
+        <nav class="tabs" aria-label="表示切替">
+          <button class="tab active" data-tab="today">今日の予想</button>
+          <button class="tab" data-tab="race">レース詳細</button>
+          <button class="tab" data-tab="learn">学習・収支</button>
+        </nav>
+
+        <section class="sidebar-group" aria-labelledby="today-filter-title">
+          <div class="sidebar-title" id="today-filter-title">絞り込み</div>
+          <label class="field">
+            <span>会場・選手検索</span>
+            <input id="searchInput" type="search" placeholder="例: 弥彦 / 佐藤" />
+          </label>
+          <label class="field">
+            <span>信頼度</span>
+            <select id="confidenceFilter">
+              <option value="all">すべて</option>
+              <option value="強">強</option>
+              <option value="中">中</option>
+              <option value="混戦">混戦</option>
+            </select>
+          </label>
+          <button id="refreshTodayBtn" class="button primary">最新表示</button>
+        </section>
+
+        <section class="sidebar-group" aria-labelledby="single-race-title">
+          <div class="sidebar-title" id="single-race-title">単レース取得</div>
+          <label class="field">
+            <span>WINTICKET URL</span>
+            <input id="raceUrl" type="url" value="https://www.winticket.jp/keirin/tamano/racecard/2026070761/2/9" />
+          </label>
+          <div class="button-row">
+            <button id="fetchBtn" class="button">取得</button>
+            <button id="sampleBtn" class="button">サンプル</button>
+          </div>
+          <button id="storeBtn" class="button">取得して学習DBへ保存</button>
+          <label class="field compact">
+            <span>結果着順</span>
+            <input id="resultOrder" type="text" placeholder="3,7,1,2,5,4,6" />
+          </label>
+          <button id="recordBtn" class="button">結果で学習</button>
+        </section>
+
+        <p class="notice">予想は研究用です。車券購入や利益を保証するものではありません。</p>
+      </aside>
+
+      <main class="workspace">
+        <section class="panel active" id="panel-today">
+          <header class="page-header">
+            <div>
+              <p class="eyebrow">Today Forecast</p>
+              <h2>今日の予想と資金運用</h2>
+            </div>
+            <span class="page-meta" id="todayMeta">読み込み中</span>
+          </header>
+
+          <div class="product-nav" aria-label="競輪分析メニュー">
+            <span class="product-nav-item active">本日開催</span>
+            <span class="product-nav-item">出走表</span>
+            <span class="product-nav-item">AI予想</span>
+            <span class="product-nav-item">買い目</span>
+            <span class="product-nav-item">収支学習</span>
+          </div>
+
+          <div class="metric-strip" id="todayMetrics"></div>
+
+          <section class="capital-planner surface-panel" aria-labelledby="capitalPlannerTitle">
+            <div class="capital-head">
+              <div>
+                <p class="eyebrow">Capital Plan</p>
+                <h3 id="capitalPlannerTitle">資金目標プラン</h3>
+              </div>
+              <div class="capital-form">
+                <label class="field compact">
+                  <span>元手</span>
+                  <input id="startAmount" type="number" min="100" step="100" value="1000" />
+                </label>
+                <label class="field compact">
+                  <span>目標</span>
+                  <input id="targetAmount" type="number" min="100" step="100" value="3000" />
+                </label>
+                <label class="field compact">
+                  <span>最大レース</span>
+                  <select id="maxPlanRaces">
+                    <option value="1">1</option>
+                    <option value="2" selected>2</option>
+                    <option value="3">3</option>
+                  </select>
+                </label>
+                <label class="check-field">
+                  <input id="liveOddsToggle" type="checkbox" checked />
+                  <span>ライブオッズ</span>
+                </label>
+                <label class="check-field">
+                  <input id="autoRollToggle" type="checkbox" />
+                  <span>運用モード</span>
+                </label>
+                <button id="planBtn" class="button primary">候補を出す</button>
+              </div>
+            </div>
+            <div class="plan-result" id="planResult">
+              <div class="empty">元手と目標額を入れて候補を出してください。</div>
+            </div>
+          </section>
+
+          <section class="venue-board" aria-label="本日開催中の競輪場">
+            <div class="venue-board-head">
+              <span>本日開催中</span>
+              <strong>競輪場</strong>
+            </div>
+            <div class="venue-strip" id="venueBoard"></div>
+          </section>
+
+          <div class="race-list" id="forecastList"></div>
+        </section>
+
+        <section class="panel" id="panel-race">
+          <header class="race-head">
+            <div>
+              <p class="eyebrow" id="sourceLabel">source</p>
+              <h2 id="raceTitle">レースを読み込んでください</h2>
+              <div class="meta" id="raceMeta"></div>
+            </div>
+            <div class="metric-strip compact-metrics" id="metricStrip"></div>
+          </header>
+
+          <div class="analysis-layout">
+            <section class="surface-panel">
+              <div class="section-head">
+                <h3>予想順位</h3>
+                <span id="modelLabel"></span>
+              </div>
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>印</th>
+                      <th>車</th>
+                      <th>選手</th>
+                      <th>1着確率</th>
+                      <th>コメント</th>
+                      <th>根拠</th>
+                    </tr>
+                  </thead>
+                  <tbody id="rankingBody"></tbody>
+                </table>
+              </div>
+            </section>
+
+            <aside class="surface-panel">
+              <h3>3連単候補</h3>
+              <div class="tickets" id="tickets"></div>
+              <h3>レースメモ</h3>
+              <ul class="notes" id="raceNotes"></ul>
+            </aside>
+          </div>
+
+          <section class="surface-panel">
+            <div class="section-head">
+              <h3>選手とコメント</h3>
+              <span id="lineupLabel"></span>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>車</th>
+                    <th>選手</th>
+                    <th>級班</th>
+                    <th>脚質</th>
+                    <th>得点</th>
+                    <th>S/H/B</th>
+                    <th>勝率</th>
+                    <th>2連対</th>
+                    <th>3連対</th>
+                    <th>コメント</th>
+                  </tr>
+                </thead>
+                <tbody id="entriesBody"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section class="panel" id="panel-learn">
+          <header class="page-header">
+            <div>
+              <p class="eyebrow">Learning</p>
+              <h2>学習・収支</h2>
+            </div>
+            <span class="page-meta" id="learnModelLabel">確認中</span>
+          </header>
+          <div class="metric-strip" id="learnGrid"></div>
+          <div class="table-wrap surface-panel">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>項目</th>
+                  <th>値</th>
+                </tr>
+              </thead>
+              <tbody id="learnBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
