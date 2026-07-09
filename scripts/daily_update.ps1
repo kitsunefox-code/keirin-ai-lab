@@ -1,4 +1,4 @@
-# Keirin AI Lab 日次自動更新
+﻿# Keirin AI Lab 日次自動更新
 #   -Mode morning : 今日の予想を生成 → 静的ビルド → push (公開版が今日の予想になる)
 #   -Mode night   : 結果・レース後談話を回収+再学習 → 静的ビルド → push (答え合わせが最新になる)
 #   -Mode push    : 静的ビルド → push のみ (動作確認用)
