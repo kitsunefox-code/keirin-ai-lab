@@ -47,7 +47,7 @@ class KeirinHandler(BaseHTTPRequestHandler):
         parsed = urlparse(self.path)
         path = parsed.path
 
-        if path == "/":
+        if path in {"/", "/index.html"}:
             return self._serve_file(APP_DIR / "index.html")
         if path in {"/results", "/results.html"}:
             return self._serve_file(APP_DIR / "results.html")
