@@ -64,6 +64,9 @@ def enrich_race_from_state(race: dict, html_text: str) -> dict:
             continue
         records_by_car[car_no] = record
 
+    # テキスト解析で取りこぼした選手を埋め込みデータから補完する(全車を必ず揃える)
+    _fill_missing_entrants(race, common, car_by_player, name_by_player, records_by_car)
+
     bank = _current_bank(common)
     if bank:
         race["bank"] = bank
@@ -135,6 +138,68 @@ def enrich_race_from_state(race: dict, html_text: str) -> dict:
         "player_names": name_by_player,
     }
     return race
+
+
+def _fill_missing_entrants(
+    race: dict,
+    common: dict,
+    car_by_player: dict[str, int],
+    name_by_player: dict[str, str],
+    records_by_car: dict[int, dict],
+) -> None:
+    """テキスト解析の正規表現で欠けた選手を、埋め込みJSON(entries/players/records)から復元する。
+
+    出走表の車番はテキストより埋め込みデータが正。特殊な氏名や表組み崩れで
+    パースが数人落とすことがある(実測で52レース中13レース)。
+    """
+    existing = {int(e.get("car_no") or 0) for e in race.get("entrants", [])}
+    entrants = race.setdefault("entrants", [])
+    added = 0
+    for player_id, car_no in car_by_player.items():
+        if car_no in existing:
+            continue
+        record = records_by_car.get(car_no) or {}
+        entrants.append(
+            {
+                "frame_no": car_no,
+                "car_no": car_no,
+                "name": name_by_player.get(player_id, "") or f"{car_no}番",
+                "prefecture": "",
+                "class": "",
+                "age": None,
+                "term": None,
+                "ai_mark": "",
+                "racing_score": record.get("racePoint"),
+                "style": str(record.get("style") or ""),
+                "gear": str(record.get("gearRatioStr") or record.get("gearRatio") or ""),
+                "comment": str(record.get("comment") or ""),
+                "player_id": player_id,
+                "stats": {
+                    "start_count": int(record.get("standing") or 0),
+                    "home_count": 0,
+                    "back_count": int(record.get("back") or 0),
+                    "escape": int(record.get("frontRunner") or 0),
+                    "makuri": int(record.get("stalker") or 0),
+                    "sashi": int(record.get("deepCloser") or 0),
+                    "mark": int(record.get("marker") or 0),
+                    "first": int(record.get("first") or 0),
+                    "second": int(record.get("second") or 0),
+                    "third": int(record.get("third") or 0),
+                    "outside": int(record.get("others") or 0),
+                    "win_rate": float(record.get("firstRate") or 0.0),
+                    "two_rate": float(record.get("secondRate") or 0.0),
+                    "three_rate": float(record.get("thirdRate") or 0.0),
+                },
+                "recovered_from_state": True,
+            }
+        )
+        existing.add(car_no)
+        added += 1
+    if added:
+        entrants.sort(key=lambda e: int(e.get("car_no") or 0))
+        quality = race.setdefault("raw_quality", {})
+        quality["entrant_count"] = len(entrants)
+        quality["recovered_entrants"] = added
 
 
 def _head_to_head_within_race(records: list, ids_in_race: set[str], name_by_player: dict[str, str]) -> list[dict]:

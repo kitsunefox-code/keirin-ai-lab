@@ -2782,3 +2782,23 @@ h4 {
 .original-daily .capital-head {
   margin-bottom: var(--space-3);
 }
+
+.mm-group {
+  margin-bottom: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+}
+.mm-group .mm-row {
+  margin-bottom: 0;
+}
+.mm-group .mm-row + .mm-row {
+  margin-top: var(--space-2);
+}
+.mm-group-title {
+  margin-bottom: var(--space-2);
+  font-size: var(--text-xs);
+  font-weight: 800;
+  color: var(--color-accent-dark);
+}

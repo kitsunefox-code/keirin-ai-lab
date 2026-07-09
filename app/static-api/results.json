@@ -18,15 +18,15 @@
     "2026-06-07"
   ],
   "summary": {
-    "races": 52,
-    "settled": 16,
-    "pending": 36,
-    "honmei_hits": 4,
-    "honmei_rate": 0.25,
-    "in_top3_hits": 12,
-    "in_top3_rate": 0.75,
-    "trifecta_hits": 2,
-    "trifecta_rate": 0.125
+    "races": 65,
+    "settled": 22,
+    "pending": 43,
+    "honmei_hits": 6,
+    "honmei_rate": 0.2727,
+    "in_top3_hits": 16,
+    "in_top3_rate": 0.7273,
+    "trifecta_hits": 3,
+    "trifecta_rate": 0.1364
   },
   "venues": [
     {
@@ -440,12 +440,16 @@
             "2-5-7",
             "2-7-5"
           ],
-          "result_order": [],
-          "status": "pending",
+          "result_order": [
+            5,
+            2,
+            7
+          ],
+          "status": "in_top3",
           "hits": {
-            "honmei": null,
-            "in_top3": null,
-            "trifecta": null,
+            "honmei": false,
+            "in_top3": true,
+            "trifecta": false,
             "trifecta_label": null
           }
         },
@@ -468,12 +472,16 @@
             "3-2-5",
             "3-2-4"
           ],
-          "result_order": [],
-          "status": "pending",
+          "result_order": [
+            4,
+            3,
+            6
+          ],
+          "status": "in_top3",
           "hits": {
-            "honmei": null,
-            "in_top3": null,
-            "trifecta": null,
+            "honmei": false,
+            "in_top3": true,
+            "trifecta": false,
             "trifecta_label": null
           }
         },
@@ -496,12 +504,16 @@
             "4-7-6",
             "4-6-7"
           ],
-          "result_order": [],
-          "status": "pending",
+          "result_order": [
+            4,
+            1,
+            6
+          ],
+          "status": "hit_honmei",
           "hits": {
-            "honmei": null,
-            "in_top3": null,
-            "trifecta": null,
+            "honmei": true,
+            "in_top3": true,
+            "trifecta": false,
             "trifecta_label": null
           }
         },
@@ -523,6 +535,90 @@
             "3-6-1",
             "3-1-2",
             "3-1-6"
+          ],
+          "result_order": [],
+          "status": "pending",
+          "hits": {
+            "honmei": null,
+            "in_top3": null,
+            "trifecta": null,
+            "trifecta_label": null
+          }
+        },
+        {
+          "race_key": "winticket:2026070844:2:10",
+          "venue": "大垣",
+          "race_no": 10,
+          "start_time": "14:53",
+          "url": "https://www.winticket.jp/keirin/ogaki/racecard/2026070844/2/10",
+          "top_pick": {
+            "car_no": 2,
+            "name": "森田優弥",
+            "probability": 0.4135
+          },
+          "tickets": [
+            "2-7-4",
+            "7-2-4",
+            "2-7-1",
+            "7-2-1",
+            "2-4-7",
+            "7-4-2"
+          ],
+          "result_order": [],
+          "status": "pending",
+          "hits": {
+            "honmei": null,
+            "in_top3": null,
+            "trifecta": null,
+            "trifecta_label": null
+          }
+        },
+        {
+          "race_key": "winticket:2026070844:2:11",
+          "venue": "大垣",
+          "race_no": 11,
+          "start_time": "15:22",
+          "url": "https://www.winticket.jp/keirin/ogaki/racecard/2026070844/2/11",
+          "top_pick": {
+            "car_no": 3,
+            "name": "大石剣士",
+            "probability": 0.4752
+          },
+          "tickets": [
+            "3-1-4",
+            "3-1-5",
+            "1-3-4",
+            "1-3-5",
+            "3-4-1",
+            "3-5-1"
+          ],
+          "result_order": [],
+          "status": "pending",
+          "hits": {
+            "honmei": null,
+            "in_top3": null,
+            "trifecta": null,
+            "trifecta_label": null
+          }
+        },
+        {
+          "race_key": "winticket:2026070844:2:12",
+          "venue": "大垣",
+          "race_no": 12,
+          "start_time": "15:52",
+          "url": "https://www.winticket.jp/keirin/ogaki/racecard/2026070844/2/12",
+          "top_pick": {
+            "car_no": 1,
+            "name": "山崎賢人",
+            "probability": 0.8967
+          },
+          "tickets": [
+            "1-4-2",
+            "1-2-4",
+            "1-4-5",
+            "1-2-5",
+            "1-5-4",
+            "1-5-2"
           ],
           "result_order": [],
           "status": "pending",
@@ -685,13 +781,49 @@
             "1-7-6",
             "1-6-7"
           ],
-          "result_order": [],
-          "status": "pending",
+          "result_order": [
+            5,
+            3,
+            6
+          ],
+          "status": "miss",
           "hits": {
-            "honmei": null,
-            "in_top3": null,
-            "trifecta": null,
+            "honmei": false,
+            "in_top3": false,
+            "trifecta": false,
             "trifecta_label": null
+          }
+        },
+        {
+          "race_key": "winticket:2026070763:3:6",
+          "venue": "防府",
+          "race_no": 6,
+          "start_time": "13:15",
+          "url": "https://www.winticket.jp/keirin/hofu/racecard/2026070763/3/6",
+          "top_pick": {
+            "car_no": 7,
+            "name": "大西貴晃",
+            "probability": 0.6556
+          },
+          "tickets": [
+            "7-1-3",
+            "7-3-1",
+            "7-1-5",
+            "7-3-5",
+            "7-5-1",
+            "7-5-3"
+          ],
+          "result_order": [
+            7,
+            1,
+            3
+          ],
+          "status": "hit_trifecta",
+          "hits": {
+            "honmei": true,
+            "in_top3": true,
+            "trifecta": true,
+            "trifecta_label": "7-1-3"
           }
         },
         {
@@ -712,6 +844,94 @@
             "6-2-7",
             "7-6-4",
             "7-6-2"
+          ],
+          "result_order": [
+            3,
+            7,
+            4
+          ],
+          "status": "miss",
+          "hits": {
+            "honmei": false,
+            "in_top3": false,
+            "trifecta": false,
+            "trifecta_label": null
+          }
+        },
+        {
+          "race_key": "winticket:2026070763:3:8",
+          "venue": "防府",
+          "race_no": 8,
+          "start_time": "14:11",
+          "url": "https://www.winticket.jp/keirin/hofu/racecard/2026070763/3/8",
+          "top_pick": {
+            "car_no": 5,
+            "name": "鈴木陸来",
+            "probability": 0.3632
+          },
+          "tickets": [
+            "5-4-2",
+            "5-4-6",
+            "4-5-2",
+            "4-5-6",
+            "5-2-4",
+            "5-6-4"
+          ],
+          "result_order": [],
+          "status": "pending",
+          "hits": {
+            "honmei": null,
+            "in_top3": null,
+            "trifecta": null,
+            "trifecta_label": null
+          }
+        },
+        {
+          "race_key": "winticket:2026070763:3:9",
+          "venue": "防府",
+          "race_no": 9,
+          "start_time": "14:39",
+          "url": "https://www.winticket.jp/keirin/hofu/racecard/2026070763/3/9",
+          "top_pick": {
+            "car_no": 3,
+            "name": "高橋舜",
+            "probability": 0.3647
+          },
+          "tickets": [
+            "3-5-1",
+            "5-3-1",
+            "3-1-5",
+            "5-1-3",
+            "3-5-4",
+            "5-3-4"
+          ],
+          "result_order": [],
+          "status": "pending",
+          "hits": {
+            "honmei": null,
+            "in_top3": null,
+            "trifecta": null,
+            "trifecta_label": null
+          }
+        },
+        {
+          "race_key": "winticket:2026070763:3:10",
+          "venue": "防府",
+          "race_no": 10,
+          "start_time": "15:07",
+          "url": "https://www.winticket.jp/keirin/hofu/racecard/2026070763/3/10",
+          "top_pick": {
+            "car_no": 7,
+            "name": "治田知也",
+            "probability": 0.5839
+          },
+          "tickets": [
+            "7-4-1",
+            "7-4-6",
+            "7-1-4",
+            "7-6-4",
+            "7-1-6",
+            "7-6-1"
           ],
           "result_order": [],
           "status": "pending",
@@ -740,6 +960,34 @@
             "6-1-5",
             "6-3-1",
             "6-1-3"
+          ],
+          "result_order": [],
+          "status": "pending",
+          "hits": {
+            "honmei": null,
+            "in_top3": null,
+            "trifecta": null,
+            "trifecta_label": null
+          }
+        },
+        {
+          "race_key": "winticket:2026070763:3:12",
+          "venue": "防府",
+          "race_no": 12,
+          "start_time": "16:15",
+          "url": "https://www.winticket.jp/keirin/hofu/racecard/2026070763/3/12",
+          "top_pick": {
+            "car_no": 7,
+            "name": "杉浦侑吾",
+            "probability": 0.4647
+          },
+          "tickets": [
+            "7-6-5",
+            "7-5-6",
+            "7-6-3",
+            "7-5-3",
+            "7-3-6",
+            "7-3-5"
           ],
           "result_order": [],
           "status": "pending",
@@ -941,6 +1189,146 @@
             "7-6-4",
             "7-1-6",
             "7-6-1"
+          ],
+          "result_order": [],
+          "status": "pending",
+          "hits": {
+            "honmei": null,
+            "in_top3": null,
+            "trifecta": null,
+            "trifecta_label": null
+          }
+        },
+        {
+          "race_key": "winticket:2026070811:2:8",
+          "venue": "函館",
+          "race_no": 8,
+          "start_time": "18:43",
+          "url": "https://www.winticket.jp/keirin/hakodate/racecard/2026070811/2/8",
+          "top_pick": {
+            "car_no": 7,
+            "name": "塩島嵩一朗",
+            "probability": 0.4534
+          },
+          "tickets": [
+            "7-5-3",
+            "7-3-5",
+            "7-5-1",
+            "7-3-1",
+            "7-1-5",
+            "7-1-3"
+          ],
+          "result_order": [],
+          "status": "pending",
+          "hits": {
+            "honmei": null,
+            "in_top3": null,
+            "trifecta": null,
+            "trifecta_label": null
+          }
+        },
+        {
+          "race_key": "winticket:2026070811:2:9",
+          "venue": "函館",
+          "race_no": 9,
+          "start_time": "19:09",
+          "url": "https://www.winticket.jp/keirin/hakodate/racecard/2026070811/2/9",
+          "top_pick": {
+            "car_no": 2,
+            "name": "角田光",
+            "probability": 0.6336
+          },
+          "tickets": [
+            "2-7-1",
+            "2-7-3",
+            "2-1-7",
+            "2-3-7",
+            "2-1-3",
+            "2-3-1"
+          ],
+          "result_order": [],
+          "status": "pending",
+          "hits": {
+            "honmei": null,
+            "in_top3": null,
+            "trifecta": null,
+            "trifecta_label": null
+          }
+        },
+        {
+          "race_key": "winticket:2026070811:2:10",
+          "venue": "函館",
+          "race_no": 10,
+          "start_time": "19:35",
+          "url": "https://www.winticket.jp/keirin/hakodate/racecard/2026070811/2/10",
+          "top_pick": {
+            "car_no": 1,
+            "name": "山崎歩夢",
+            "probability": 0.7044
+          },
+          "tickets": [
+            "1-4-7",
+            "1-4-3",
+            "1-7-4",
+            "1-3-4",
+            "1-7-3",
+            "1-3-7"
+          ],
+          "result_order": [],
+          "status": "pending",
+          "hits": {
+            "honmei": null,
+            "in_top3": null,
+            "trifecta": null,
+            "trifecta_label": null
+          }
+        },
+        {
+          "race_key": "winticket:2026070811:2:11",
+          "venue": "函館",
+          "race_no": 11,
+          "start_time": "20:02",
+          "url": "https://www.winticket.jp/keirin/hakodate/racecard/2026070811/2/11",
+          "top_pick": {
+            "car_no": 4,
+            "name": "松崎広太",
+            "probability": 0.5733
+          },
+          "tickets": [
+            "4-2-5",
+            "4-2-1",
+            "4-5-2",
+            "4-1-2",
+            "2-4-5",
+            "2-4-1"
+          ],
+          "result_order": [],
+          "status": "pending",
+          "hits": {
+            "honmei": null,
+            "in_top3": null,
+            "trifecta": null,
+            "trifecta_label": null
+          }
+        },
+        {
+          "race_key": "winticket:2026070811:2:12",
+          "venue": "函館",
+          "race_no": 12,
+          "start_time": "20:30",
+          "url": "https://www.winticket.jp/keirin/hakodate/racecard/2026070811/2/12",
+          "top_pick": {
+            "car_no": 1,
+            "name": "町田太我",
+            "probability": 0.552
+          },
+          "tickets": [
+            "1-5-3",
+            "1-5-6",
+            "1-3-5",
+            "1-6-5",
+            "5-1-3",
+            "5-1-6"
           ],
           "result_order": [],
           "status": "pending",
@@ -1301,7 +1689,7 @@
           "race_key": "winticket:2026070761:3:2",
           "venue": "玉野",
           "race_no": 2,
-          "start_time": "21:10",
+          "start_time": "",
           "url": "https://www.winticket.jp/keirin/tamano/racecard/2026070761/3/2",
           "top_pick": {
             "car_no": 6,
@@ -1329,7 +1717,7 @@
           "race_key": "winticket:2026070761:3:3",
           "venue": "玉野",
           "race_no": 3,
-          "start_time": "21:30",
+          "start_time": "",
           "url": "https://www.winticket.jp/keirin/tamano/racecard/2026070761/3/3",
           "top_pick": {
             "car_no": 1,
@@ -1357,7 +1745,7 @@
           "race_key": "winticket:2026070761:3:4",
           "venue": "玉野",
           "race_no": 4,
-          "start_time": "21:50",
+          "start_time": "",
           "url": "https://www.winticket.jp/keirin/tamano/racecard/2026070761/3/4",
           "top_pick": {
             "car_no": 6,
@@ -1589,29 +1977,29 @@
     "as_of": "2026-07-09",
     "today": {
       "label": "本日",
-      "settled": 16,
-      "honmei_hits": 4,
-      "honmei_rate": 0.25,
-      "in_top3_rate": 0.75,
-      "trifecta_hits": 2,
-      "trifecta_rate": 0.125
+      "settled": 22,
+      "honmei_hits": 6,
+      "honmei_rate": 0.2727,
+      "in_top3_rate": 0.7273,
+      "trifecta_hits": 3,
+      "trifecta_rate": 0.1364
     },
     "week": {
       "label": "今週(直近7日)",
-      "settled": 264,
-      "honmei_hits": 110,
-      "honmei_rate": 0.4167,
-      "in_top3_rate": 0.7273,
-      "trifecta_hits": 50,
-      "trifecta_rate": 0.1894
+      "settled": 270,
+      "honmei_hits": 112,
+      "honmei_rate": 0.4148,
+      "in_top3_rate": 0.7259,
+      "trifecta_hits": 51,
+      "trifecta_rate": 0.1889
     },
     "year": {
       "label": "2026年通算",
-      "settled": 569,
-      "honmei_hits": 218,
-      "honmei_rate": 0.3831,
-      "in_top3_rate": 0.71,
-      "trifecta_hits": 100,
+      "settled": 575,
+      "honmei_hits": 220,
+      "honmei_rate": 0.3826,
+      "in_top3_rate": 0.7096,
+      "trifecta_hits": 101,
       "trifecta_rate": 0.1757
     }
   }

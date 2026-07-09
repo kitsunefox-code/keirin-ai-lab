@@ -33,16 +33,19 @@ def build_today_forecast_payload(conn, data_dir: Path | str = DATA_DIR) -> dict:
         if item.get("race_key")
     ]
     now_jst = datetime.now(JST)
-    forecasts = [race for race in all_forecasts if not _is_elapsed(race, now_jst)]
-    elapsed_count = len(all_forecasts) - len(forecasts)
+    for race in all_forecasts:
+        race["elapsed"] = _is_elapsed(race, now_jst)
+    forecasts = all_forecasts
+    active = [race for race in forecasts if not race["elapsed"]]
+    elapsed_count = len(forecasts) - len(active)
     forecasts.sort(key=lambda item: (item.get("start_time") or "99:99", item.get("venue") or "", item.get("race_no") or 0))
 
     confidence_counts: dict[str, int] = {}
-    for item in forecasts:
+    for item in active:
         label = item.get("confidence", {}).get("label", "混戦")
         confidence_counts[label] = confidence_counts.get(label, 0) + 1
 
-    recommended = _pick_recommended(forecasts)
+    recommended = _pick_recommended(active)
     recommended_keys = {race["race_key"] for race in recommended}
     for race in forecasts:
         race["recommended"] = race["race_key"] in recommended_keys
@@ -58,7 +61,7 @@ def build_today_forecast_payload(conn, data_dir: Path | str = DATA_DIR) -> dict:
             "candidates": source.get("candidates", []),
         },
         "summary": {
-            "count": len(forecasts),
+            "count": len(active),
             "elapsed_count": elapsed_count,
             "after": source.get("after") or "14:30",
             "target_date": source.get("target_date") or "2026-07-08",
