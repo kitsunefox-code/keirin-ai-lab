@@ -42,6 +42,13 @@ FEATURE_NAMES = [
     "hour_top3_rate",
     "line_strength_score",
     "line_strength_back",
+    "bank_style_fit",
+    "is_girls",
+    "class_s",
+    "class_a",
+    "is_night",
+    "is_midnight",
+    "is_rain",
 ]
 
 
@@ -93,8 +100,34 @@ def build_feature_row(race: dict, entrant: dict, emotion: dict | None = None) ->
         "hour_top3_rate": _block_rate(entrant.get("hour_stats"), min_total=8),
         "line_strength_score": _line_strength(entrant, "rank_score"),
         "line_strength_back": _line_strength(entrant, "rank_back"),
+        "bank_style_fit": _bank_style_fit(style, race.get("bank") or {}),
+        "is_girls": 1.0 if race.get("is_girls") else 0.0,
+        "class_s": _class_flag(race, "S"),
+        "class_a": _class_flag(race, "A"),
+        "is_night": 1.0 if race.get("hour_type") == "hourTypeNight" else 0.0,
+        "is_midnight": 1.0 if race.get("hour_type") == "hourTypeMidnight" else 0.0,
+        "is_rain": 1.0 if (race.get("weather_info") or {}).get("is_rain") else 0.0,
     }
     return {name: float(row.get(name, 0.0)) for name in FEATURE_NAMES}
+
+
+def _style_axis(style: str) -> float:
+    return {"逃": 1.0, "両": 0.3, "追": -1.0}.get(str(style or ""), 0.0)
+
+
+def _bank_style_fit(style: str, bank: dict) -> float:
+    """脚質とバンク傾向の適合度を 0(不適)〜1(適)へ。中立は0.5。"""
+    bias = bank.get("bank_bias")
+    axis = _style_axis(style)
+    if bias is None or axis == 0.0:
+        return 0.5
+    # bias*axis は -1..1。0.5中心にスケール。
+    return max(0.0, min(1.0, 0.5 + float(bias) * axis * 0.5))
+
+
+def _class_flag(race: dict, letter: str) -> float:
+    text = str(race.get("race_class_official") or race.get("race_class") or "")
+    return 1.0 if text.startswith(f"{letter}級") or f"{letter}級" in text[:3] else 0.0
 
 
 def _ex_attack(ex: dict) -> float:
@@ -165,6 +198,27 @@ def _head_to_head_ratio(records: list[dict]) -> float:
 
 def dot(weights: dict[str, float], features: dict[str, float]) -> float:
     return sum(float(weights.get(name, 0.0)) * float(features.get(name, 0.0)) for name in FEATURE_NAMES)
+
+
+# 名前つき特徴量が欠けているときの中立デフォルト(古い保存データや取得失敗の穴埋め用)。
+FEATURE_DEFAULTS: dict[str, float] = {
+    "recent_avg_finish": 0.5,
+    "partner_top3_rate": 0.45,
+    "head_to_head_ratio": 0.5,
+    "pos_win_rate": 0.12,
+    "pos_top3_rate": 0.35,
+    "venue_top3_rate": 0.35,
+    "track_top3_rate": 0.35,
+    "hour_top3_rate": 0.35,
+    "line_strength_score": 0.5,
+    "line_strength_back": 0.5,
+    "bank_style_fit": 0.5,
+}
+
+
+def feature_vector(features: dict[str, float], names: list[str] = FEATURE_NAMES) -> list[float]:
+    """特徴量dictを固定順ベクトルへ。欠損は中立デフォルト(なければ0)で埋める。"""
+    return [float(features.get(name, FEATURE_DEFAULTS.get(name, 0.0))) for name in names]
 
 
 def _line_context(car_no: int, lineup: list[list[int]]) -> tuple[int, int]:

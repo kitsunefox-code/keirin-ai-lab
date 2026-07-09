@@ -99,6 +99,7 @@ async function loadLearnStatus() {
     const payload = await res.json();
     if (payload.ok) {
       state.learning = payload.status;
+      if (payload.model) state.learnedModel = payload.model;
       renderLearn();
     }
   } catch {
@@ -1010,6 +1011,35 @@ function filterForecasts(rows) {
   });
 }
 
+function renderBankCard(race) {
+  const bank = race.bank;
+  if (!bank) return "";
+  const km = bank.kimarite || {};
+  const kmBar = ["逃げ", "捲り", "差し"]
+    .map((key) => {
+      const pct = Math.round((km[key] || 0) * 100);
+      const cls = key === "逃げ" ? "km-nige" : key === "捲り" ? "km-makuri" : "km-sashi";
+      return `<div class="km-seg ${cls}" style="width:${pct}%" title="${key} ${pct}%"><span>${key}${pct}</span></div>`;
+    })
+    .join("");
+  const biasClass = (bank.bank_bias || 0) > 0.1 ? "is-nige" : (bank.bank_bias || 0) < -0.1 ? "is-sashi" : "is-flat";
+  const chips = [];
+  if (bank.track_distance) chips.push(`周長${bank.track_distance}m`);
+  if (bank.straight) chips.push(`みなし直線${bank.straight}m`);
+  if (bank.is_indoor) chips.push("屋内(ミッドナイト)");
+  if (race.hour_label && race.hour_type !== "hourTypeNormal") chips.push(race.hour_label);
+  if (race.weather?.weather) chips.push(`天気: ${race.weather.weather}${race.weather.is_rain ? "☔" : ""}`);
+  return `<section class="bank-card ${biasClass}">
+    <div class="bank-card-head">
+      <h4>${escapeHtml(bank.name || race.venue || "")}バンク</h4>
+      <span class="bank-tendency">${escapeHtml(bank.tendency || "")}</span>
+    </div>
+    <div class="bank-chips">${chips.map((c) => `<span>${escapeHtml(c)}</span>`).join("")}</div>
+    ${Object.keys(km).length ? `<div class="km-bar" aria-label="決まり手分布">${kmBar}</div>` : ""}
+    ${bank.net_notes ? `<p class="bank-notes">${escapeHtml(bank.net_notes)}</p>` : ""}
+  </section>`;
+}
+
 function renderForecastCard(race) {
   const top = race.top3?.[0] || {};
   const second = race.top3?.[1] || {};
@@ -1029,7 +1059,9 @@ function renderForecastCard(race) {
       <strong>${escapeHtml(race.race_no || "")}R</strong>
       <span class="ribbon-main">${car(top.car_no)} ${escapeHtml(top.name || "-")} <em>${percent(top.probability)}</em></span>
       <span class="ribbon-tickets">${escapeHtml(primaryTickets || "-")}</span>
-      ${race.is_girls ? badge("ガールズ", "girls-badge") : ""}
+      ${race.class_group ? badge(race.class_group, race.is_girls ? "girls-badge" : "class-badge") : ""}
+      ${race.hour_label && race.hour_type !== "hourTypeNormal" ? badge(race.hour_label, "hour-badge") : ""}
+      ${race.weather?.is_rain ? badge("雨", "rain-badge") : ""}
       ${badge(confidence.label || "混戦", "confidence-badge")}
     </summary>
     <div class="ribbon-body">
@@ -1062,6 +1094,7 @@ function renderForecastCard(race) {
         </div>
 
         ${renderLineDiagram(race.lines || [], race.top3 || [])}
+        ${renderBankCard(race)}
 
         <div class="race-motion" data-motion-race="${escapeAttr(race.race_key || "")}">
           <button type="button" class="button motion-btn" data-race="${escapeAttr(race.race_key || "")}">▶ 展開を再生</button>

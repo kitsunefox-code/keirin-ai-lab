@@ -22,7 +22,7 @@ from keirin_ai.bankroll import (
 from keirin_ai.capital_plan import build_capital_plan_payload
 from keirin_ai.results_view import build_results_payload
 from keirin_ai.forecast_view import build_today_forecast_payload
-from keirin_ai.learner import train_win_model
+from keirin_ai.learner import load_model, train_win_model
 from keirin_ai.odds import fetch_live_odds
 from keirin_ai.predictor import predict_race
 from keirin_ai.sources import fetch_url, parse_winticket_racecard
@@ -333,7 +333,16 @@ class KeirinHandler(BaseHTTPRequestHandler):
         try:
             with connect() as conn:
                 status = learning_status(conn)
-            return self._json({"ok": True, "status": status})
+            model = load_model() or {}
+            model_summary = {
+                "name": model.get("name"),
+                "backend": model.get("backend"),
+                "version": model.get("version"),
+                "training": model.get("training", {}),
+                "metrics": model.get("metrics", {}),
+                "feature_importance": model.get("feature_importance", {}),
+            }
+            return self._json({"ok": True, "status": status, "model": model_summary})
         except Exception as exc:
             return self._json({"ok": False, "error": str(exc)}, status=502)
 

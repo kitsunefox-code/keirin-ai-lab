@@ -151,6 +151,9 @@ def _enrich_forecast(conn, forecast: dict) -> dict:
     venue = race.get("venue") or forecast.get("venue")
     race_no = race.get("race_no") or forecast.get("race_no")
     race_class_official = race.get("race_class_official") or ""
+    bank = _bank_info(conn, race)
+    hour_type = race.get("hour_type") or ""
+    weather = _json_or(race.get("weather_json"), None)
     return {
         "race_key": race_key,
         "venue": venue,
@@ -158,7 +161,9 @@ def _enrich_forecast(conn, forecast: dict) -> dict:
         "race_no": race_no,
         "race_date": race.get("race_date") or forecast.get("race_date") or "",
         "race_class": race.get("race_class") or forecast.get("race_class") or "",
+        "race_class_official": race_class_official,
         "is_girls": "ガール" in race_class_official,
+        "class_group": _class_group(race_class_official, "ガール" in race_class_official),
         "start_time": forecast.get("start_time") or race.get("start_time") or "",
         "url": race.get("source_url") or forecast.get("url") or "",
         "title": _race_title(venue, race_no, race.get("event") or forecast.get("title")),
@@ -170,21 +175,73 @@ def _enrich_forecast(conn, forecast: dict) -> dict:
         "lineup": lineup,
         "lines": lines,
         "entries": entries,
+        "bank": bank,
+        "hour_type": hour_type,
+        "hour_label": HOUR_LABELS.get(hour_type, ""),
+        "weather": weather,
         "notes": _notes(forecast.get("notes", []), prediction),
     }
+
+
+def _class_group(race_class_official: str, is_girls: bool) -> str:
+    """級班を短いバッジ用ラベルへ(S級/A級/ガールズ)。"""
+    if is_girls:
+        return "ガールズ"
+    text = str(race_class_official or "")
+    if text.startswith("S級") or "S級" in text[:3]:
+        return "S級"
+    if text.startswith("A級") or "A級" in text[:3]:
+        return "A級"
+    if text.startswith("L級"):
+        return "L級"
+    return ""
 
 
 def _race_record(conn, race_key: str) -> dict:
     row = conn.execute(
         """
         select race_key, source_url, title, venue, event, race_no, race_class,
-               race_date, lineup_json, raw_quality_json, race_class_official
+               race_date, lineup_json, raw_quality_json, race_class_official,
+               venue_id, hour_type, weather_json
         from races
         where race_key=?
         """,
         (race_key,),
     ).fetchone()
     return dict(row) if row else {}
+
+
+HOUR_LABELS = {
+    "hourTypeMorning": "モーニング",
+    "hourTypeNormal": "デイ",
+    "hourTypeNight": "ナイター",
+    "hourTypeMidnight": "ミッドナイト",
+}
+
+
+def _bank_info(conn, race: dict) -> dict | None:
+    """races.venue_id からvenuesテーブルのバンク特徴を組み立てる(UI表示・傾向文用)。"""
+    venue_id = str(race.get("venue_id") or "")
+    if not venue_id:
+        return None
+    row = conn.execute("select * from venues where venue_id=?", (venue_id,)).fetchone()
+    if not row:
+        return None
+    data = dict(row)
+    kimarite = _json_or(data.get("kimarite_json"), None)
+    bias = data.get("bank_bias")
+    tendency = "逃げ・先行有利" if (bias or 0) > 0.1 else "差し・追込有利" if (bias or 0) < -0.1 else "標準的"
+    return {
+        "name": data.get("name"),
+        "track_distance": data.get("track_distance"),
+        "straight": data.get("straight"),
+        "angle_center": data.get("angle_center"),
+        "is_indoor": bool(data.get("is_indoor")) if data.get("is_indoor") is not None else None,
+        "kimarite": kimarite,
+        "bank_bias": bias,
+        "tendency": tendency,
+        "net_notes": data.get("net_notes"),
+    }
 
 
 def _latest_prediction(conn, race_key: str) -> dict:

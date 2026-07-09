@@ -11,6 +11,7 @@ from keirin_ai.bankroll import build_bankroll_payload
 from keirin_ai.capital_plan import build_capital_plan_payload
 from keirin_ai.results_view import build_results_payload
 from keirin_ai.forecast_view import build_today_forecast_payload
+from keirin_ai.learner import load_model
 from keirin_ai.predictor import predict_race
 from keirin_ai.storage import connect, learning_status
 
@@ -87,10 +88,19 @@ def main() -> None:
     with connect() as conn:
         bankroll = build_bankroll_payload(conn, DATA_DIR)
         results = build_results_payload(conn, None, DATA_DIR)
+    model = load_model() or {}
+    model_summary = {
+        "name": model.get("name"),
+        "backend": model.get("backend"),
+        "version": model.get("version"),
+        "training": model.get("training", {}),
+        "metrics": model.get("metrics", {}),
+        "feature_importance": model.get("feature_importance", {}),
+    }
     payloads = {
         "/api/today": today,
         "/api/sample": {"ok": True, "race": sample_race, "prediction": predict_race(sample_race)},
-        "/api/learn/status": {"ok": True, "status": status},
+        "/api/learn/status": {"ok": True, "status": status, "model": model_summary},
         "/api/capital_plan": capital,
         "/api/bankroll": bankroll,
         "/api/results": results,

@@ -27,7 +27,7 @@ def predict_race(race: dict, use_learning: bool = True) -> dict:
     for entrant in entrants:
         emotion = analyze_comment(entrant.get("comment"))
         features = build_feature_row(race, entrant, emotion)
-        baseline = _baseline_score(entrant, emotion, race.get("lineup", []))
+        baseline = _baseline_score(entrant, emotion, race)
         learned_logit = predict_logit(learned_model, features) if learned_model else 0.0
         learned_prob = predict_probability(learned_model, features) if learned_model else None
         score = baseline + _learned_adjustment(learned_model, learned_logit)
@@ -40,7 +40,7 @@ def predict_race(race: dict, use_learning: bool = True) -> dict:
                 "learned_logit": round(learned_logit, 3),
                 "learned_probability": round(learned_prob, 4) if learned_prob is not None else None,
                 "model_score": round(score, 3),
-                "reasons": _reasons(entrant, emotion, baseline, learned_model, learned_logit),
+                "reasons": _reasons(entrant, emotion, baseline, learned_model, learned_logit, race),
             }
         )
 
@@ -58,7 +58,8 @@ def predict_race(race: dict, use_learning: bool = True) -> dict:
     }
 
 
-def _baseline_score(entrant: dict, emotion: dict, lineup: list[list[int]]) -> float:
+def _baseline_score(entrant: dict, emotion: dict, race: dict) -> float:
+    lineup = race.get("lineup", [])
     stats = entrant.get("stats", {})
     score = 0.0
     score += (float(entrant.get("racing_score") or 0) - 68.0) * 0.18
@@ -70,10 +71,14 @@ def _baseline_score(entrant: dict, emotion: dict, lineup: list[list[int]]) -> fl
     score += MARK_BONUS.get(str(entrant.get("ai_mark") or ""), 0.0)
     score += float(emotion.get("score") or 0) * 0.18
     score += _deep_signal_score(entrant)
-    score += _line_strength_score(entrant)
+    # ガールズは単騎主体でライン概念が薄いので、ライン強度の寄与を下げる
+    line_weight = 0.4 if race.get("is_girls") else 1.0
+    score += _line_strength_score(entrant) * line_weight
     score += _position_fit_score(entrant)
     score += _bank_fit_score(entrant)
-    score += _line_bonus(int(entrant.get("car_no") or 0), lineup)
+    score += _bank_tendency_score(entrant, race)
+    score += _condition_score(entrant, race)
+    score += _line_bonus(int(entrant.get("car_no") or 0), lineup) * line_weight
     if entrant.get("style") == "逃":
         score += 0.12
     if entrant.get("style") == "追" and _is_second_in_line(int(entrant.get("car_no") or 0), lineup):
@@ -168,6 +173,41 @@ def _bank_fit_score(entrant: dict) -> float:
     return score
 
 
+def _style_axis(style: str) -> float:
+    """脚質を -1(差し・追込)〜+1(逃げ・先行)の軸へ。"""
+    return {"逃": 1.0, "両": 0.3, "追": -1.0}.get(str(style or ""), 0.0)
+
+
+def _bank_tendency_score(entrant: dict, race: dict) -> float:
+    """バンクの脚質傾向(周長・直線・決まり手分布)と選手の脚質の適合を加点する。
+
+    逃げ有利バンク(bank_bias>0)では逃げ・先行型を、差し有利バンクでは差し・追込型を評価。
+    """
+    bank = race.get("bank") or {}
+    bias = bank.get("bank_bias")
+    if bias is None:
+        return 0.0
+    axis = _style_axis(entrant.get("style"))
+    if axis == 0.0:
+        return 0.0
+    # bias と 脚質軸が同符号(適合)なら加点、逆なら減点
+    return float(bias) * axis * 0.22
+
+
+def _condition_score(entrant: dict, race: dict) -> float:
+    """ナイター/ミッドナイト・天気(雨)による展開補正。逃げ・先行型に効く。"""
+    axis = _style_axis(entrant.get("style"))
+    score = 0.0
+    weather = race.get("weather_info") or {}
+    if weather.get("is_rain"):
+        # 雨は差しづらく逃げ・先行が残りやすい
+        score += axis * 0.12
+    if race.get("hour_type") == "hourTypeMidnight":
+        # ミッドナイトは無観客・short fieldで先行有利になりやすい
+        score += axis * 0.06
+    return score
+
+
 def _deep_signal_score(entrant: dict) -> float:
     """前検日/レース後インタビュー、EXデータ、直近着順の追加シグナル。"""
     score = 0.0
@@ -255,8 +295,9 @@ def _ticket_candidates(scored: list[dict]) -> list[dict]:
     return tickets[:8]
 
 
-def _reasons(entrant: dict, emotion: dict, baseline: float, learned_model: dict | None, learned_logit: float) -> list[str]:
+def _reasons(entrant: dict, emotion: dict, baseline: float, learned_model: dict | None, learned_logit: float, race: dict | None = None) -> list[str]:
     stats = entrant.get("stats", {})
+    race = race or {}
     reasons = []
     if entrant.get("ai_mark"):
         reasons.append(f"印: {entrant['ai_mark']}")
@@ -304,6 +345,19 @@ def _reasons(entrant: dict, emotion: dict, baseline: float, learned_model: dict 
     line_rank = entrant.get("line_rank")
     if line_rank and line_rank["rank_back"] == 0 and line_rank["rank_score"] > 0 and line_rank["pos"] <= 1:
         reasons.append("バック数最強ライン(穴目)")
+    bank = race.get("bank") or {}
+    bias = bank.get("bank_bias")
+    axis = _style_axis(entrant.get("style"))
+    if bias is not None and axis != 0 and abs(float(bias)) >= 0.15 and (float(bias) * axis) > 0:
+        if float(bias) > 0:
+            reasons.append(f"逃げ有利バンク({bank.get('track_distance') or ''}m)")
+        else:
+            reasons.append("差し有利バンク")
+    weather = race.get("weather_info") or {}
+    if weather.get("is_rain") and axis > 0:
+        reasons.append("雨で先行有利")
+    if race.get("hour_type") == "hourTypeMidnight" and axis > 0:
+        reasons.append("ミッドナイト先行")
     partner = entrant.get("partner_record")
     if partner and partner.get("races", 0) >= 2:
         reasons.append(f"連携実績 {partner['partner_name']}と{partner['races']}戦{partner['top3']}回3着内")
@@ -340,9 +394,22 @@ def _race_notes(race: dict, scored: list[dict], learned_model: dict | None) -> l
     if any(row.get("line_rank") for row in scored):
         notes.append("2軸ライン強度(先頭の得点とバック回数)を評価に反映しました。")
     if race.get("is_girls") and any(row.get("head_to_head") for row in scored):
-        notes.append("ガールズケイリンのため、出走選手同士の対戦成績を評価に反映しました。")
+        notes.append("ガールズケイリンのため単騎前提でライン重みを下げ、選手個人力と対戦成績を重視しました。")
     elif any(row.get("head_to_head") for row in scored):
         notes.append("出走選手同士の対戦成績を評価に反映しました。")
+    bank = race.get("bank") or {}
+    if bank.get("bank_bias") is not None:
+        km = bank.get("kimarite") or {}
+        tendency = "逃げ・先行有利" if bank["bank_bias"] > 0.1 else "差し・追込有利" if bank["bank_bias"] < -0.1 else "標準的"
+        km_text = ""
+        if km:
+            km_text = f"(決まり手 逃{km.get('逃げ',0)*100:.0f}/捲{km.get('捲り',0)*100:.0f}/差{km.get('差し',0)*100:.0f})"
+        notes.append(f"{bank.get('name','')}バンク{bank.get('track_distance') or ''}m・直線{bank.get('straight') or ''}mは{tendency}{km_text}として脚質評価に反映しました。")
+    weather = race.get("weather_info") or {}
+    if weather.get("is_rain"):
+        notes.append(f"天気({weather.get('weather') or '雨'})は逃げ・先行有利の材料として反映しました。")
+    if race.get("hour_type") == "hourTypeMidnight":
+        notes.append("ミッドナイト(無観客)は先行有利の傾向を軽く加味しました。")
     if learned_model:
         rows = learned_model.get("training", {}).get("rows", 0)
         races = learned_model.get("training", {}).get("races", 0)

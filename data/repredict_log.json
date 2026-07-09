@@ -1,0 +1,33 @@
+{
+  "checked": 600,
+  "updated_count": 599,
+  "skipped_count": 1,
+  "skipped": [
+    {
+      "race_key": "winticket:2026070545:3:12",
+      "reason": "no entrants"
+    }
+  ],
+  "status": {
+    "races": 605,
+    "entries": 4065,
+    "result_races": 569,
+    "result_entries": 3786,
+    "predictions": 611,
+    "documents": 15,
+    "db_path": "C:\\Users\\shadai15\\Desktop\\keirin-ai-lab\\data\\keirin_learning.sqlite3"
+  },
+  "model_name": "lightgbm-win",
+  "model_metrics": {
+    "log_loss": 0.3775,
+    "top1_accuracy": 0.3605,
+    "eval_split": "time-based 15% holdout"
+  },
+  "model_training": {
+    "rows": 3786,
+    "races": 569,
+    "positive_rows": 524,
+    "best_iteration": 8,
+    "valid_races": 86
+  }
+}
