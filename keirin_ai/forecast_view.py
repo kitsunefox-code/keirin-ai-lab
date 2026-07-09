@@ -104,7 +104,7 @@ def _enrich_forecast(conn, forecast: dict) -> dict:
         "url": race.get("source_url") or forecast.get("url") or "",
         "title": _race_title(venue, race_no, race.get("event") or forecast.get("title")),
         "top3": top3,
-        "tickets": [_ticket(ticket) for ticket in tickets[:5]],
+        "tickets": [_ticket(ticket) for ticket in tickets[:8]],
         "confidence": confidence,
         "scenario": scenario,
         "comment_signals": signals,

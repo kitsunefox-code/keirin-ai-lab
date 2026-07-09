@@ -390,12 +390,6 @@ function startRaceMotion(raceKey, race, stage) {
       const x = point.x + point.nx * outside;
       const y = point.y + point.ny * outside;
       node.setAttribute("transform", `translate(${x.toFixed(1)}, ${y.toFixed(1)})`);
-      // 進行方向(接線)へ車体だけ回転。番号板は正立を保つ。
-      const body = node.querySelector("[data-body]");
-      if (body) {
-        const deg = (Math.atan2(-point.nx, point.ny) * 180) / Math.PI;
-        body.setAttribute("transform", `rotate(${deg.toFixed(1)})`);
-      }
     });
     // 打鐘: 残り1周半のバック線通過で鐘が揺れる+ジャン音
     const bell = svg.querySelector(".bank-bell");
@@ -474,19 +468,9 @@ function playBellSound() {
 
 function motionRiderSvg(car) {
   const [fill, text] = CAR_COLORS[car] || ["#8d8f97", "#ffffff"];
-  // ステッカー風の自転車シルエット(進行方向=+x)。data-body を回転させ、番号板は正立のまま。
   return `<g data-rider="${car}" class="motion-rider">
-    <g data-body>
-      <circle cx="-6.5" cy="4.5" r="4.2" class="rider-wheel" />
-      <circle cx="6.5" cy="4.5" r="4.2" class="rider-wheel" />
-      <path d="M-6.5 4.5 L-1.5 -0.5 L4 4.5 Z M-1.5 -0.5 L2 -1.5 M6.5 4.5 L2 -1.5" class="rider-frame" />
-      <path d="M-7 -2.5 C-4.5 -6.5 0.5 -7 3 -4.5 L5.5 -2 L1.5 0 L-3.5 0.5 Z" class="rider-body" />
-      <circle cx="4.6" cy="-5.6" r="2.6" fill="${fill}" stroke="#18181a" stroke-width="0.8" />
-    </g>
-    <g transform="translate(-9, -9)">
-      <rect x="-5" y="-5" width="10" height="10" rx="2" fill="${fill}" stroke="#18181a" stroke-width="0.8" />
-      <text y="3" text-anchor="middle" fill="${text}" font-size="7.5" font-weight="700">${car}</text>
-    </g>
+    <circle r="8" fill="${fill}" stroke="#18181a" stroke-width="1.1" />
+    <text y="3.2" text-anchor="middle" fill="${text}" font-size="9" font-weight="700">${car}</text>
   </g>`;
 }
 
@@ -974,7 +958,7 @@ function renderForecastCard(race) {
   const confidence = race.confidence || {};
   const tickets = (race.tickets || []).map(ticketChip).join("");
   const primaryTickets = (race.tickets || [])
-    .slice(0, 3)
+    .slice(0, 4)
     .map((ticket) => ticket.label)
     .join(" / ");
   const lines = (race.lines || []).map(lineItem).join("");

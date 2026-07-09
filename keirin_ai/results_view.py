@@ -109,7 +109,7 @@ def _hit_flags(row: sqlite3.Row) -> dict | None:
     if len(order) < 3:
         return None
     top_car = int(ranking[0].get("car_no") or 0)
-    tickets = [_ticket_label(t) for t in _json_or(row["tickets_json"], [])[:3]]
+    tickets = [_ticket_label(t) for t in _json_or(row["tickets_json"], [])[:6]]
     actual3 = "-".join(str(car) for car in order[:3])
     return {
         "honmei": top_car == int(order[0]),
@@ -181,7 +181,8 @@ def _race_report(conn: sqlite3.Connection, row: sqlite3.Row, time_map: dict[str,
         "name": top.get("name") or "",
         "probability": round(float(top.get("win_probability") or top.get("probability") or 0), 4),
     }
-    ticket_labels = [_ticket_label(t) for t in tickets[:3]]
+    # 答え合わせはAIが提示した上位6点(運用モードの最大点数)で判定する
+    ticket_labels = [_ticket_label(t) for t in tickets[:6]]
     ticket_labels = [label for label in ticket_labels if label]
 
     start_time = time_map.get(row["race_key"], "")

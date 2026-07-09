@@ -908,8 +908,8 @@ h4 {
 
 .ribbon-tickets {
   overflow: hidden;
-  color: var(--color-muted);
-  font-size: var(--text-sm);
+  color: var(--color-text);
+  font-size: var(--text-lg);
   font-variant-numeric: tabular-nums;
   font-weight: 800;
   text-overflow: ellipsis;
@@ -1100,6 +1100,13 @@ h4 {
   padding: 5px 8px;
   background: #ffffff;
   font-size: var(--text-sm);
+}
+
+.ticket-chip {
+  min-height: 40px;
+  padding: 8px 14px;
+  font-size: 18px;
+  font-weight: 800;
 }
 
 .rank-pill:first-child,
@@ -2471,24 +2478,6 @@ h4 {
   color: var(--color-subtle);
   font-style: normal;
   font-size: 11px;
-}
-
-/* Rider icon */
-.motion-svg .rider-wheel {
-  fill: none;
-  stroke: #18181a;
-  stroke-width: 1.1;
-}
-
-.motion-svg .rider-frame {
-  fill: none;
-  stroke: #18181a;
-  stroke-width: 1;
-  stroke-linejoin: round;
-}
-
-.motion-svg .rider-body {
-  fill: #18181a;
 }
 
 /* Bell */
