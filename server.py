@@ -20,6 +20,7 @@ from keirin_ai.bankroll import (
     record_skip,
     replace_plan_slot,
     set_session_plan,
+    set_session_style,
     start_session,
     stop_session,
 )
@@ -103,6 +104,8 @@ class KeirinHandler(BaseHTTPRequestHandler):
             return self._handle_bankroll_stop()
         if parsed.path == "/api/bankroll/replace_slot":
             return self._handle_bankroll_replace()
+        if parsed.path == "/api/bankroll/set_style":
+            return self._handle_bankroll_set_style()
         self._send(404, "text/plain; charset=utf-8", "Not found")
 
     def log_message(self, fmt: str, *args: object) -> None:
@@ -276,6 +279,22 @@ class KeirinHandler(BaseHTTPRequestHandler):
                     set_session_plan(conn, session_id, plan)
                 payload = build_bankroll_payload(conn, DATA_DIR)
             return self._json(payload)
+        except Exception as exc:
+            return self._json({"ok": False, "error": str(exc)}, status=502)
+
+    def _handle_bankroll_set_style(self) -> None:
+        try:
+            body = self._read_json_body()
+            style = str(body.get("style") or "").strip()
+            with connect() as conn:
+                session = active_session(conn)
+                if not session:
+                    return self._json({"ok": False, "error": "運用中のセッションがありません。"}, status=400)
+                set_session_style(conn, session["id"], style)
+                payload = build_bankroll_payload(conn, DATA_DIR)
+            return self._json(payload)
+        except ValueError as exc:
+            return self._json({"ok": False, "error": str(exc)}, status=400)
         except Exception as exc:
             return self._json({"ok": False, "error": str(exc)}, status=502)
 

@@ -3001,3 +3001,49 @@ h4 {
   /* モーション再生SVGは全幅 */
   .motion-svg { width: 100%; height: auto; }
 }
+
+/* 運用中のスタイル切替 */
+.style-switcher {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  margin: var(--space-3) 0;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+}
+.style-switch-label {
+  font-size: var(--text-xs);
+  font-weight: 800;
+  color: var(--color-muted);
+}
+.style-switch-row {
+  display: inline-flex;
+  gap: var(--space-1);
+}
+.style-switch {
+  min-height: 32px;
+  padding: 5px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-weight: 700;
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+.style-switch.active {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: #fff;
+}
+.style-switch-note {
+  font-size: var(--text-xs);
+  color: var(--color-amber);
+}
+@media (max-width: 768px) {
+  .style-switch-row { flex: 1 1 100%; }
+  .style-switch { flex: 1 1 auto; }
+}

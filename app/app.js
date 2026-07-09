@@ -427,6 +427,8 @@ function buildCustomMotionPlan(race, opts) {
     push(spurtLap, [...leadLine, ...cur], text);
   }
   if (opts.spurt === "early") captions.push({ lap: 0.5, text: "🔔 打鐘!早めの主導権争いでピッチが上がる" });
+  if (opts.pace === "slow") captions.push({ lap: 0.7, text: "スローペース…上がり勝負、差し・追込有利の流れ" });
+  else if (opts.pace === "high") captions.push({ lap: 0.7, text: "ハイペースの消耗戦!先行有利、後方は離れる" });
   if (opts.spurt !== "late") captions.push({ lap: 1.0, text: "残り1周、ホームストレッチライン通過" });
 
   // --- 番手競り ---
@@ -470,6 +472,14 @@ function buildCustomMotionPlan(race, opts) {
     captions.push({ lap: 1.5, text: "最終バック、勝負どころ!" });
   }
 
+  // --- 大外一気(最後方から追込) ---
+  if (opts.closerCar && cars.includes(opts.closerCar) && opts.closerCar !== opts.makuriCar) {
+    const others = cur.filter((car) => car !== opts.closerCar);
+    // 一旦最後方 → 直線で外を強襲して上位へ
+    push(1.55, [...others, opts.closerCar], `${nameOf(opts.closerCar)}は最後方…ここから大外へ持ち出す`);
+    push(1.8, [others[0], opts.closerCar, ...others.slice(1)], `${nameOf(opts.closerCar)}が大外一気に伸びてくる!`);
+  }
+
   // --- 結末 ---
   const dropTail = (order) => {
     let result = [...order];
@@ -490,6 +500,16 @@ function buildCustomMotionPlan(race, opts) {
     let aiFinal = base.final;
     if (opts.makuriCar && opts.makuriResult !== "fail") {
       aiFinal = [opts.makuriCar, ...aiFinal.filter((car) => car !== opts.makuriCar)];
+    }
+    if (opts.closerCar && cars.includes(opts.closerCar)) {
+      // 大外一気は2着前後まで突っ込む想定
+      const rest = aiFinal.filter((car) => car !== opts.closerCar);
+      aiFinal = [rest[0], opts.closerCar, ...rest.slice(1)];
+    }
+    if (opts.pace === "slow") {
+      // 差し・追込タイプ(先頭以外)を1つ繰り上げ
+      const idx = aiFinal.findIndex((car) => (base.styles.get(car) || "") !== "逃");
+      if (idx > 0) { const [x] = aiFinal.splice(idx, 1); aiFinal.splice(idx - 1, 0, x); }
     }
     if (opts.makuriCar && opts.makuriResult === "fail") {
       aiFinal = [...aiFinal.filter((car) => car !== opts.makuriCar), opts.makuriCar];
@@ -628,6 +648,18 @@ function renderMmOptions(race) {
           <select id="mmAccident">${noneCarOptions}</select>
         </label>
       </div>
+      <div class="mm-row">
+        <label class="field compact"><span>大外一気(最後方から追込)</span>
+          <select id="mmCloser">${noneCarOptions}</select>
+        </label>
+        <label class="field compact"><span>ペース(展開)</span>
+          <select id="mmPace">
+            <option value="normal">平均ペース</option>
+            <option value="slow">スロー(上がり勝負・差し有利)</option>
+            <option value="high">ハイペース(消耗戦・先行有利)</option>
+          </select>
+        </label>
+      </div>
     </div>
     <div class="mm-group">
       <div class="mm-group-title">結末</div>
@@ -672,6 +704,8 @@ function playCustomMotion(useAiPlan) {
       makuriResult: el("mmMakuriResult")?.value || "win",
       chigirareCar: Number(el("mmChigirare")?.value) || null,
       accidentCar: Number(el("mmAccident")?.value) || null,
+      closerCar: Number(el("mmCloser")?.value) || null,
+      pace: el("mmPace")?.value || "normal",
       finishMode: finishManual ? "manual" : "ai",
       finishTop3: finishManual ? [...new Set(picked.filter(Boolean))] : null,
     };
@@ -871,6 +905,15 @@ async function bankrollPost(path, body) {
   }
 }
 
+function changeBankrollStyle(style) {
+  bankrollPost("/api/bankroll/set_style", { style }).then((payload) => {
+    if (payload) {
+      const label = (state.bankroll?.styles || []).find((s) => s.key === style)?.label || style;
+      setStatus(`乗り方を「${label}」に変更しました`);
+    }
+  });
+}
+
 function startBankroll() {
   bankrollPost("/api/bankroll/start", {
     start_amount: Number(el("brStart").value || 0),
@@ -1008,7 +1051,7 @@ function renderBankroll(payload) {
   head.innerHTML = `<button id="brStopBtn" class="button">停止</button>`;
   on("brStopBtn", "click", stopBankroll);
 
-  const parts = [yesterday, renderBankrollStatus(session, brState)];
+  const parts = [yesterday, renderBankrollStatus(session, brState), renderStyleSwitcher(session)];
   if (payload.plan) {
     parts.push(renderOriginalPlan(payload.plan));
   }
@@ -1025,6 +1068,9 @@ function renderBankroll(payload) {
   parts.push(renderBankrollHistory(brState));
   body.innerHTML = parts.join("");
 
+  document.querySelectorAll("[data-style-switch]").forEach((btn) => {
+    btn.addEventListener("click", () => changeBankrollStyle(btn.dataset.styleSwitch));
+  });
   on("brCommitBtn", "click", commitBankroll);
   on("brSkipBtn", "click", skipBankroll);
   on("brCopyBtn", "click", copyProposalTickets);
@@ -1230,6 +1276,22 @@ function renderBankrollStopBanner(session, brState) {
   return `<div class="bankroll-stop-banner ${tone}">
     <strong>停止: ${escapeHtml(session.stop_reason || "停止")}</strong>
     <span>最終残高 ${yen(brState?.balance ?? 0)}(${profit >= 0 ? "+" : ""}${yen(profit)})</span>
+  </div>`;
+}
+
+function renderStyleSwitcher(session) {
+  const current = session.config?.style || "balance";
+  const styles = (state.bankroll?.styles || []).filter((s) => s.key !== "original");
+  const buttons = styles
+    .map(
+      (s) => `<button type="button" class="style-switch${s.key === current ? " active" : ""}" data-style-switch="${escapeAttr(s.key)}">${escapeHtml(s.label)}</button>`
+    )
+    .join("");
+  const orig = current === "original" ? `<span class="style-switch-note">オリジナル運用中。乗り方を変えると通常運用へ切り替わります。</span>` : "";
+  return `<div class="style-switcher">
+    <span class="style-switch-label">乗り方(運用中でも変更可)</span>
+    <div class="style-switch-row">${buttons}</div>
+    ${orig}
   </div>`;
 }
 

@@ -203,6 +203,32 @@ def set_session_plan(conn: sqlite3.Connection, session_id: int, plan: dict) -> N
     conn.commit()
 
 
+def set_session_style(conn: sqlite3.Connection, session_id: int, style: str) -> dict:
+    """運用中に乗り方(堅実/バランス/冒険)を切り替える。残高・購入履歴・元手はそのまま。
+
+    レース上限つき(オリジナル)からの相互切替も可能。予定表(plan)は保持する。
+    """
+    ensure_tables(conn)
+    row = conn.execute("select config_json from bankroll_sessions where id=?", (session_id,)).fetchone()
+    if not row:
+        raise ValueError("運用セッションが見つかりません。")
+    config = json.loads(row["config_json"])
+    preset = STYLES.get(style)
+    if not preset:
+        raise ValueError("不明な運用スタイルです。")
+    config["style"] = preset["key"]
+    config["per_race_cap_pct"] = preset["per_race_cap_pct"]
+    config["daily_loss_limit_pct"] = preset["daily_loss_limit_pct"]
+    config["max_consecutive_losses"] = preset["max_consecutive_losses"]
+    config["min_ev"] = preset["min_ev"]
+    conn.execute(
+        "update bankroll_sessions set config_json=? where id=?",
+        (json.dumps(config, ensure_ascii=False), session_id),
+    )
+    conn.commit()
+    return config
+
+
 def build_original_plan(conn: sqlite3.Connection, data_dir, race_limit: int) -> dict:
     """オリジナル運用: 朝のうちに本日勝負する10レースをAIが確定する。
 
