@@ -344,9 +344,31 @@ def _line_relation(front: dict, followers: list[dict]) -> str:
     return base
 
 
+def _race_pattern(lines: list[dict], entries_by_car: dict[int, dict]) -> str:
+    """KEIRIN.JPガイドの戦型分類: 2分戦/3分戦/4分戦(細切れ戦)/先行1車。"""
+    groups = [line for line in lines if len(line.get("members") or []) >= 2]
+    singles = [line for line in lines if len(line.get("members") or []) == 1]
+    total_lines = len(groups) + len(singles)
+    self_powered = 0
+    for line in lines:
+        front = (line.get("members") or [{}])[0]
+        entry = entries_by_car.get(int(front.get("car_no") or 0), front)
+        if (entry.get("style") or "") in {"逃", "両"}:
+            self_powered += 1
+    if self_powered == 1 and total_lines >= 2:
+        return "先行1車"
+    if total_lines <= 1:
+        return ""
+    if total_lines == 2:
+        return "2分戦"
+    if total_lines == 3:
+        return "3分戦"
+    return "細切れ戦"
+
+
 def _scenario(top3: list[dict], ranking: list[dict], entries_by_car: dict[int, dict], lines: list[dict]) -> dict:
     if not top3:
-        return {"headline": "出走データが足りません。", "flow": "", "watch": "", "upset": ""}
+        return {"headline": "出走データが足りません。", "flow": "", "watch": "", "upset": "", "pattern": ""}
     top = top3[0]
     second = top3[1] if len(top3) > 1 else {}
     top_line = _find_line(top["car_no"], lines)
@@ -376,7 +398,15 @@ def _scenario(top3: list[dict], ranking: list[dict], entries_by_car: dict[int, d
     else:
         upset = "崩れるなら単騎勢の位置取り成功、または本線ラインの踏み遅れです。"
 
-    return {"headline": headline, "flow": flow, "watch": watch, "upset": upset}
+    pattern = _race_pattern(lines, entries_by_car)
+    if pattern == "先行1車":
+        flow = f"先行1車の展開。主導権は自力型が握りやすく、そのライン残りが本線です。 {flow}"
+    elif pattern == "細切れ戦":
+        flow = f"細切れ戦(4分戦以上)。短いラインの主導権争いで展開が乱れやすい一戦です。 {flow}"
+    elif pattern:
+        flow = f"{pattern}。 {flow}"
+
+    return {"headline": headline, "flow": flow, "watch": watch, "upset": upset, "pattern": pattern}
 
 
 def _comment_signals(top3: list[dict], entries: list[dict], lines: list[dict]) -> list[str]:

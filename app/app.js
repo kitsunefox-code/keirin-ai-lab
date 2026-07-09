@@ -213,7 +213,49 @@ const CAR_COLORS = {
   9: ["#7b3fd4", "#ffffff"],
 };
 
-const MOTION = { cx: 320, cy: 150, rx: 250, ry: 105, duration: 9000, laps: 2 };
+/*
+ * バンク形状(KEIRIN.JPガイド準拠): 直線+半円の競走路。
+ * ゴール=ホームストレッチライン(下側直線)、打鐘=残り1周半のバックストレッチライン通過。
+ * センターライン: 直線 y=250/50 (x 170..470)、両端は半径100の半円。
+ */
+const MOTION = { duration: 10000, laps: 2 };
+const BANK = {
+  x1: 170,
+  x2: 470,
+  yBottom: 250,
+  yTop: 50,
+  cy: 150,
+  r: 100,
+  goalX: 430,
+};
+BANK.arcLen = Math.PI * BANK.r;
+BANK.straight = BANK.x2 - BANK.x1;
+BANK.segA = BANK.x2 - BANK.goalX; // ゴール→1コーナー
+BANK.perimeter = 2 * BANK.straight + 2 * BANK.arcLen;
+
+function bankPointAt(fraction) {
+  let s = ((fraction % 1) + 1) % 1 * BANK.perimeter;
+  const { x1, x2, yBottom, yTop, cy, r, goalX, segA, arcLen, straight } = BANK;
+  if (s < segA) {
+    return { x: goalX + s, y: yBottom, nx: 0, ny: 1 };
+  }
+  s -= segA;
+  if (s < arcLen) {
+    const theta = Math.PI / 2 - s / r;
+    return { x: x2 + r * Math.cos(theta), y: cy + r * Math.sin(theta), nx: Math.cos(theta), ny: Math.sin(theta) };
+  }
+  s -= arcLen;
+  if (s < straight) {
+    return { x: x2 - s, y: yTop, nx: 0, ny: -1 };
+  }
+  s -= straight;
+  if (s < arcLen) {
+    const theta = -Math.PI / 2 - s / r;
+    return { x: x1 + r * Math.cos(theta), y: cy + r * Math.sin(theta), nx: Math.cos(theta), ny: Math.sin(theta) };
+  }
+  s -= arcLen;
+  return { x: x1 + s, y: yBottom, nx: 0, ny: 1 };
+}
 
 function toggleRaceMotion(raceKey) {
   const race = (state.today?.forecasts || []).find((item) => item.race_key === raceKey);
@@ -261,21 +303,24 @@ function buildMotionPlan(race) {
     backStretch = afterBell;
   }
 
+  // キーフレームとキャプションは「先頭の走破周回数」基準。
+  // 打鐘=残り1周半(2周走のうち0.5周消化)、最終バック=残り半周(1.5周消化)。
   return {
     cars,
     keyframes: [
-      { t: 0.0, order: initial },
-      { t: 0.32, order: afterBell },
-      { t: 0.6, order: backStretch },
-      { t: 0.92, order: final },
-      { t: 1.0, order: final },
+      { lap: 0.0, order: initial },
+      { lap: 0.5, order: afterBell },
+      { lap: 1.5, order: backStretch },
+      { lap: 1.9, order: final },
+      { lap: 2.0, order: final },
     ],
     captions: [
-      { t: 0.0, text: "隊列を組んで周回中" },
-      { t: 0.28, text: "🔔 打鐘!先行ラインが踏み込む" },
-      { t: 0.55, text: "最終バック、勝負どころで外から動く" },
-      { t: 0.8, text: "直線勝負!" },
-      { t: 0.97, text: `ゴール!1着予想 ${topCar || "-"} ${escapeHtml((race.top3?.[0]?.name) || "")}` },
+      { lap: 0.0, text: "青板、先頭員の後ろで隊列を組んで周回" },
+      { lap: 0.5, text: "🔔 打鐘!残り1周半、先行ラインが踏み込む" },
+      { lap: 1.0, text: "残り1周、ホームストレッチライン通過" },
+      { lap: 1.5, text: "最終バック、まくり勢が外から仕掛ける" },
+      { lap: 1.87, text: "直線勝負!内圏線と外帯線の間で追い比べ" },
+      { lap: 1.99, text: `ゴール!1着予想 ${topCar || "-"} ${escapeHtml((race.top3?.[0]?.name) || "")}` },
     ],
   };
 }
@@ -292,44 +337,44 @@ function startRaceMotion(raceKey, race, stage) {
   const riders = new Map(plan.cars.map((car) => [car, svg.querySelector(`[data-rider="${car}"]`)]));
 
   const started = performance.now();
-  const gapStep = 0.088;
-  const totalAngle = MOTION.laps * Math.PI * 2;
+  const gapStep = 0.014; // 車間(周回の割合)
 
-  const positionAt = (car, progress) => {
+  const positionAt = (car, coveredLaps) => {
     const frames = plan.keyframes;
     let a = frames[0];
     let b = frames[frames.length - 1];
     for (let i = 0; i < frames.length - 1; i += 1) {
-      if (progress >= frames[i].t && progress <= frames[i + 1].t) {
+      if (coveredLaps >= frames[i].lap && coveredLaps <= frames[i + 1].lap) {
         a = frames[i];
         b = frames[i + 1];
         break;
       }
     }
-    const span = Math.max(0.0001, b.t - a.t);
-    const local = Math.min(1, Math.max(0, (progress - a.t) / span));
+    const span = Math.max(0.0001, b.lap - a.lap);
+    const local = Math.min(1, Math.max(0, (coveredLaps - a.lap) / span));
     const eased = local * local * (3 - 2 * local);
     const posA = Math.max(0, a.order.indexOf(car));
     const posB = Math.max(0, b.order.indexOf(car));
     const gap = (posA + (posB - posA) * eased) * gapStep;
     const overtaking = posB < posA ? Math.sin(local * Math.PI) : 0;
-    return { gap, outside: overtaking * 14 };
+    return { gap, outside: overtaking * 12 };
   };
 
   const tick = () => {
     const progress = Math.min(1, (performance.now() - started) / MOTION.duration);
-    const eased = 1 - Math.pow(1 - progress, 1.6);
-    const leadAngle = Math.PI * 0.5 + eased * totalAngle;
+    // 打鐘後にピッチが上がる: 序盤ゆっくり→終盤加速(eased は 0..1)
+    const eased = progress < 0.4 ? progress * 0.7 : 0.28 + (progress - 0.4) * 1.2;
+    const covered = Math.min(MOTION.laps, eased * MOTION.laps);
     plan.cars.forEach((car) => {
       const node = riders.get(car);
       if (!node) return;
-      const { gap, outside } = positionAt(car, progress);
-      const angle = leadAngle - gap;
-      const x = MOTION.cx + (MOTION.rx + outside) * Math.cos(angle);
-      const y = MOTION.cy + (MOTION.ry + outside * 0.45) * Math.sin(angle);
+      const { gap, outside } = positionAt(car, covered);
+      const point = bankPointAt(covered - gap);
+      const x = point.x + point.nx * outside;
+      const y = point.y + point.ny * outside;
       node.setAttribute("transform", `translate(${x.toFixed(1)}, ${y.toFixed(1)})`);
     });
-    const active = plan.captions.filter((item) => progress >= item.t).pop();
+    const active = plan.captions.filter((item) => covered >= item.lap).pop();
     if (active) caption.innerHTML = active.text;
     if (progress >= 1 && state.motionTimers[raceKey]) {
       clearInterval(state.motionTimers[raceKey]);
@@ -341,13 +386,25 @@ function startRaceMotion(raceKey, race, stage) {
 }
 
 function motionTrackSvg() {
-  const { cx, cy, rx, ry } = MOTION;
-  const goalX = cx + rx;
+  const { x1, x2, cy, r, goalX, perimeter, segA, arcLen, straight } = BANK;
+  // センターライン半径rに対するオフセットで各ラインを描く(rect rx=半径でスタジアム形状)
+  const ring = (offset, cls, extra = "") => {
+    const radius = r + offset;
+    return `<rect x="${x1 - radius}" y="${cy - radius}" width="${x2 - x1 + radius * 2}" height="${radius * 2}" rx="${radius}" class="${cls}" ${extra}/>`;
+  };
+  // バックストレッチライン: ゴールからちょうど半周の地点(上側直線)
+  const backX = x2 - (perimeter / 2 - segA - arcLen);
   return `
-    <ellipse cx="${cx}" cy="${cy}" rx="${rx + 22}" ry="${ry + 22}" class="track-outer" />
-    <ellipse cx="${cx}" cy="${cy}" rx="${rx - 22}" ry="${ry - 22}" class="track-inner" />
-    <line x1="${goalX - 24}" y1="${cy - 14}" x2="${goalX + 24}" y2="${cy - 14}" class="goal-line" transform="rotate(90 ${goalX} ${cy})" />
-    <text x="${goalX - 34}" y="${cy + 4}" class="goal-text">GOAL</text>
+    ${ring(26, "bank-track")}
+    ${ring(-22, "bank-refuge")}
+    ${ring(-34, "bank-infield")}
+    ${ring(-8, "bank-yellow-line")}
+    ${ring(-16, "bank-outer-line")}
+    ${ring(-22, "bank-inner-line")}
+    <line x1="${goalX}" y1="${cy + r - 24}" x2="${goalX}" y2="${cy + r + 26}" class="goal-line" />
+    <text x="${goalX + 6}" y="${cy + r + 22}" class="goal-text">GOAL</text>
+    <line x1="${backX}" y1="${cy - r - 26}" x2="${backX}" y2="${cy - r + 24}" class="back-line" />
+    <text x="${backX + 8}" y="${cy - r - 14}" class="back-text">バック線(打鐘)</text>
   `;
 }
 
@@ -867,6 +924,7 @@ function renderForecastCard(race) {
           </div>
           <div class="confidence-summary">
             ${badge(confidence.label || "混戦", "confidence-badge")}
+            ${race.scenario?.pattern ? badge(race.scenario.pattern, "pattern-badge") : ""}
             <span>${escapeHtml(confidence.reason || "")}</span>
           </div>
         </header>
