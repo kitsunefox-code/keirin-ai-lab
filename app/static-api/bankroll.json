@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at_jst": "2026-07-09T14:16:03+09:00",
+  "generated_at_jst": "2026-07-09T14:29:07+09:00",
   "rules": [
     "全額転がしは行いません(1レース投資は残高の上限%まで)",
     "負けた後の倍賭け(マーチンゲール)は行いません",
@@ -107,7 +107,7 @@
     {
       "key": "original",
       "label": "オリジナル",
-      "description": "1万円を10レースでどこまで伸ばせるか。目標なし・見送り自由、モーニングからナイターまで通しで勝負。",
+      "description": "1万円×10レース勝負。開始時に本日の10レースをAIが確定し、予定表どおりに回す(差し替えは変更履歴付き)。",
       "per_race_cap_pct": 25,
       "daily_loss_limit_pct": 90,
       "max_consecutive_losses": 10,
@@ -142,20 +142,116 @@
   ],
   "auto_buy_available": false,
   "session": {
-    "id": 6,
-    "created_at": "2026-07-09T14:07:41+09:00",
+    "id": 7,
+    "created_at": "2026-07-09T14:25:06+09:00",
     "session_date": "2026-07-09",
     "status": "active",
     "stop_reason": null,
     "config": {
       "start_amount": 10000,
-      "target_amount": 10100,
+      "target_amount": 30000,
       "style": "original",
       "per_race_cap_pct": 25,
       "daily_loss_limit_pct": 80,
       "max_consecutive_losses": 10,
       "min_ev": 1.1,
       "auto_buy": false
+    },
+    "plan": {
+      "locked_at": "2026-07-09T14:25:06+09:00",
+      "race_limit": 10,
+      "slots": [
+        {
+          "race_key": "winticket:2026070763:3:9",
+          "venue": "防府",
+          "race_no": 9,
+          "start_time": "14:39",
+          "original": {
+            "race_key": "winticket:2026070844:2:12",
+            "venue": "大垣",
+            "race_no": 12,
+            "start_time": "15:52"
+          },
+          "changed_at": "2026-07-09T14:26:11+09:00"
+        },
+        {
+          "race_key": "winticket:2026070844:2:12",
+          "venue": "大垣",
+          "race_no": 12,
+          "start_time": "15:52",
+          "original": {
+            "race_key": "winticket:2026070763:3:11",
+            "venue": "防府",
+            "race_no": 11,
+            "start_time": "15:37"
+          },
+          "changed_at": "2026-07-09T14:27:58+09:00"
+        },
+        {
+          "race_key": "winticket:2026070811:2:2",
+          "venue": "函館",
+          "race_no": 2,
+          "start_time": "16:07",
+          "original": null,
+          "changed_at": null
+        },
+        {
+          "race_key": "winticket:2026070783:3:2",
+          "venue": "久留米",
+          "race_no": 2,
+          "start_time": "16:22",
+          "original": null,
+          "changed_at": null
+        },
+        {
+          "race_key": "winticket:2026070811:2:3",
+          "venue": "函館",
+          "race_no": 3,
+          "start_time": "16:33",
+          "original": null,
+          "changed_at": null
+        },
+        {
+          "race_key": "winticket:2026070783:3:5",
+          "venue": "久留米",
+          "race_no": 5,
+          "start_time": "17:38",
+          "original": null,
+          "changed_at": null
+        },
+        {
+          "race_key": "winticket:2026070783:3:6",
+          "venue": "久留米",
+          "race_no": 6,
+          "start_time": "18:04",
+          "original": null,
+          "changed_at": null
+        },
+        {
+          "race_key": "winticket:2026070811:2:7",
+          "venue": "函館",
+          "race_no": 7,
+          "start_time": "18:17",
+          "original": null,
+          "changed_at": null
+        },
+        {
+          "race_key": "winticket:2026070783:3:10",
+          "venue": "久留米",
+          "race_no": 10,
+          "start_time": "19:48",
+          "original": null,
+          "changed_at": null
+        },
+        {
+          "race_key": "winticket:2026070783:3:11",
+          "venue": "久留米",
+          "race_no": 11,
+          "start_time": "20:16",
+          "original": null,
+          "changed_at": null
+        }
+      ]
     }
   },
   "state": {
@@ -169,83 +265,83 @@
     "skips": 0,
     "pending_bet": null,
     "bets": [],
-    "target_progress": 0.9900990099009901,
+    "target_progress": 0.3333333333333333,
     "races_to_target": {
-      "expected": 1,
-      "fast": 1
+      "expected": 45,
+      "fast": 4
     }
   },
   "proposal": {
-    "race_key": "winticket:2026070844:2:9",
-    "venue": "大垣",
+    "race_key": "winticket:2026070763:3:9",
+    "venue": "防府",
     "race_no": 9,
-    "start_time": "14:25",
+    "start_time": "14:39",
     "race_date": "2026年7月9日",
-    "url": "https://www.winticket.jp/keirin/ogaki/racecard/2026070844/2/9",
-    "confidence": "中",
+    "url": "https://www.winticket.jp/keirin/hofu/racecard/2026070763/3/9",
+    "confidence": "混戦",
     "budget": 2500,
     "total_stake": 2500,
-    "ev": 53.115,
-    "expected_return": 132790,
+    "ev": 20.996,
+    "expected_return": 52490,
     "tickets": [
       {
         "role": "本線",
-        "label": "3-7-6",
+        "label": "3-5-1",
         "stake": 900,
-        "odds": 158.0,
+        "odds": 104.4,
         "odds_source": "live",
-        "popularity": 61,
-        "hit_probability": 0.2657,
-        "projected_return": 142200
+        "popularity": 28,
+        "hit_probability": 0.2279,
+        "projected_return": 93960
       },
       {
         "role": "抑え",
-        "label": "3-6-7",
+        "label": "5-3-1",
         "stake": 600,
-        "odds": 194.3,
+        "odds": 29.4,
         "odds_source": "live",
-        "popularity": 73,
-        "hit_probability": 0.2634,
-        "projected_return": 116580
+        "popularity": 6,
+        "hit_probability": 0.2256,
+        "projected_return": 17640
       },
       {
         "role": "妙味",
-        "label": "3-6-4",
+        "label": "3-1-5",
         "stake": 400,
-        "odds": 387.1,
+        "odds": 194.3,
         "odds_source": "live",
-        "popularity": 133,
-        "hit_probability": 0.2487,
-        "projected_return": 154840
+        "popularity": 53,
+        "hit_probability": 0.2172,
+        "projected_return": 77720
       },
       {
         "role": "妙味2",
-        "label": "3-4-6",
+        "label": "3-5-4",
         "stake": 300,
-        "odds": 251.5,
+        "odds": 94.8,
         "odds_source": "live",
-        "popularity": 93,
-        "hit_probability": 0.2365,
-        "projected_return": 75450
+        "popularity": 25,
+        "hit_probability": 0.2052,
+        "projected_return": 28440
       },
       {
         "role": "穴",
-        "label": "3-4-7",
+        "label": "5-1-3",
         "stake": 300,
-        "odds": 110.9,
+        "odds": 68.4,
         "odds_source": "live",
-        "popularity": 46,
-        "hit_probability": 0.2388,
-        "projected_return": 33270
+        "popularity": 17,
+        "hit_probability": 0.2135,
+        "projected_return": 20520
       }
     ],
     "live_odds_count": 5,
     "top_pick": {
       "car_no": 3,
-      "name": "伊東翔貴",
-      "probability": 0.4696,
-      "score": 8.324,
-      "mark": "対抗",
+      "name": "高橋舜",
+      "probability": 0.3647,
+      "score": 10.828,
+      "mark": "",
       "style": "逃",
       "comment": "自力。",
       "emotion": {
@@ -264,16 +360,17 @@
         "summary": "戦法意図は見えますが、状態評価は控えめです。"
       },
       "reasons": [
-        "印: 対抗",
         "競走得点上位",
         "バック数あり",
-        "EX攻撃力100%",
-        "対金子哲大 0勝1敗",
-        "学習: 割引"
+        "EX攻撃力85%",
+        "直近3着内多い",
+        "先頭勝率25%",
+        "当所3着内50%",
+        "逃げ有利バンク(333m)"
       ]
     },
-    "scenario_headline": "3伊東翔貴が本線。前で動いてライン3-5-6を残す展開を重視。",
-    "copy_text": "大垣9R 3連単\n本線 3-7-6 900円\n抑え 3-6-7 600円\n妙味 3-6-4 400円\n妙味2 3-4-6 300円\n穴 3-4-7 300円",
+    "scenario_headline": "3高橋舜が本線。前で動いてライン3-5-7を残す展開を重視。",
+    "copy_text": "防府9R 3連単\n本線 3-5-1 900円\n抑え 5-3-1 600円\n妙味 3-1-5 400円\n妙味2 3-5-4 300円\n穴 5-1-3 300円",
     "odds_status": {
       "attempted": 6,
       "fetched": 6,
@@ -283,81 +380,15 @@
   },
   "judged_races": [
     {
-      "race_key": "winticket:2026070844:2:9",
-      "venue": "大垣",
-      "race_no": 9,
-      "start_time": "14:25",
-      "confidence": "中",
-      "decision": "bet",
-      "reason": "EV 53.11 / 5点分散 / ライブ5点",
-      "ev": 53.115,
-      "is_next": true
-    },
-    {
       "race_key": "winticket:2026070763:3:9",
       "venue": "防府",
       "race_no": 9,
       "start_time": "14:39",
       "confidence": "混戦",
       "decision": "bet",
-      "reason": "EV 19.13 / 5点分散 / ライブ5点",
-      "ev": 19.134,
-      "is_next": false
-    },
-    {
-      "race_key": "winticket:2026070844:2:10",
-      "venue": "大垣",
-      "race_no": 10,
-      "start_time": "14:53",
-      "confidence": "混戦",
-      "decision": "bet",
-      "reason": "EV 8.19 / 5点分散 / ライブ5点",
-      "ev": 8.185,
-      "is_next": false
-    },
-    {
-      "race_key": "winticket:2026070763:3:10",
-      "venue": "防府",
-      "race_no": 10,
-      "start_time": "15:07",
-      "confidence": "中",
-      "decision": "bet",
-      "reason": "EV 88.66 / 5点分散 / ライブ5点",
-      "ev": 88.656,
-      "is_next": false
-    },
-    {
-      "race_key": "winticket:2026070844:2:11",
-      "venue": "大垣",
-      "race_no": 11,
-      "start_time": "15:22",
-      "confidence": "中",
-      "decision": "bet",
-      "reason": "EV 99.93 / 5点分散 / ライブ5点",
-      "ev": 99.934,
-      "is_next": false
-    },
-    {
-      "race_key": "winticket:2026070763:3:11",
-      "venue": "防府",
-      "race_no": 11,
-      "start_time": "15:37",
-      "confidence": "強",
-      "decision": "bet",
-      "reason": "EV 31.94 / 5点分散 / ライブ5点",
-      "ev": 31.935,
-      "is_next": false
-    },
-    {
-      "race_key": "winticket:2026070811:2:1",
-      "venue": "函館",
-      "race_no": 1,
-      "start_time": "15:45",
-      "confidence": "中",
-      "decision": "bet",
-      "reason": "EV 8.91 / 5点分散",
-      "ev": 8.914,
-      "is_next": false
+      "reason": "EV 21.00 / 5点分散 / ライブ5点",
+      "ev": 20.996,
+      "is_next": true
     },
     {
       "race_key": "winticket:2026070844:2:12",
@@ -366,19 +397,8 @@
       "start_time": "15:52",
       "confidence": "強",
       "decision": "bet",
-      "reason": "EV 5.64 / 5点分散",
-      "ev": 5.638,
-      "is_next": false
-    },
-    {
-      "race_key": "winticket:2026070783:3:1",
-      "venue": "久留米",
-      "race_no": 1,
-      "start_time": "15:59",
-      "confidence": "混戦",
-      "decision": "bet",
-      "reason": "EV 11.32 / 5点分散",
-      "ev": 11.321,
+      "reason": "EV 10.22 / 5点分散 / ライブ5点",
+      "ev": 10.215,
       "is_next": false
     },
     {
@@ -388,19 +408,8 @@
       "start_time": "16:07",
       "confidence": "強",
       "decision": "bet",
-      "reason": "EV 5.57 / 5点分散",
-      "ev": 5.574,
-      "is_next": false
-    },
-    {
-      "race_key": "winticket:2026070763:3:12",
-      "venue": "防府",
-      "race_no": 12,
-      "start_time": "16:15",
-      "confidence": "中",
-      "decision": "bet",
-      "reason": "EV 10.22 / 5点分散",
-      "ev": 10.223,
+      "reason": "EV 21.45 / 5点分散 / ライブ5点",
+      "ev": 21.45,
       "is_next": false
     },
     {
@@ -410,8 +419,74 @@
       "start_time": "16:22",
       "confidence": "強",
       "decision": "bet",
-      "reason": "EV 4.82 / 5点分散",
-      "ev": 4.823,
+      "reason": "EV 9.76 / 5点分散 / ライブ5点",
+      "ev": 9.757,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026070811:2:3",
+      "venue": "函館",
+      "race_no": 3,
+      "start_time": "16:33",
+      "confidence": "強",
+      "decision": "bet",
+      "reason": "EV 19.99 / 5点分散 / ライブ5点",
+      "ev": 19.987,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026070783:3:5",
+      "venue": "久留米",
+      "race_no": 5,
+      "start_time": "17:38",
+      "confidence": "強",
+      "decision": "bet",
+      "reason": "EV 36.86 / 5点分散 / ライブ5点",
+      "ev": 36.858,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026070783:3:6",
+      "venue": "久留米",
+      "race_no": 6,
+      "start_time": "18:04",
+      "confidence": "強",
+      "decision": "bet",
+      "reason": "EV 5.25 / 5点分散",
+      "ev": 5.246,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026070811:2:7",
+      "venue": "函館",
+      "race_no": 7,
+      "start_time": "18:17",
+      "confidence": "強",
+      "decision": "bet",
+      "reason": "EV 6.65 / 5点分散",
+      "ev": 6.654,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026070783:3:10",
+      "venue": "久留米",
+      "race_no": 10,
+      "start_time": "19:48",
+      "confidence": "強",
+      "decision": "bet",
+      "reason": "EV 5.00 / 5点分散",
+      "ev": 5.002,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026070783:3:11",
+      "venue": "久留米",
+      "race_no": 11,
+      "start_time": "20:16",
+      "confidence": "強",
+      "decision": "bet",
+      "reason": "EV 7.02 / 5点分散",
+      "ev": 7.016,
       "is_next": false
     }
   ],
@@ -428,11 +503,34 @@
           "id": 6,
           "style": "original",
           "style_label": "オリジナル",
+          "status": "stopped",
+          "stop_reason": "新しいセッション開始",
+          "config": {
+            "start_amount": 10000,
+            "target_amount": 10100,
+            "style": "original",
+            "per_race_cap_pct": 25,
+            "daily_loss_limit_pct": 80,
+            "max_consecutive_losses": 10,
+            "min_ev": 1.1,
+            "auto_buy": false
+          },
+          "balance": 10000,
+          "profit": 0,
+          "wins": 0,
+          "losses": 0,
+          "skips": 0,
+          "target_reached": false
+        },
+        {
+          "id": 7,
+          "style": "original",
+          "style_label": "オリジナル",
           "status": "active",
           "stop_reason": null,
           "config": {
             "start_amount": 10000,
-            "target_amount": 10100,
+            "target_amount": 30000,
             "style": "original",
             "per_race_cap_pct": 25,
             "daily_loss_limit_pct": 80,
@@ -452,8 +550,8 @@
         "id": 6,
         "style": "original",
         "style_label": "オリジナル",
-        "status": "active",
-        "stop_reason": null,
+        "status": "stopped",
+        "stop_reason": "新しいセッション開始",
         "config": {
           "start_amount": 10000,
           "target_amount": 10100,
@@ -472,5 +570,112 @@
         "target_reached": false
       }
     }
-  ]
+  ],
+  "plan": {
+    "locked_at": "2026-07-09T14:25:06+09:00",
+    "race_limit": 10,
+    "slots": [
+      {
+        "race_key": "winticket:2026070763:3:9",
+        "venue": "防府",
+        "race_no": 9,
+        "start_time": "14:39",
+        "original": {
+          "race_key": "winticket:2026070844:2:12",
+          "venue": "大垣",
+          "race_no": 12,
+          "start_time": "15:52"
+        },
+        "changed_at": "2026-07-09T14:26:11+09:00",
+        "status": "planned",
+        "is_next": true
+      },
+      {
+        "race_key": "winticket:2026070844:2:12",
+        "venue": "大垣",
+        "race_no": 12,
+        "start_time": "15:52",
+        "original": {
+          "race_key": "winticket:2026070763:3:11",
+          "venue": "防府",
+          "race_no": 11,
+          "start_time": "15:37"
+        },
+        "changed_at": "2026-07-09T14:27:58+09:00",
+        "status": "planned"
+      },
+      {
+        "race_key": "winticket:2026070811:2:2",
+        "venue": "函館",
+        "race_no": 2,
+        "start_time": "16:07",
+        "original": null,
+        "changed_at": null,
+        "status": "planned"
+      },
+      {
+        "race_key": "winticket:2026070783:3:2",
+        "venue": "久留米",
+        "race_no": 2,
+        "start_time": "16:22",
+        "original": null,
+        "changed_at": null,
+        "status": "planned"
+      },
+      {
+        "race_key": "winticket:2026070811:2:3",
+        "venue": "函館",
+        "race_no": 3,
+        "start_time": "16:33",
+        "original": null,
+        "changed_at": null,
+        "status": "planned"
+      },
+      {
+        "race_key": "winticket:2026070783:3:5",
+        "venue": "久留米",
+        "race_no": 5,
+        "start_time": "17:38",
+        "original": null,
+        "changed_at": null,
+        "status": "planned"
+      },
+      {
+        "race_key": "winticket:2026070783:3:6",
+        "venue": "久留米",
+        "race_no": 6,
+        "start_time": "18:04",
+        "original": null,
+        "changed_at": null,
+        "status": "planned"
+      },
+      {
+        "race_key": "winticket:2026070811:2:7",
+        "venue": "函館",
+        "race_no": 7,
+        "start_time": "18:17",
+        "original": null,
+        "changed_at": null,
+        "status": "planned"
+      },
+      {
+        "race_key": "winticket:2026070783:3:10",
+        "venue": "久留米",
+        "race_no": 10,
+        "start_time": "19:48",
+        "original": null,
+        "changed_at": null,
+        "status": "planned"
+      },
+      {
+        "race_key": "winticket:2026070783:3:11",
+        "venue": "久留米",
+        "race_no": 11,
+        "start_time": "20:16",
+        "original": null,
+        "changed_at": null,
+        "status": "planned"
+      }
+    ]
+  }
 }

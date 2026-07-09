@@ -71,7 +71,7 @@ STYLES: dict[str, dict] = {
     "original": {
         "key": "original",
         "label": "オリジナル",
-        "description": "1万円を10レースでどこまで伸ばせるか。目標なし・見送り自由、モーニングからナイターまで通しで勝負。",
+        "description": "1万円×10レース勝負。開始時に本日の10レースをAIが確定し、予定表どおりに回す(差し替えは変更履歴付き)。",
         "per_race_cap_pct": 25,
         "daily_loss_limit_pct": 90,
         "max_consecutive_losses": 10,
@@ -173,6 +173,9 @@ def ensure_tables(conn: sqlite3.Connection) -> None:
         );
         """
     )
+    columns = {row["name"] for row in conn.execute("pragma table_info(bankroll_sessions)").fetchall()}
+    if "plan_json" not in columns:
+        conn.execute("alter table bankroll_sessions add column plan_json text")
     conn.commit()
 
 
@@ -189,6 +192,114 @@ def start_session(conn: sqlite3.Connection, config: BankrollConfig) -> int:
     )
     conn.commit()
     return int(cursor.lastrowid)
+
+
+def set_session_plan(conn: sqlite3.Connection, session_id: int, plan: dict) -> None:
+    ensure_tables(conn)
+    conn.execute(
+        "update bankroll_sessions set plan_json=? where id=?",
+        (json.dumps(plan, ensure_ascii=False), session_id),
+    )
+    conn.commit()
+
+
+def build_original_plan(conn: sqlite3.Connection, data_dir, race_limit: int) -> dict:
+    """オリジナル運用: 朝のうちに本日勝負する10レースをAIが確定する。
+
+    信頼度・本命確率・買い目スコアで採点した上位レースを、発走時刻順に並べて予定表にする。
+    """
+    now_jst = datetime.now(JST)
+    today = build_today_forecast_payload(conn, data_dir)
+    active, _ = _future_forecasts(today.get("forecasts", []), now_jst)
+
+    def score(race: dict) -> float:
+        confidence = race.get("confidence") or {}
+        top = (race.get("top3") or [{}])[0]
+        best_ticket = max((t.get("score") or 0) for t in (race.get("tickets") or [{"score": 0}]))
+        return int(confidence.get("rank") or 0) * 10 + float(top.get("probability") or 0) * 8 + best_ticket * 4
+
+    picked = sorted(active, key=score, reverse=True)[: race_limit]
+    picked.sort(key=lambda race: race.get("start_time") or "99:99")
+    slots = [
+        {
+            "race_key": race.get("race_key"),
+            "venue": race.get("venue") or "",
+            "race_no": race.get("race_no"),
+            "start_time": race.get("start_time") or "",
+            "original": None,
+            "changed_at": None,
+        }
+        for race in picked
+    ]
+    return {
+        "locked_at": now_jst.isoformat(timespec="seconds"),
+        "race_limit": race_limit,
+        "slots": slots,
+    }
+
+
+def replace_plan_slot(conn: sqlite3.Connection, session: dict, slot_index: int, new_race: dict) -> dict:
+    """予定レースを差し替える。元のレースを記録し「変更済み」と分かるようにする。"""
+    plan = session.get("plan") or {}
+    slots = plan.get("slots") or []
+    if not (0 <= slot_index < len(slots)):
+        raise ValueError("差し替え対象のレースが見つかりません。")
+    slot = slots[slot_index]
+    if any(s.get("race_key") == new_race.get("race_key") for s in slots):
+        raise ValueError("そのレースはすでに予定に入っています。")
+    original = slot.get("original") or {
+        "race_key": slot.get("race_key"),
+        "venue": slot.get("venue"),
+        "race_no": slot.get("race_no"),
+        "start_time": slot.get("start_time"),
+    }
+    slots[slot_index] = {
+        "race_key": new_race.get("race_key"),
+        "venue": new_race.get("venue") or "",
+        "race_no": new_race.get("race_no"),
+        "start_time": new_race.get("start_time") or "",
+        "original": original,
+        "changed_at": datetime.now(JST).isoformat(timespec="seconds"),
+    }
+    # 差し替え後も時刻順を保つ
+    slots.sort(key=lambda s: s.get("start_time") or "99:99")
+    plan["slots"] = slots
+    set_session_plan(conn, session["id"], plan)
+    session["plan"] = plan
+    return plan
+
+
+def _plan_with_status(plan: dict, state: dict, now_jst: datetime) -> list[dict]:
+    """予定レース表に消化状況(予定/購入済/的中/不的中/見送り/未消化)を付ける。"""
+    bets_by_key = {bet["race_key"]: bet for bet in state.get("bets", []) if bet.get("race_key")}
+    slots = []
+    next_marked = False
+    for slot in (plan or {}).get("slots") or []:
+        info = dict(slot)
+        bet = bets_by_key.get(slot.get("race_key"))
+        if bet:
+            info["status"] = bet["status"]  # pending/won/lost/skipped
+            info["profit"] = (bet.get("payout") or 0) - (bet.get("total_stake") or 0) if bet["status"] in {"won", "lost"} else None
+        else:
+            start = _slot_start_dt(slot, now_jst)
+            if start and start <= now_jst:
+                info["status"] = "missed"
+            else:
+                info["status"] = "planned"
+                if not next_marked:
+                    info["is_next"] = True
+                    next_marked = True
+        slots.append(info)
+    return slots
+
+
+def _slot_start_dt(slot: dict, now_jst: datetime) -> datetime | None:
+    import re as _re
+
+    match = _re.fullmatch(r"(\d{1,2}):(\d{2})", str(slot.get("start_time") or ""))
+    if not match:
+        return None
+    return datetime(now_jst.year, now_jst.month, now_jst.day, int(match.group(1)), int(match.group(2)), tzinfo=JST)
 
 
 def stop_session(conn: sqlite3.Connection, session_id: int, reason: str) -> None:
@@ -453,6 +564,13 @@ def build_bankroll_payload(conn: sqlite3.Connection, data_dir: Path | str) -> di
 
     payload["session"] = session
     payload["state"] = state
+    now_jst = datetime.now(JST)
+    if session.get("plan"):
+        payload["plan"] = {
+            "locked_at": session["plan"].get("locked_at"),
+            "race_limit": session["plan"].get("race_limit"),
+            "slots": _plan_with_status(session["plan"], state, now_jst),
+        }
 
     if session["status"] != "active":
         return payload
@@ -460,15 +578,24 @@ def build_bankroll_payload(conn: sqlite3.Connection, data_dir: Path | str) -> di
         payload["message"] = "結果待ちの購入記録があります。レース確定後に結果を入力してください。"
         return payload
 
-    judged, proposal = _judge_races(conn, data_dir, config, state)
+    plan_keys = None
+    if session.get("plan"):
+        plan_keys = [
+            slot["race_key"]
+            for slot in payload["plan"]["slots"]
+            if slot.get("status") == "planned" and slot.get("race_key")
+        ]
+    judged, proposal = _judge_races(conn, data_dir, config, state, plan_keys=plan_keys)
     payload["judged_races"] = judged
     payload["proposal"] = proposal
     if proposal is None and not judged:
-        payload["message"] = "本日はこれから発走する対象レースがありません。"
+        payload["message"] = (
+            "予定レースを消化しました。差し替えるか停止してください。" if plan_keys is not None else "本日はこれから発走する対象レースがありません。"
+        )
     return payload
 
 
-def _judge_races(conn, data_dir, config: dict, state: dict) -> tuple[list[dict], dict | None]:
+def _judge_races(conn, data_dir, config: dict, state: dict, plan_keys: list | None = None) -> tuple[list[dict], dict | None]:
     now_jst = datetime.now(JST)
     today = build_today_forecast_payload(conn, data_dir)
     active, _ = _future_forecasts(today.get("forecasts", []), now_jst + timedelta(minutes=2))
@@ -476,7 +603,12 @@ def _judge_races(conn, data_dir, config: dict, state: dict) -> tuple[list[dict],
 
     handled_keys = {bet["race_key"] for bet in state["bets"] if bet["race_key"]}
     budget = _race_budget(state["balance"], config)
-    pending_races = [race for race in active[:12] if race.get("race_key") not in handled_keys]
+    if plan_keys is not None:
+        # 予定レース表(朝に確定)に沿って回す
+        by_key = {race.get("race_key"): race for race in active}
+        pending_races = [by_key[key] for key in plan_keys if key in by_key][:12]
+    else:
+        pending_races = [race for race in active[:12] if race.get("race_key") not in handled_keys]
 
     odds_status = {"attempted": 0, "fetched": 0, "failed": 0, "errors": []}
     live_odds_by_race = _fetch_live_odds_for_races(pending_races, limit=6, odds_status=odds_status)
@@ -485,7 +617,7 @@ def _judge_races(conn, data_dir, config: dict, state: dict) -> tuple[list[dict],
     proposal: dict | None = None
     for race in pending_races:
         live_trifecta = live_odds_by_race.get(race.get("race_key"))
-        verdict = _judge_race(race, budget, config, live_trifecta)
+        verdict = _judge_race(race, budget, config, live_trifecta, force_plan=plan_keys is not None)
         judged.append(verdict["summary"])
         if proposal is None and verdict["proposal"] is not None:
             proposal = verdict["proposal"]
@@ -500,7 +632,7 @@ def _race_budget(balance: int, config: dict) -> int:
     return max(0, min(cap, balance))
 
 
-def _judge_race(race: dict, budget: int, config: dict, live_trifecta: dict | None = None) -> dict:
+def _judge_race(race: dict, budget: int, config: dict, live_trifecta: dict | None = None, force_plan: bool = False) -> dict:
     style = STYLES.get(config.get("style") or "balance") or STYLES["balance"]
     summary = {
         "race_key": race.get("race_key"),
@@ -514,7 +646,7 @@ def _judge_race(race: dict, budget: int, config: dict, live_trifecta: dict | Non
         "is_next": False,
     }
     confidence_rank = int((race.get("confidence") or {}).get("rank") or 1)
-    if confidence_rank < style["min_confidence_rank"]:
+    if not force_plan and confidence_rank < style["min_confidence_rank"]:
         summary["reason"] = f"{style['label']}運用のため混戦は見送り"
         return {"summary": summary, "proposal": None}
     candidates = _race_tickets(race, live_trifecta)
@@ -530,13 +662,15 @@ def _judge_race(race: dict, budget: int, config: dict, live_trifecta: dict | Non
     expected = sum(t["stake"] * t["odds"] * t["hit_probability"] for t in allocation)
     ev = expected / max(1, total_stake)
     summary["ev"] = round(ev, 3)
-    if ev < config["min_ev"]:
+    if ev < config["min_ev"] and not force_plan:
         summary["reason"] = f"期待値不足(EV {ev:.2f} < {config['min_ev']:.2f})"
         return {"summary": summary, "proposal": None}
 
     summary["decision"] = "bet"
     live_count = sum(1 for t in allocation if t.get("odds_source") == "live")
     summary["reason"] = f"EV {ev:.2f} / {len(allocation)}点分散" + (f" / ライブ{live_count}点" if live_count else "")
+    if force_plan and ev < config["min_ev"]:
+        summary["reason"] = f"予定レース実行(EV {ev:.2f} 低め・見送りも可)"
     proposal = {
         "race_key": race.get("race_key"),
         "venue": race.get("venue") or "",
@@ -677,6 +811,13 @@ def _copy_text(race: dict, allocation: list[dict]) -> str:
 
 
 def _session_row(row: sqlite3.Row) -> dict:
+    keys = set(row.keys())
+    plan = None
+    if "plan_json" in keys and row["plan_json"]:
+        try:
+            plan = json.loads(row["plan_json"])
+        except (TypeError, ValueError):
+            plan = None
     return {
         "id": row["id"],
         "created_at": row["created_at"],
@@ -684,6 +825,7 @@ def _session_row(row: sqlite3.Row) -> dict:
         "status": row["status"],
         "stop_reason": row["stop_reason"],
         "config": json.loads(row["config_json"]),
+        "plan": plan,
     }
 
 

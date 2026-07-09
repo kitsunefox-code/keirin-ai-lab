@@ -10,12 +10,16 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 from keirin_ai.bankroll import (
+    STYLES,
     BankrollConfig,
     active_session,
     build_bankroll_payload,
+    build_original_plan,
     commit_bet,
     record_result,
     record_skip,
+    replace_plan_slot,
+    set_session_plan,
     start_session,
     stop_session,
 )
@@ -97,6 +101,8 @@ class KeirinHandler(BaseHTTPRequestHandler):
             return self._handle_bankroll_skip()
         if parsed.path == "/api/bankroll/stop":
             return self._handle_bankroll_stop()
+        if parsed.path == "/api/bankroll/replace_slot":
+            return self._handle_bankroll_replace()
         self._send(404, "text/plain; charset=utf-8", "Not found")
 
     def log_message(self, fmt: str, *args: object) -> None:
@@ -263,9 +269,30 @@ class KeirinHandler(BaseHTTPRequestHandler):
                     min_ev=float(body.get("min_ev") or 1.2),
                 )
             with connect() as conn:
-                start_session(conn, config)
+                session_id = start_session(conn, config)
+                race_limit = (STYLES.get(config.normalized().style) or {}).get("race_limit")
+                if race_limit:
+                    plan = build_original_plan(conn, DATA_DIR, race_limit)
+                    set_session_plan(conn, session_id, plan)
                 payload = build_bankroll_payload(conn, DATA_DIR)
             return self._json(payload)
+        except Exception as exc:
+            return self._json({"ok": False, "error": str(exc)}, status=502)
+
+    def _handle_bankroll_replace(self) -> None:
+        try:
+            body = self._read_json_body()
+            slot_index = int(body.get("slot_index"))
+            new_race = body.get("race") or {}
+            with connect() as conn:
+                session = active_session(conn)
+                if not session or not session.get("plan"):
+                    return self._json({"ok": False, "error": "予定レース表がありません。"}, status=400)
+                replace_plan_slot(conn, session, slot_index, new_race)
+                payload = build_bankroll_payload(conn, DATA_DIR)
+            return self._json(payload)
+        except ValueError as exc:
+            return self._json({"ok": False, "error": str(exc)}, status=400)
         except Exception as exc:
             return self._json({"ok": False, "error": str(exc)}, status=502)
 

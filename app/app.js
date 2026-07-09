@@ -1003,6 +1003,9 @@ function renderBankroll(payload) {
   on("brStopBtn", "click", stopBankroll);
 
   const parts = [yesterday, renderBankrollStatus(session, brState)];
+  if (payload.plan) {
+    parts.push(renderOriginalPlan(payload.plan));
+  }
   if (brState.pending_bet) {
     parts.push(renderBankrollPending(brState.pending_bet));
   } else if (payload.proposal) {
@@ -1022,6 +1025,84 @@ function renderBankroll(payload) {
   on("brWonBtn", "click", () => recordBankrollResult("won"));
   on("brLostBtn", "click", () => recordBankrollResult("lost"));
   on("brRefreshBtn", "click", loadBankroll);
+  document.querySelectorAll("[data-replace-slot]").forEach((btn) => {
+    btn.addEventListener("click", () => togglePlanReplace(Number(btn.dataset.replaceSlot)));
+  });
+  document.querySelectorAll("[data-replace-confirm]").forEach((btn) => {
+    btn.addEventListener("click", () => confirmPlanReplace(Number(btn.dataset.replaceConfirm)));
+  });
+}
+
+function planStatusChip(slot) {
+  const map = {
+    planned: ["予定", "plan-chip-planned"],
+    pending: ["結果待ち", "plan-chip-pending"],
+    won: ["的中", "plan-chip-won"],
+    lost: ["不的中", "plan-chip-lost"],
+    skipped: ["見送り", "plan-chip-skip"],
+    missed: ["未消化", "plan-chip-missed"],
+  };
+  const [label, cls] = map[slot.status] || [slot.status, ""];
+  return `<span class="plan-chip ${cls}">${escapeHtml(label)}</span>`;
+}
+
+function renderOriginalPlan(plan) {
+  const lockedAt = (plan.locked_at || "").slice(11, 16);
+  const replacePool = (state.today?.forecasts || []).filter(
+    (race) => !race.elapsed && !(plan.slots || []).some((slot) => slot.race_key === race.race_key)
+  );
+  const rows = (plan.slots || [])
+    .map((slot, index) => {
+      const changed = slot.original
+        ? `<span class="plan-changed" title="変更: ${escapeAttr(slot.changed_at || "")}">変更済 (元: ${escapeHtml(slot.original.venue || "")}${escapeHtml(slot.original.race_no ?? "")}R ${escapeHtml(slot.original.start_time || "")})</span>`
+        : "";
+      const profit = slot.profit != null
+        ? `<em class="${slot.profit >= 0 ? "ev-positive" : "ev-caution"}">${slot.profit >= 0 ? "+" : ""}${yen(slot.profit)}</em>`
+        : "";
+      const canReplace = slot.status === "planned" || slot.status === "missed";
+      const replaceUi = canReplace && replacePool.length
+        ? `<button type="button" class="button plan-replace-btn" data-replace-slot="${index}">変更</button>
+           <span class="plan-replace-picker" id="planReplace-${index}" hidden>
+             <select id="planReplaceSel-${index}">
+               ${replacePool.map((race) => `<option value="${escapeAttr(race.race_key)}">${escapeHtml(race.venue)}${escapeHtml(race.race_no)}R ${escapeHtml(race.start_time || "")}</option>`).join("")}
+             </select>
+             <button type="button" class="button primary" data-replace-confirm="${index}">確定</button>
+           </span>`
+        : "";
+      return `<div class="plan-row${slot.is_next ? " is-next" : ""}">
+        <span class="time-chip">${escapeHtml(slot.start_time || "--:--")}</span>
+        <strong>${escapeHtml(slot.venue || "")}${escapeHtml(slot.race_no ?? "")}R</strong>
+        ${planStatusChip(slot)}
+        ${profit}
+        ${changed}
+        ${replaceUi}
+      </div>`;
+    })
+    .join("");
+  return `<div class="original-plan">
+    <div class="original-plan-head">
+      <strong>本日の予定レース(朝に確定${lockedAt ? ` ${lockedAt}` : ""})</strong>
+      <span>${(plan.slots || []).length}/${plan.race_limit || 10}R・差し替えると「変更済」が付きます</span>
+    </div>
+    ${rows || '<div class="empty">予定レースがありません。</div>'}
+  </div>`;
+}
+
+function togglePlanReplace(index) {
+  const picker = el(`planReplace-${index}`);
+  if (picker) picker.hidden = !picker.hidden;
+}
+
+function confirmPlanReplace(index) {
+  const sel = el(`planReplaceSel-${index}`);
+  const race = (state.today?.forecasts || []).find((item) => item.race_key === sel?.value);
+  if (!race) return;
+  bankrollPost("/api/bankroll/replace_slot", {
+    slot_index: index,
+    race: { race_key: race.race_key, venue: race.venue, race_no: race.race_no, start_time: race.start_time },
+  }).then((payload) => {
+    if (payload) setStatus(`予定レースを${race.venue}${race.race_no}Rに変更しました`);
+  });
 }
 
 function renderOriginalDaily(history) {
