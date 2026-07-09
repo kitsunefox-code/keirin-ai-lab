@@ -68,11 +68,34 @@ def _baseline_score(entrant: dict, emotion: dict, lineup: list[list[int]]) -> fl
     score += min(float(stats.get("start_count") or 0), 8.0) * 0.03
     score += MARK_BONUS.get(str(entrant.get("ai_mark") or ""), 0.0)
     score += float(emotion.get("score") or 0) * 0.18
+    score += _deep_signal_score(entrant)
     score += _line_bonus(int(entrant.get("car_no") or 0), lineup)
     if entrant.get("style") == "逃":
         score += 0.12
     if entrant.get("style") == "追" and _is_second_in_line(int(entrant.get("car_no") or 0), lineup):
         score += 0.16
+    return score
+
+
+def _deep_signal_score(entrant: dict) -> float:
+    """前検日/レース後インタビュー、EXデータ、直近着順の追加シグナル。"""
+    score = 0.0
+    if entrant.get("interview"):
+        score += float(analyze_comment(entrant["interview"]).get("score") or 0) * 0.14
+    if entrant.get("post_race_comment"):
+        score += float(analyze_comment(entrant["post_race_comment"]).get("score") or 0) * 0.10
+    ex = entrant.get("ex") or {}
+    attack = max(
+        float(ex.get("exSpurt") or 0.0),
+        float(ex.get("exThrust") or 0.0),
+        float(ex.get("exSnatch") or 0.0),
+    )
+    score += min(attack, 100.0) / 100.0 * 0.35
+    score -= min(float(ex.get("exLeftBehind") or 0.0), 60.0) / 60.0 * 0.30
+    form = entrant.get("recent_form") or []
+    if form:
+        top3_ratio = sum(1 for finish in form if finish <= 3) / len(form)
+        score += (top3_ratio - 0.4) * 0.5
     return score
 
 
@@ -144,13 +167,34 @@ def _reasons(entrant: dict, emotion: dict, baseline: float, learned_model: dict 
     if float(stats.get("back_count") or 0) >= 4:
         reasons.append("バック数あり")
     if emotion.get("tone") not in {"中立", "材料なし"}:
-        reasons.append(f"コメント: {emotion['tone']}")
+        reasons.append(f"前検コメ: {emotion['tone']}")
+    if entrant.get("interview"):
+        tone = analyze_comment(entrant["interview"]).get("tone")
+        if tone not in {"中立", "材料なし"}:
+            reasons.append(f"前検日談話: {tone}")
+    if entrant.get("post_race_comment"):
+        tone = analyze_comment(entrant["post_race_comment"]).get("tone")
+        if tone not in {"中立", "材料なし"}:
+            reasons.append(f"前走後談話: {tone}")
+    ex = entrant.get("ex") or {}
+    attack = max(
+        float(ex.get("exSpurt") or 0.0),
+        float(ex.get("exThrust") or 0.0),
+        float(ex.get("exSnatch") or 0.0),
+    )
+    if attack >= 50:
+        reasons.append(f"EX攻撃力{attack:.0f}%")
+    if float(ex.get("exLeftBehind") or 0.0) >= 40:
+        reasons.append("EX置かれ注意")
+    form = entrant.get("recent_form") or []
+    if form and sum(1 for finish in form if finish <= 3) / len(form) >= 0.6:
+        reasons.append("直近3着内多い")
     if learned_model and abs(learned_logit) >= 0.35:
         direction = "追い風" if learned_logit > 0 else "割引"
         reasons.append(f"学習: {direction}")
     if baseline < 0:
         reasons.append("総合材料は弱め")
-    return reasons[:5] or ["目立つ強調材料は少なめ"]
+    return reasons[:6] or ["目立つ強調材料は少なめ"]
 
 
 def _race_notes(race: dict, scored: list[dict], learned_model: dict | None) -> list[str]:
@@ -159,6 +203,12 @@ def _race_notes(race: dict, scored: list[dict], learned_model: dict | None) -> l
         notes.append("ライン構成をスコアへ反映しました。")
     if any(row["emotion"]["hits"] for row in scored):
         notes.append("コメントの心理・状態語を補助材料にしました。")
+    if any(row.get("interview") for row in scored):
+        notes.append("前検日インタビューを評価に反映しました。")
+    if any(row.get("post_race_comment") for row in scored):
+        notes.append("前走レース後の談話を評価に反映しました。")
+    if any(row.get("ex") for row in scored):
+        notes.append("EXデータ(スパート・置かれ等)を評価に反映しました。")
     if learned_model:
         rows = learned_model.get("training", {}).get("rows", 0)
         races = learned_model.get("training", {}).get("races", 0)

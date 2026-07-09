@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 import sqlite3
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta, timezone
@@ -28,23 +29,97 @@ HARD_RULES = [
     "自動購入は行いません。買い目コピーと購入前確認までです",
 ]
 
+# 運用スタイル。買い目配分・停止条件・レース選別基準をまとめて決める。
+STYLES: dict[str, dict] = {
+    "kenjitsu": {
+        "key": "kenjitsu",
+        "label": "堅実",
+        "description": "信頼度の高いレースだけ、本線厚めの2点。損失は浅く止める。",
+        "per_race_cap_pct": 10,
+        "daily_loss_limit_pct": 20,
+        "max_consecutive_losses": 2,
+        "min_ev": 1.3,
+        "weights": [("本線", 0.65), ("抑え", 0.35)],
+        "min_confidence_rank": 2,  # 混戦は見送る
+        "assumed_main_odds": 4.5,
+    },
+    "balance": {
+        "key": "balance",
+        "label": "バランス",
+        "description": "本線・抑え・妙味の3点分散。標準の停止条件で回す。",
+        "per_race_cap_pct": 20,
+        "daily_loss_limit_pct": 30,
+        "max_consecutive_losses": 3,
+        "min_ev": 1.2,
+        "weights": [("本線", 0.5), ("抑え", 0.3), ("妙味", 0.2)],
+        "min_confidence_rank": 1,
+        "assumed_main_odds": 7.0,
+    },
+    "bouken": {
+        "key": "bouken",
+        "label": "冒険",
+        "description": "妙味厚めの3点で高配当を狙う。振れ幅と引き換えに大きく取りにいく。",
+        "per_race_cap_pct": 30,
+        "daily_loss_limit_pct": 40,
+        "max_consecutive_losses": 4,
+        "min_ev": 1.1,
+        "weights": [("本線", 0.4), ("抑え", 0.25), ("妙味", 0.35)],
+        "min_confidence_rank": 1,
+        "assumed_main_odds": 12.0,
+    },
+}
+
+
+def estimate_races(start_amount: int, target_amount: int, style_key: str) -> dict:
+    """目標達成までのレース数目安。expected=EV下限ペース、fast=本線連続的中ペース。"""
+    style = STYLES.get(style_key) or STYLES["balance"]
+    cap = style["per_race_cap_pct"] / 100.0
+    main_weight = style["weights"][0][1]
+
+    def races(growth: float) -> int | None:
+        if growth <= 0 or target_amount <= start_amount or start_amount <= 0:
+            return None
+        value = math.ceil(math.log(target_amount / start_amount) / math.log(1.0 + growth))
+        return min(value, 99)
+
+    return {
+        "expected": races(cap * (style["min_ev"] - 1.0)),
+        "fast": races(cap * (main_weight * style["assumed_main_odds"] - 1.0)),
+    }
+
 
 @dataclass
 class BankrollConfig:
     start_amount: int = 1000
     target_amount: int = 3000
+    style: str = "balance"
     per_race_cap_pct: int = 20
     daily_loss_limit_pct: int = 30
     max_consecutive_losses: int = 3
     min_ev: float = 1.2
     auto_buy: bool = False  # 初期実装では常にOFF。公式APIがないため自動購入は実装しない。
 
+    @classmethod
+    def from_style(cls, style: str, start_amount: int, target_amount: int) -> "BankrollConfig":
+        preset = STYLES.get(style) or STYLES["balance"]
+        return cls(
+            start_amount=start_amount,
+            target_amount=target_amount,
+            style=preset["key"],
+            per_race_cap_pct=preset["per_race_cap_pct"],
+            daily_loss_limit_pct=preset["daily_loss_limit_pct"],
+            max_consecutive_losses=preset["max_consecutive_losses"],
+            min_ev=preset["min_ev"],
+        )
+
     def normalized(self) -> "BankrollConfig":
         start = max(300, int(self.start_amount or 0))
         target = max(start + UNIT, int(self.target_amount or 0))
+        style = self.style if self.style in STYLES else "balance"
         return BankrollConfig(
             start_amount=start,
             target_amount=target,
+            style=style,
             per_race_cap_pct=max(5, min(50, int(self.per_race_cap_pct or 20))),
             daily_loss_limit_pct=max(10, min(80, int(self.daily_loss_limit_pct or 30))),
             max_consecutive_losses=max(1, min(10, int(self.max_consecutive_losses or 3))),
@@ -251,6 +326,7 @@ def session_state(conn: sqlite3.Connection, session: dict) -> dict:
         "pending_bet": pending,
         "bets": bets,
         "target_progress": min(1.0, balance / max(1, config["target_amount"])),
+        "races_to_target": estimate_races(balance, config["target_amount"], config.get("style", "balance")),
     }
 
 
@@ -272,6 +348,10 @@ def build_bankroll_payload(conn: sqlite3.Connection, data_dir: Path | str) -> di
         "ok": True,
         "generated_at_jst": datetime.now(JST).isoformat(timespec="seconds"),
         "rules": HARD_RULES,
+        "styles": [
+            {**style, "weights": [list(pair) for pair in style["weights"]]}
+            for style in STYLES.values()
+        ],
         "auto_buy_available": False,
         "session": None,
         "state": None,
@@ -341,6 +421,7 @@ def _race_budget(balance: int, config: dict) -> int:
 
 
 def _judge_race(race: dict, budget: int, config: dict) -> dict:
+    style = STYLES.get(config.get("style") or "balance") or STYLES["balance"]
     summary = {
         "race_key": race.get("race_key"),
         "venue": race.get("venue") or "",
@@ -352,6 +433,10 @@ def _judge_race(race: dict, budget: int, config: dict) -> dict:
         "ev": None,
         "is_next": False,
     }
+    confidence_rank = int((race.get("confidence") or {}).get("rank") or 1)
+    if confidence_rank < style["min_confidence_rank"]:
+        summary["reason"] = f"{style['label']}運用のため混戦は見送り"
+        return {"summary": summary, "proposal": None}
     candidates = _race_tickets(race)
     if len(candidates) < 2:
         summary["reason"] = "買い目候補が不足(1点勝負は行わない)"
@@ -360,7 +445,7 @@ def _judge_race(race: dict, budget: int, config: dict) -> dict:
         summary["reason"] = f"1レース上限({config['per_race_cap_pct']}%)内で最低2点を買えません"
         return {"summary": summary, "proposal": None}
 
-    allocation = _allocate(budget, candidates)
+    allocation = _allocate(budget, candidates, style["weights"])
     total_stake = sum(t["stake"] for t in allocation)
     expected = sum(t["stake"] * t["odds"] * t["hit_probability"] for t in allocation)
     ev = expected / max(1, total_stake)
@@ -413,17 +498,25 @@ def _race_tickets(race: dict) -> list[dict]:
     return tickets
 
 
-def _allocate(budget: int, candidates: list[dict]) -> list[dict]:
+def _allocate(budget: int, candidates: list[dict], weights: list | None = None) -> list[dict]:
+    weights = [tuple(pair) for pair in (weights or [("本線", 0.5), ("抑え", 0.3), ("妙味", 0.2)])]
     main = candidates[0]
     cover = candidates[1]
     value = None
     if len(candidates) > 2:
         value = max(candidates[2:], key=lambda t: t["odds"] * t["hit_probability"])
 
-    if value is not None and budget >= UNIT * 3:
-        roles = [("本線", main, 0.5), ("抑え", cover, 0.3), ("妙味", value, 0.2)]
-    else:
-        roles = [("本線", main, 0.65), ("抑え", cover, 0.35)]
+    ticket_by_role = {"本線": main, "抑え": cover, "妙味": value}
+    roles = [
+        (role, ticket_by_role[role], weight)
+        for role, weight in weights
+        if ticket_by_role.get(role) is not None
+    ]
+    if len(roles) >= 3 and budget < UNIT * 3:
+        roles = roles[:2]
+    if len(roles) == 2:
+        total = roles[0][2] + roles[1][2]
+        roles = [(roles[0][0], roles[0][1], roles[0][2] / total), (roles[1][0], roles[1][1], roles[1][2] / total)]
 
     total_units = budget // UNIT
     allocation = []

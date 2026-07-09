@@ -88,9 +88,78 @@ def init_db(conn: sqlite3.Connection) -> None:
             word_count integer,
             learned_at text not null
         );
+
+        create table if not exists player_form (
+            player_id text not null,
+            race_key text not null,
+            name text,
+            race_date text,
+            finish integer,
+            factor text,
+            post_comment text,
+            updated_at text not null,
+            primary key (player_id, race_key)
+        );
         """
     )
     conn.commit()
+
+
+def save_player_form(conn: sqlite3.Connection, rows: list[dict]) -> int:
+    """レース後の着順・決まり手・談話を選手単位で蓄積する。"""
+    saved = 0
+    now = _now()
+    for row in rows:
+        player_id = str(row.get("player_id") or "").strip()
+        race_key_value = str(row.get("race_key") or "").strip()
+        if not player_id or not race_key_value:
+            continue
+        conn.execute(
+            """
+            insert into player_form (
+                player_id, race_key, name, race_date, finish, factor, post_comment, updated_at
+            ) values (?, ?, ?, ?, ?, ?, ?, ?)
+            on conflict(player_id, race_key) do update set
+                name=excluded.name,
+                race_date=excluded.race_date,
+                finish=coalesce(excluded.finish, player_form.finish),
+                factor=coalesce(nullif(excluded.factor, ''), player_form.factor),
+                post_comment=coalesce(nullif(excluded.post_comment, ''), player_form.post_comment),
+                updated_at=excluded.updated_at
+            """,
+            (
+                player_id,
+                race_key_value,
+                row.get("name"),
+                row.get("race_date"),
+                row.get("finish"),
+                row.get("factor") or "",
+                row.get("post_comment") or "",
+                now,
+            ),
+        )
+        saved += 1
+    conn.commit()
+    return saved
+
+
+def latest_player_form(conn: sqlite3.Connection, player_ids: list[str]) -> dict[str, dict]:
+    """各選手の直近のレース後情報(談話・着順・決まり手)を返す。"""
+    result: dict[str, dict] = {}
+    for player_id in {str(pid) for pid in player_ids if pid}:
+        row = conn.execute(
+            """
+            select player_id, name, race_date, finish, factor, post_comment
+            from player_form
+            where player_id=?
+            order by updated_at desc, race_key desc
+            limit 1
+            """,
+            (player_id,),
+        ).fetchone()
+        if row:
+            result[player_id] = dict(row)
+    return result
 
 
 def save_race(conn: sqlite3.Connection, race: dict, prediction: dict | None = None) -> str:

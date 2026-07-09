@@ -27,6 +27,7 @@ from keirin_ai.odds import fetch_live_odds
 from keirin_ai.predictor import predict_race
 from keirin_ai.sources import fetch_url, parse_winticket_racecard
 from keirin_ai.storage import connect, learning_status, result_from_order, save_race
+from keirin_ai.winticket_state import enrich_race_from_state
 
 
 ROOT = Path(__file__).resolve().parent
@@ -116,6 +117,7 @@ class KeirinHandler(BaseHTTPRequestHandler):
         try:
             html = fetch_url(url)
             race = parse_winticket_racecard(html, url)
+            race = enrich_race_from_state(race, html)
             return self._json({"ok": True, "race": race, "prediction": predict_race(race)})
         except Exception as exc:
             return self._json({"ok": False, "error": str(exc)}, status=502)
@@ -155,6 +157,7 @@ class KeirinHandler(BaseHTTPRequestHandler):
         try:
             html = fetch_url(url)
             race = parse_winticket_racecard(html, url)
+            race = enrich_race_from_state(race, html)
             prediction = predict_race(race)
             with connect() as conn:
                 key = save_race(conn, race, prediction)
@@ -236,14 +239,22 @@ class KeirinHandler(BaseHTTPRequestHandler):
     def _handle_bankroll_start(self) -> None:
         try:
             body = self._read_json_body()
-            config = BankrollConfig(
-                start_amount=int(body.get("start_amount") or 0),
-                target_amount=int(body.get("target_amount") or 0),
-                per_race_cap_pct=int(body.get("per_race_cap_pct") or 20),
-                daily_loss_limit_pct=int(body.get("daily_loss_limit_pct") or 30),
-                max_consecutive_losses=int(body.get("max_consecutive_losses") or 3),
-                min_ev=float(body.get("min_ev") or 1.0),
-            )
+            style = str(body.get("style") or "").strip()
+            if style:
+                config = BankrollConfig.from_style(
+                    style,
+                    start_amount=int(body.get("start_amount") or 0),
+                    target_amount=int(body.get("target_amount") or 0),
+                )
+            else:
+                config = BankrollConfig(
+                    start_amount=int(body.get("start_amount") or 0),
+                    target_amount=int(body.get("target_amount") or 0),
+                    per_race_cap_pct=int(body.get("per_race_cap_pct") or 20),
+                    daily_loss_limit_pct=int(body.get("daily_loss_limit_pct") or 30),
+                    max_consecutive_losses=int(body.get("max_consecutive_losses") or 3),
+                    min_ev=float(body.get("min_ev") or 1.2),
+                )
             with connect() as conn:
                 start_session(conn, config)
                 payload = build_bankroll_payload(conn, DATA_DIR)

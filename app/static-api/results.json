@@ -19,14 +19,14 @@
   ],
   "summary": {
     "races": 50,
-    "settled": 2,
-    "pending": 48,
-    "honmei_hits": 0,
-    "honmei_rate": 0.0,
-    "in_top3_hits": 1,
-    "in_top3_rate": 0.5,
-    "trifecta_hits": 0,
-    "trifecta_rate": 0.0
+    "settled": 3,
+    "pending": 47,
+    "honmei_hits": 1,
+    "honmei_rate": 0.3333,
+    "in_top3_hits": 2,
+    "in_top3_rate": 0.6667,
+    "trifecta_hits": 1,
+    "trifecta_rate": 0.3333
   },
   "venues": [
     {
@@ -106,13 +106,17 @@
             "4-3-5",
             "4-2-3"
           ],
-          "result_order": [],
-          "status": "pending",
+          "result_order": [
+            4,
+            3,
+            2
+          ],
+          "status": "hit_trifecta",
           "hits": {
-            "honmei": null,
-            "in_top3": null,
-            "trifecta": null,
-            "trifecta_label": null
+            "honmei": true,
+            "in_top3": true,
+            "trifecta": true,
+            "trifecta_label": "4-3-2"
           }
         },
         {

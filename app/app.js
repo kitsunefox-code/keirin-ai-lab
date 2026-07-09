@@ -5,7 +5,9 @@
   learning: null,
   learnedModel: null,
   bankroll: null,
+  bankrollStyle: null,
   results: null,
+  motionTimers: {},
 };
 
 const STATIC_API = {
@@ -61,6 +63,10 @@ async function apiPost(url, options) {
 document.addEventListener("DOMContentLoaded", () => {
   on("refreshTodayBtn", "click", loadToday);
   on("confidenceFilter", "change", renderToday);
+  document.addEventListener("click", (event) => {
+    const btn = event.target.closest(".motion-btn");
+    if (btn) toggleRaceMotion(btn.dataset.race);
+  });
   loadLearnStatus();
   loadToday();
   loadBankroll();
@@ -193,6 +199,166 @@ function shortDate(iso) {
   return `${Number(parts[1])}/${Number(parts[2])}`;
 }
 
+/* ---- 展開予想モーション再生 ---- */
+
+const CAR_COLORS = {
+  1: ["#ffffff", "#2b2b2e"],
+  2: ["#2b2b2e", "#ffffff"],
+  3: ["#d13438", "#ffffff"],
+  4: ["#1f5cd4", "#ffffff"],
+  5: ["#f2c800", "#2b2b2e"],
+  6: ["#1d9e50", "#ffffff"],
+  7: ["#f4792a", "#ffffff"],
+  8: ["#f26ba4", "#2b2b2e"],
+  9: ["#7b3fd4", "#ffffff"],
+};
+
+const MOTION = { cx: 320, cy: 150, rx: 250, ry: 105, duration: 9000, laps: 2 };
+
+function toggleRaceMotion(raceKey) {
+  const race = (state.today?.forecasts || []).find((item) => item.race_key === raceKey);
+  const container = document.querySelector(`[data-motion-race="${CSS.escape(raceKey)}"]`);
+  if (!race || !container) return;
+  const stage = container.querySelector(".motion-stage");
+  const btn = container.querySelector(".motion-btn");
+  if (state.motionTimers[raceKey]) {
+    clearInterval(state.motionTimers[raceKey]);
+    delete state.motionTimers[raceKey];
+  }
+  stage.hidden = false;
+  btn.textContent = "↺ もう一度再生";
+  startRaceMotion(raceKey, race, stage);
+}
+
+function buildMotionPlan(race) {
+  const entries = race.entries || [];
+  const lineup = (race.lineup || []).map((line) => line.map(Number));
+  const probs = new Map(entries.map((entry) => [Number(entry.car_no), Number(entry.win_probability || 0)]));
+  const styles = new Map(entries.map((entry) => [Number(entry.car_no), entry.style || ""]));
+  let cars = entries.map((entry) => Number(entry.car_no)).filter(Boolean);
+  if (!cars.length) cars = lineup.flat();
+  cars = [...new Set(cars)];
+
+  const initial = [...lineup.flat().filter((car) => cars.includes(car)), ...cars.filter((car) => !lineup.flat().includes(car))];
+
+  const top3 = (race.top3 || []).map((row) => Number(row.car_no)).filter(Boolean);
+  const rest = cars.filter((car) => !top3.includes(car)).sort((a, b) => (probs.get(b) || 0) - (probs.get(a) || 0));
+  const final = [...top3, ...rest];
+
+  const escapeLine =
+    lineup.find((line) => styles.get(line[0]) === "逃") ||
+    lineup.find((line) => line.length >= 2) ||
+    (lineup.length ? [lineup[0]].flat() : [initial[0]].filter(Boolean));
+  const afterBell = [...escapeLine.filter((car) => initial.includes(car)), ...initial.filter((car) => !escapeLine.includes(car))];
+
+  const topCar = final[0];
+  const attackLine = lineup.find((line) => line.includes(topCar) && line !== escapeLine);
+  let backStretch;
+  if (attackLine) {
+    const others = afterBell.filter((car) => !attackLine.includes(car));
+    backStretch = [...others.slice(0, 1), ...attackLine, ...others.slice(1)];
+  } else {
+    backStretch = afterBell;
+  }
+
+  return {
+    cars,
+    keyframes: [
+      { t: 0.0, order: initial },
+      { t: 0.32, order: afterBell },
+      { t: 0.6, order: backStretch },
+      { t: 0.92, order: final },
+      { t: 1.0, order: final },
+    ],
+    captions: [
+      { t: 0.0, text: "隊列を組んで周回中" },
+      { t: 0.28, text: "🔔 打鐘!先行ラインが踏み込む" },
+      { t: 0.55, text: "最終バック、勝負どころで外から動く" },
+      { t: 0.8, text: "直線勝負!" },
+      { t: 0.97, text: `ゴール!1着予想 ${topCar || "-"} ${escapeHtml((race.top3?.[0]?.name) || "")}` },
+    ],
+  };
+}
+
+function startRaceMotion(raceKey, race, stage) {
+  const svg = stage.querySelector(".motion-svg");
+  const caption = stage.querySelector(".motion-caption");
+  const plan = buildMotionPlan(race);
+  if (!plan.cars.length) {
+    caption.textContent = "出走データが足りないため再生できません";
+    return;
+  }
+  svg.innerHTML = motionTrackSvg() + plan.cars.map((car) => motionRiderSvg(car)).join("");
+  const riders = new Map(plan.cars.map((car) => [car, svg.querySelector(`[data-rider="${car}"]`)]));
+
+  const started = performance.now();
+  const gapStep = 0.088;
+  const totalAngle = MOTION.laps * Math.PI * 2;
+
+  const positionAt = (car, progress) => {
+    const frames = plan.keyframes;
+    let a = frames[0];
+    let b = frames[frames.length - 1];
+    for (let i = 0; i < frames.length - 1; i += 1) {
+      if (progress >= frames[i].t && progress <= frames[i + 1].t) {
+        a = frames[i];
+        b = frames[i + 1];
+        break;
+      }
+    }
+    const span = Math.max(0.0001, b.t - a.t);
+    const local = Math.min(1, Math.max(0, (progress - a.t) / span));
+    const eased = local * local * (3 - 2 * local);
+    const posA = Math.max(0, a.order.indexOf(car));
+    const posB = Math.max(0, b.order.indexOf(car));
+    const gap = (posA + (posB - posA) * eased) * gapStep;
+    const overtaking = posB < posA ? Math.sin(local * Math.PI) : 0;
+    return { gap, outside: overtaking * 14 };
+  };
+
+  const tick = () => {
+    const progress = Math.min(1, (performance.now() - started) / MOTION.duration);
+    const eased = 1 - Math.pow(1 - progress, 1.6);
+    const leadAngle = Math.PI * 0.5 + eased * totalAngle;
+    plan.cars.forEach((car) => {
+      const node = riders.get(car);
+      if (!node) return;
+      const { gap, outside } = positionAt(car, progress);
+      const angle = leadAngle - gap;
+      const x = MOTION.cx + (MOTION.rx + outside) * Math.cos(angle);
+      const y = MOTION.cy + (MOTION.ry + outside * 0.45) * Math.sin(angle);
+      node.setAttribute("transform", `translate(${x.toFixed(1)}, ${y.toFixed(1)})`);
+    });
+    const active = plan.captions.filter((item) => progress >= item.t).pop();
+    if (active) caption.innerHTML = active.text;
+    if (progress >= 1 && state.motionTimers[raceKey]) {
+      clearInterval(state.motionTimers[raceKey]);
+      delete state.motionTimers[raceKey];
+    }
+  };
+  tick();
+  state.motionTimers[raceKey] = setInterval(tick, 33);
+}
+
+function motionTrackSvg() {
+  const { cx, cy, rx, ry } = MOTION;
+  const goalX = cx + rx;
+  return `
+    <ellipse cx="${cx}" cy="${cy}" rx="${rx + 22}" ry="${ry + 22}" class="track-outer" />
+    <ellipse cx="${cx}" cy="${cy}" rx="${rx - 22}" ry="${ry - 22}" class="track-inner" />
+    <line x1="${goalX - 24}" y1="${cy - 14}" x2="${goalX + 24}" y2="${cy - 14}" class="goal-line" transform="rotate(90 ${goalX} ${cy})" />
+    <text x="${goalX - 34}" y="${cy + 4}" class="goal-text">GOAL</text>
+  `;
+}
+
+function motionRiderSvg(car) {
+  const [fill, text] = CAR_COLORS[car] || ["#8d8f97", "#ffffff"];
+  return `<g data-rider="${car}" class="motion-rider">
+    <circle r="13" fill="${fill}" stroke="#2b2b2e" stroke-width="1.4" />
+    <text y="4.5" text-anchor="middle" fill="${text}" font-size="12" font-weight="700">${car}</text>
+  </g>`;
+}
+
 async function loadBankroll() {
   try {
     const res = await apiGet("/api/bankroll");
@@ -229,12 +395,42 @@ function startBankroll() {
   bankrollPost("/api/bankroll/start", {
     start_amount: Number(el("brStart").value || 0),
     target_amount: Number(el("brTarget").value || 0),
-    per_race_cap_pct: Number(el("brCap").value || 20),
-    daily_loss_limit_pct: Number(el("brLossLimit").value || 30),
-    max_consecutive_losses: Number(el("brMaxLosses").value || 3),
-    min_ev: Number(el("brMinEv").value || 1.2),
+    style: state.bankrollStyle || "balance",
   }).then((payload) => {
     if (payload) setStatus("運用セッションを開始しました");
+  });
+}
+
+function styleEstimate(style, start, target) {
+  const races = (growth) => {
+    if (!growth || growth <= 0 || !start || target <= start) return null;
+    return Math.min(99, Math.ceil(Math.log(target / start) / Math.log(1 + growth)));
+  };
+  const cap = style.per_race_cap_pct / 100;
+  const mainWeight = style.weights?.[0]?.[1] ?? 0.5;
+  return {
+    expected: races(cap * (style.min_ev - 1)),
+    fast: races(cap * (mainWeight * style.assumed_main_odds - 1)),
+  };
+}
+
+function updateStyleEstimates() {
+  const start = Number(el("brStart")?.value || 0);
+  const target = Number(el("brTarget")?.value || 0);
+  (state.bankroll?.styles || []).forEach((style) => {
+    const node = document.getElementById(`styleEst-${style.key}`);
+    if (!node) return;
+    const est = styleEstimate(style, start, target);
+    node.textContent = est.fast
+      ? `目安 ${est.fast}〜${est.expected ?? "-"}レースで達成`
+      : "目標額を元手より大きくしてください";
+  });
+}
+
+function selectBankrollStyle(key) {
+  state.bankrollStyle = key;
+  document.querySelectorAll(".style-card").forEach((node) => {
+    node.classList.toggle("active", node.dataset.style === key);
   });
 }
 
@@ -344,18 +540,27 @@ function renderBankroll(payload) {
 
 function renderBankrollSetup(payload) {
   const config = payload.last_session?.config || payload.session?.config || {};
+  const selected = state.bankrollStyle || config.style || "balance";
+  state.bankrollStyle = selected;
   const lastNote = payload.last_session
     ? `<p class="bankroll-last">前回: ${escapeHtml(payload.last_session.stop_reason || "停止")} / 最終残高 ${yen(payload.last_session.state?.balance ?? 0)}</p>`
     : "";
+  const styleCards = (payload.styles || [])
+    .map(
+      (style) => `<button type="button" class="style-card${style.key === selected ? " active" : ""}" data-style="${escapeAttr(style.key)}">
+        <strong>${escapeHtml(style.label)}</strong>
+        <span>${escapeHtml(style.description)}</span>
+        <small>1R上限${style.per_race_cap_pct}% / 損失上限${style.daily_loss_limit_pct}% / ${style.max_consecutive_losses}連敗停止 / EV${style.min_ev}</small>
+        <em id="styleEst-${escapeAttr(style.key)}"></em>
+      </button>`
+    )
+    .join("");
   return `<div class="bankroll-setup">
     ${lastNote}
+    <div class="style-cards">${styleCards}</div>
     <div class="bankroll-form">
       <label class="field compact"><span>元手</span><input id="brStart" type="number" min="300" step="100" value="${Number(config.start_amount || 1000)}" /></label>
       <label class="field compact"><span>目標額</span><input id="brTarget" type="number" min="400" step="100" value="${Number(config.target_amount || 3000)}" /></label>
-      <label class="field compact"><span>1R上限%</span><input id="brCap" type="number" min="5" max="50" step="5" value="${Number(config.per_race_cap_pct || 20)}" /></label>
-      <label class="field compact"><span>損失上限%</span><input id="brLossLimit" type="number" min="10" max="80" step="5" value="${Number(config.daily_loss_limit_pct || 30)}" /></label>
-      <label class="field compact"><span>連敗停止</span><input id="brMaxLosses" type="number" min="1" max="10" value="${Number(config.max_consecutive_losses || 3)}" /></label>
-      <label class="field compact"><span>EV下限</span><input id="brMinEv" type="number" min="0.5" max="2" step="0.05" value="${Number(config.min_ev || 1.2)}" /></label>
       <label class="check-field is-disabled"><input type="checkbox" disabled /><span>自動購入(未対応・常時OFF)</span></label>
       <button id="brStartBtn" class="button primary">運用を開始</button>
     </div>
@@ -367,6 +572,12 @@ function renderBankrollSetup(payload) {
 
 function bindBankrollSetup() {
   on("brStartBtn", "click", startBankroll);
+  on("brStart", "input", updateStyleEstimates);
+  on("brTarget", "input", updateStyleEstimates);
+  document.querySelectorAll(".style-card").forEach((node) => {
+    node.addEventListener("click", () => selectBankrollStyle(node.dataset.style));
+  });
+  updateStyleEstimates();
 }
 
 function renderBankrollStopBanner(session, brState) {
@@ -382,13 +593,23 @@ function renderBankrollStatus(session, brState) {
   const config = session.config || {};
   const profit = brState.profit ?? 0;
   const profitClass = profit >= 0 ? "ev-positive" : "ev-caution";
+  const styleLabel = styleLabelOf(config.style);
+  const estimate = brState.races_to_target || {};
+  const estimateText = estimate.fast
+    ? `${estimate.fast}〜${estimate.expected ?? "-"}R`
+    : brState.balance >= config.target_amount ? "達成" : "-";
   return `<div class="bankroll-status">
     <div class="metric metric-teal"><span>残高</span><strong>${yen(brState.balance)}</strong><em>目標 ${yen(config.target_amount)}</em></div>
     <div class="metric metric-${profit >= 0 ? "green" : "amber"}"><span>損益</span><strong class="${profitClass}">${profit >= 0 ? "+" : ""}${yen(profit)}</strong><em>元手 ${yen(config.start_amount)}</em></div>
-    <div class="metric metric-blue"><span>目標進捗</span><strong>${Math.round((brState.target_progress || 0) * 100)}%</strong><em>${brState.wins}勝${brState.losses}敗</em></div>
+    <div class="metric metric-blue"><span>達成目安</span><strong>${escapeHtml(estimateText)}</strong><em>${styleLabel}運用 / ${brState.wins}勝${brState.losses}敗</em></div>
     <div class="metric metric-purple"><span>連敗</span><strong>${brState.consecutive_losses}</strong><em>${config.max_consecutive_losses}で停止</em></div>
     <div class="metric metric-slate"><span>損失余地</span><strong>${yen(Math.max(0, brState.day_loss_limit - brState.day_loss))}</strong><em>上限 ${yen(brState.day_loss_limit)}</em></div>
   </div>`;
+}
+
+function styleLabelOf(key) {
+  const style = (state.bankroll?.styles || []).find((item) => item.key === key);
+  return style ? style.label : "バランス";
 }
 
 function renderBankrollProposal(proposal) {
@@ -665,6 +886,14 @@ function renderForecastCard(race) {
         </div>
 
         ${renderLineDiagram(race.lines || [], race.top3 || [])}
+
+        <div class="race-motion" data-motion-race="${escapeAttr(race.race_key || "")}">
+          <button type="button" class="button motion-btn" data-race="${escapeAttr(race.race_key || "")}">▶ 展開を再生</button>
+          <div class="motion-stage" hidden>
+            <div class="motion-caption">周回中</div>
+            <svg class="motion-svg" viewBox="0 0 640 300" role="img" aria-label="展開予想アニメーション"></svg>
+          </div>
+        </div>
 
         <div class="forecast-grid">
           <section class="analysis-block">

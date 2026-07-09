@@ -27,6 +27,12 @@ FEATURE_NAMES = [
     "emotion_positive",
     "emotion_negative",
     "age",
+    "interview_score",
+    "post_race_score",
+    "ex_attack",
+    "ex_left_behind",
+    "recent_top3",
+    "recent_avg_finish",
 ]
 
 
@@ -63,8 +69,34 @@ def build_feature_row(race: dict, entrant: dict, emotion: dict | None = None) ->
         "emotion_positive": max(0.0, emotion_score) / 3.0,
         "emotion_negative": max(0.0, -emotion_score) / 3.0,
         "age": (float(entrant.get("age") or 40.0) - 40.0) / 20.0,
+        "interview_score": float(analyze_comment(entrant.get("interview")).get("score") or 0.0) / 3.0 if entrant.get("interview") else 0.0,
+        "post_race_score": float(analyze_comment(entrant.get("post_race_comment")).get("score") or 0.0) / 3.0 if entrant.get("post_race_comment") else 0.0,
+        "ex_attack": _ex_attack(entrant.get("ex") or {}),
+        "ex_left_behind": min(float((entrant.get("ex") or {}).get("exLeftBehind") or 0.0), 60.0) / 60.0,
+        "recent_top3": _recent_top3(entrant.get("recent_form") or []),
+        "recent_avg_finish": _recent_avg_finish(entrant.get("recent_form") or []),
     }
     return {name: float(row.get(name, 0.0)) for name in FEATURE_NAMES}
+
+
+def _ex_attack(ex: dict) -> float:
+    """スパート/突き抜け/奪取の攻撃系EXの最大成功率(0-1)。"""
+    values = [float(ex.get(key) or 0.0) for key in ("exSpurt", "exThrust", "exSnatch")]
+    return min(max(values, default=0.0), 100.0) / 100.0
+
+
+def _recent_top3(form: list[int]) -> float:
+    if not form:
+        return 0.0
+    return sum(1 for finish in form if finish <= 3) / len(form)
+
+
+def _recent_avg_finish(form: list[int]) -> float:
+    """直近平均着順を0-1へ(1着=1.0, 9着=0.0)。データなしは中立0.5。"""
+    if not form:
+        return 0.5
+    average = sum(form) / len(form)
+    return max(0.0, min(1.0, (9.0 - average) / 8.0))
 
 
 def dot(weights: dict[str, float], features: dict[str, float]) -> float:

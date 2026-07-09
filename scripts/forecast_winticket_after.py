@@ -15,7 +15,8 @@ if str(ROOT) not in sys.path:
 
 from keirin_ai.predictor import predict_race
 from keirin_ai.sources import fetch_url, parse_winticket_racecard
-from keirin_ai.storage import connect, save_race
+from keirin_ai.storage import connect, latest_player_form, save_race
+from keirin_ai.winticket_state import enrich_race_from_state
 
 
 TOP_URL = "https://www.winticket.jp/keirin/"
@@ -44,12 +45,14 @@ def main() -> None:
                 try:
                     html = fetch_url(url)
                     race = parse_winticket_racecard(html, url)
+                    race = enrich_race_from_state(race, html)
                     scanned += 1
                     if len(race.get("entrants", [])) < 5:
                         continue
                     start_time = race.get("start_time")
                     if not start_time or start_time < args.after:
                         continue
+                    _attach_player_form(conn, race)
                     prediction = predict_race(race)
                     key = save_race(conn, race, prediction)
                     forecasts.append(summarize_forecast(key, race, prediction))
@@ -70,6 +73,22 @@ def main() -> None:
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(payload, ensure_ascii=False, indent=2))
+
+
+def _attach_player_form(conn, race: dict) -> None:
+    """前走のレース後談話・着順をDBから各選手へ補完する。"""
+    ids = [str(e.get("player_id") or "") for e in race.get("entrants", [])]
+    form = latest_player_form(conn, [pid for pid in ids if pid])
+    for entrant in race.get("entrants", []):
+        info = form.get(str(entrant.get("player_id") or ""))
+        if not info:
+            continue
+        if not entrant.get("post_race_comment") and info.get("post_comment"):
+            entrant["post_race_comment"] = info["post_comment"]
+        if info.get("finish"):
+            entrant["last_finish"] = info["finish"]
+        if info.get("factor"):
+            entrant["last_factor"] = info["factor"]
 
 
 def discover_candidates(target: date) -> list[dict]:
