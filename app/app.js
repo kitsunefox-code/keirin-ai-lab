@@ -1784,40 +1784,28 @@ function ticketChip(ticket) {
 function renderLineDiagram(lines, top3) {
   if (!lines.length) return "";
   const topCars = new Set(top3.map((row) => Number(row.car_no)));
-  return `<div class="line-diagram" aria-label="ライン図">
-    <div class="diagram-title">
-      <span>ライン図</span>
-      <strong>隊列と仕掛けどころ</strong>
-    </div>
-    <div class="line-tracks">
-      ${lines.map((line, index) => renderLineTrack(line, index, topCars)).join("")}
-    </div>
-  </div>`;
-}
-
-function renderLineTrack(line, index, topCars) {
-  const members = line.members || [];
-  const color = (index % 5) + 1;
-  const memberNodes = members
-    .map((member, memberIndex) => {
-      const highlight = topCars.has(Number(member.car_no)) ? " is-highlight" : "";
-      const arrow = memberIndex < members.length - 1 ? `<span class="line-arrow">→</span>` : "";
-      return `<span class="line-node${highlight}">
-        ${car(member.car_no)}
-        <span class="node-copy">
-          <b>${escapeHtml(member.name || "")}</b>
-          <small>${escapeHtml(member.style || "")}</small>
-        </span>
-      </span>${arrow}`;
+  // WINTICKET本家と同じ「一列」表示: 全ラインを1行に横並び(左が先頭)
+  const chains = lines
+    .map((line, index) => {
+      const color = (index % 5) + 1;
+      const members = (line.members || [])
+        .map((member) => {
+          const highlight = topCars.has(Number(member.car_no)) ? " is-highlight" : "";
+          return `<span class="line-flat-member${highlight}" title="${escapeAttr(member.name || "")} ${escapeAttr(member.style || "")}">
+            ${car(member.car_no)}
+            <small>${escapeHtml((member.name || "").slice(0, 4))}</small>
+          </span>`;
+        })
+        .join("");
+      return `<span class="line-flat-chain line-color-${color}">${members}</span>`;
     })
     .join("");
-  const role = members.length <= 1 ? "単騎" : `${members.length}車ライン`;
-  return `<div class="line-track line-color-${color}">
-    <div class="line-track-label">
-      <b>${escapeHtml(line.label)}</b>
-      <span>${role}</span>
+  return `<div class="line-flat" aria-label="並び予想">
+    <div class="line-flat-head">
+      <span>並び予想</span>
+      <em>左が先頭 / かたまり=ライン</em>
     </div>
-    <div class="line-nodes">${memberNodes}</div>
+    <div class="line-flat-row">${chains}</div>
   </div>`;
 }
 

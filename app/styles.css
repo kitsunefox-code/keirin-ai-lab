@@ -3047,3 +3047,66 @@ h4 {
   .style-switch-row { flex: 1 1 100%; }
   .style-switch { flex: 1 1 auto; }
 }
+
+/* ===== 並び予想: 本家流の完全一列 ===== */
+.line-flat {
+  margin-top: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+.line-flat-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+.line-flat-head span {
+  font-size: var(--text-xs);
+  font-weight: 800;
+  color: var(--color-muted);
+}
+.line-flat-head em {
+  font-style: normal;
+  font-size: 10px;
+  color: var(--color-subtle);
+}
+.line-flat-row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  gap: var(--space-4);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 4px;
+}
+.line-flat-chain {
+  --line-color: var(--color-accent);
+  --line-soft: var(--color-green-soft);
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 3px;
+  padding: 6px 8px;
+  border-radius: var(--radius-md);
+  border-top: 3px solid var(--line-color);
+  background: var(--line-soft);
+}
+.line-flat-member {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 44px;
+}
+.line-flat-member small {
+  max-width: 44px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 10px;
+  color: var(--color-muted);
+}
+.line-flat-member.is-highlight .car {
+  box-shadow: 0 0 0 2px var(--color-accent);
+}
