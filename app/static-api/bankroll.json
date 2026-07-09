@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at_jst": "2026-07-10T08:17:33+09:00",
+  "generated_at_jst": "2026-07-10T08:24:58+09:00",
   "rules": [
     "全額転がしは行いません(1レース投資は残高の上限%まで)",
     "負けた後の倍賭け(マーチンゲール)は行いません",
@@ -149,34 +149,11 @@
     "date": "2026-07-09",
     "sessions": [
       {
-        "id": 6,
-        "style": "original",
-        "style_label": "オリジナル",
-        "status": "stopped",
-        "stop_reason": "新しいセッション開始",
-        "config": {
-          "start_amount": 10000,
-          "target_amount": 10100,
-          "style": "original",
-          "per_race_cap_pct": 25,
-          "daily_loss_limit_pct": 80,
-          "max_consecutive_losses": 10,
-          "min_ev": 1.1,
-          "auto_buy": false
-        },
-        "balance": 10000,
-        "profit": 0,
-        "wins": 0,
-        "losses": 0,
-        "skips": 0,
-        "target_reached": false
-      },
-      {
         "id": 7,
         "style": "original",
         "style_label": "オリジナル",
         "status": "stopped",
-        "stop_reason": "日付変更のため停止(7/9分の予定レースは未消化)",
+        "stop_reason": "バックテスト(予定10レースを実結果で答え合わせ) 最終1,120円 / -8,880円",
         "config": {
           "start_amount": 10000,
           "target_amount": 30000,
@@ -187,10 +164,10 @@
           "min_ev": 1.1,
           "auto_buy": false
         },
-        "balance": 10000,
-        "profit": 0,
-        "wins": 0,
-        "losses": 0,
+        "balance": 1120,
+        "profit": -8880,
+        "wins": 1,
+        "losses": 9,
         "skips": 0,
         "target_reached": false
       }
@@ -205,37 +182,14 @@
     },
     {
       "date": "2026-07-09",
-      "total_profit": 0,
+      "total_profit": -8880,
       "sessions": [
-        {
-          "id": 6,
-          "style": "original",
-          "style_label": "オリジナル",
-          "status": "stopped",
-          "stop_reason": "新しいセッション開始",
-          "config": {
-            "start_amount": 10000,
-            "target_amount": 10100,
-            "style": "original",
-            "per_race_cap_pct": 25,
-            "daily_loss_limit_pct": 80,
-            "max_consecutive_losses": 10,
-            "min_ev": 1.1,
-            "auto_buy": false
-          },
-          "balance": 10000,
-          "profit": 0,
-          "wins": 0,
-          "losses": 0,
-          "skips": 0,
-          "target_reached": false
-        },
         {
           "id": 7,
           "style": "original",
           "style_label": "オリジナル",
           "status": "stopped",
-          "stop_reason": "日付変更のため停止(7/9分の予定レースは未消化)",
+          "stop_reason": "バックテスト(予定10レースを実結果で答え合わせ) 最終1,120円 / -8,880円",
           "config": {
             "start_amount": 10000,
             "target_amount": 30000,
@@ -246,23 +200,23 @@
             "min_ev": 1.1,
             "auto_buy": false
           },
-          "balance": 10000,
-          "profit": 0,
-          "wins": 0,
-          "losses": 0,
+          "balance": 1120,
+          "profit": -8880,
+          "wins": 1,
+          "losses": 9,
           "skips": 0,
           "target_reached": false
         }
       ],
       "original": {
-        "id": 6,
+        "id": 7,
         "style": "original",
         "style_label": "オリジナル",
         "status": "stopped",
-        "stop_reason": "新しいセッション開始",
+        "stop_reason": "バックテスト(予定10レースを実結果で答え合わせ) 最終1,120円 / -8,880円",
         "config": {
           "start_amount": 10000,
-          "target_amount": 10100,
+          "target_amount": 30000,
           "style": "original",
           "per_race_cap_pct": 25,
           "daily_loss_limit_pct": 80,
@@ -270,17 +224,17 @@
           "min_ev": 1.1,
           "auto_buy": false
         },
-        "balance": 10000,
-        "profit": 0,
-        "wins": 0,
-        "losses": 0,
+        "balance": 1120,
+        "profit": -8880,
+        "wins": 1,
+        "losses": 9,
         "skips": 0,
         "target_reached": false
       }
     }
   ],
   "last_session": {
-    "stop_reason": "日付変更のため停止(7/9分の予定レースは未消化)",
+    "stop_reason": "バックテスト(予定10レースを実結果で答え合わせ) 最終1,120円 / -8,880円",
     "config": {
       "start_amount": 10000,
       "target_amount": 30000,
@@ -292,20 +246,171 @@
       "auto_buy": false
     },
     "state": {
-      "balance": 10000,
-      "profit": 0,
-      "day_loss": 0,
+      "balance": 1120,
+      "profit": -8880,
+      "day_loss": 8880,
       "day_loss_limit": 8000,
-      "consecutive_losses": 0,
-      "wins": 0,
-      "losses": 0,
+      "consecutive_losses": 8,
+      "wins": 1,
+      "losses": 9,
       "skips": 0,
       "pending_bet": null,
-      "bets": [],
-      "target_progress": 0.3333333333333333,
+      "bets": [
+        {
+          "id": 1,
+          "race_key": "winticket:2026070763:3:9",
+          "venue": "防府",
+          "race_no": 9,
+          "start_time": "14:39",
+          "url": "",
+          "tickets": [],
+          "total_stake": 2500,
+          "status": "lost",
+          "payout": 0,
+          "note": "バックテスト",
+          "created_at": "2026-07-10T08:24:42+09:00",
+          "settled_at": "2026-07-10T08:24:42+09:00"
+        },
+        {
+          "id": 2,
+          "race_key": "winticket:2026070844:2:12",
+          "venue": "大垣",
+          "race_no": 12,
+          "start_time": "15:52",
+          "url": "",
+          "tickets": [],
+          "total_stake": 1800,
+          "status": "won",
+          "payout": 4020,
+          "note": "バックテスト",
+          "created_at": "2026-07-10T08:24:42+09:00",
+          "settled_at": "2026-07-10T08:24:42+09:00"
+        },
+        {
+          "id": 3,
+          "race_key": "winticket:2026070811:2:2",
+          "venue": "函館",
+          "race_no": 2,
+          "start_time": "16:07",
+          "url": "",
+          "tickets": [],
+          "total_stake": 2400,
+          "status": "lost",
+          "payout": 0,
+          "note": "バックテスト",
+          "created_at": "2026-07-10T08:24:42+09:00",
+          "settled_at": "2026-07-10T08:24:42+09:00"
+        },
+        {
+          "id": 4,
+          "race_key": "winticket:2026070783:3:2",
+          "venue": "久留米",
+          "race_no": 2,
+          "start_time": "16:22",
+          "url": "",
+          "tickets": [],
+          "total_stake": 1800,
+          "status": "lost",
+          "payout": 0,
+          "note": "バックテスト",
+          "created_at": "2026-07-10T08:24:42+09:00",
+          "settled_at": "2026-07-10T08:24:42+09:00"
+        },
+        {
+          "id": 5,
+          "race_key": "winticket:2026070811:2:3",
+          "venue": "函館",
+          "race_no": 3,
+          "start_time": "16:33",
+          "url": "",
+          "tickets": [],
+          "total_stake": 1300,
+          "status": "lost",
+          "payout": 0,
+          "note": "バックテスト",
+          "created_at": "2026-07-10T08:24:42+09:00",
+          "settled_at": "2026-07-10T08:24:42+09:00"
+        },
+        {
+          "id": 6,
+          "race_key": "winticket:2026070783:3:5",
+          "venue": "久留米",
+          "race_no": 5,
+          "start_time": "17:38",
+          "url": "",
+          "tickets": [],
+          "total_stake": 1000,
+          "status": "lost",
+          "payout": 0,
+          "note": "バックテスト",
+          "created_at": "2026-07-10T08:24:42+09:00",
+          "settled_at": "2026-07-10T08:24:42+09:00"
+        },
+        {
+          "id": 7,
+          "race_key": "winticket:2026070783:3:6",
+          "venue": "久留米",
+          "race_no": 6,
+          "start_time": "18:04",
+          "url": "",
+          "tickets": [],
+          "total_stake": 800,
+          "status": "lost",
+          "payout": 0,
+          "note": "バックテスト",
+          "created_at": "2026-07-10T08:24:42+09:00",
+          "settled_at": "2026-07-10T08:24:42+09:00"
+        },
+        {
+          "id": 8,
+          "race_key": "winticket:2026070811:2:7",
+          "venue": "函館",
+          "race_no": 7,
+          "start_time": "18:17",
+          "url": "",
+          "tickets": [],
+          "total_stake": 600,
+          "status": "lost",
+          "payout": 0,
+          "note": "バックテスト",
+          "created_at": "2026-07-10T08:24:42+09:00",
+          "settled_at": "2026-07-10T08:24:42+09:00"
+        },
+        {
+          "id": 9,
+          "race_key": "winticket:2026070783:3:10",
+          "venue": "久留米",
+          "race_no": 10,
+          "start_time": "19:48",
+          "url": "",
+          "tickets": [],
+          "total_stake": 400,
+          "status": "lost",
+          "payout": 0,
+          "note": "バックテスト",
+          "created_at": "2026-07-10T08:24:42+09:00",
+          "settled_at": "2026-07-10T08:24:42+09:00"
+        },
+        {
+          "id": 10,
+          "race_key": "winticket:2026070783:3:11",
+          "venue": "久留米",
+          "race_no": 11,
+          "start_time": "20:16",
+          "url": "",
+          "tickets": [],
+          "total_stake": 300,
+          "status": "lost",
+          "payout": 0,
+          "note": "バックテスト",
+          "created_at": "2026-07-10T08:24:42+09:00",
+          "settled_at": "2026-07-10T08:24:42+09:00"
+        }
+      ],
+      "target_progress": 0.037333333333333336,
       "races_to_target": {
-        "expected": 45,
-        "fast": 4
+        "expected": 99,
+        "fast": 12
       }
     }
   }
