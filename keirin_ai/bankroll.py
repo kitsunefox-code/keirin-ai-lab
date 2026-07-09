@@ -34,36 +34,36 @@ STYLES: dict[str, dict] = {
     "kenjitsu": {
         "key": "kenjitsu",
         "label": "堅実",
-        "description": "信頼度の高いレースだけ、本線厚めの2点。損失は浅く止める。",
+        "description": "信頼度の高いレースだけ、本線厚めの最大3点。損失は浅く止める。",
         "per_race_cap_pct": 10,
         "daily_loss_limit_pct": 20,
         "max_consecutive_losses": 2,
         "min_ev": 1.3,
-        "weights": [("本線", 0.65), ("抑え", 0.35)],
+        "weights": [("本線", 0.55), ("抑え", 0.3), ("妙味", 0.15)],
         "min_confidence_rank": 2,  # 混戦は見送る
         "assumed_main_odds": 4.5,
     },
     "balance": {
         "key": "balance",
         "label": "バランス",
-        "description": "本線・抑え・妙味の3点分散。標準の停止条件で回す。",
+        "description": "本線・抑え・妙味を最大5点に分散。標準の停止条件で回す。",
         "per_race_cap_pct": 20,
         "daily_loss_limit_pct": 30,
         "max_consecutive_losses": 3,
         "min_ev": 1.2,
-        "weights": [("本線", 0.5), ("抑え", 0.3), ("妙味", 0.2)],
+        "weights": [("本線", 0.34), ("抑え", 0.24), ("妙味", 0.16), ("妙味2", 0.14), ("穴", 0.12)],
         "min_confidence_rank": 1,
         "assumed_main_odds": 7.0,
     },
     "bouken": {
         "key": "bouken",
         "label": "冒険",
-        "description": "妙味厚めの3点で高配当を狙う。振れ幅と引き換えに大きく取りにいく。",
+        "description": "妙味・穴を厚めに最大6点。振れ幅と引き換えに高配当を取りにいく。",
         "per_race_cap_pct": 30,
         "daily_loss_limit_pct": 40,
         "max_consecutive_losses": 4,
         "min_ev": 1.1,
-        "weights": [("本線", 0.4), ("抑え", 0.25), ("妙味", 0.35)],
+        "weights": [("本線", 0.28), ("抑え", 0.2), ("妙味", 0.16), ("妙味2", 0.14), ("穴", 0.12), ("大穴", 0.1)],
         "min_confidence_rank": 1,
         "assumed_main_odds": 12.0,
     },
@@ -481,7 +481,7 @@ def _race_tickets(race: dict) -> list[dict]:
     rank = int(confidence.get("rank") or 1)
     has_signals = bool(race.get("comment_signals"))
     tickets = []
-    for index, ticket in enumerate((race.get("tickets") or [])[:4]):
+    for index, ticket in enumerate((race.get("tickets") or [])[:6]):
         label = ticket.get("label") if isinstance(ticket, dict) else str(ticket)
         if not label:
             continue
@@ -499,30 +499,28 @@ def _race_tickets(race: dict) -> list[dict]:
 
 
 def _allocate(budget: int, candidates: list[dict], weights: list | None = None) -> list[dict]:
+    """スタイルの重み表に沿って、予算と候補が許す限り複数点へ配分する。
+
+    点数の上限はスタイルの重み表の長さ(堅実3点/バランス5点/冒険6点)だが、
+    予算(100円単位)と買い目候補数が足りなければ自然に減る。固定の点数縛りはない。
+    """
     weights = [tuple(pair) for pair in (weights or [("本線", 0.5), ("抑え", 0.3), ("妙味", 0.2)])]
-    main = candidates[0]
-    cover = candidates[1]
-    value = None
-    if len(candidates) > 2:
-        value = max(candidates[2:], key=lambda t: t["odds"] * t["hit_probability"])
-
-    ticket_by_role = {"本線": main, "抑え": cover, "妙味": value}
-    roles = [
-        (role, ticket_by_role[role], weight)
-        for role, weight in weights
-        if ticket_by_role.get(role) is not None
-    ]
-    if len(roles) >= 3 and budget < UNIT * 3:
-        roles = roles[:2]
-    if len(roles) == 2:
-        total = roles[0][2] + roles[1][2]
-        roles = [(roles[0][0], roles[0][1], roles[0][2] / total), (roles[1][0], roles[1][1], roles[1][2] / total)]
-
     total_units = budget // UNIT
+
+    # 本線=スコア1位、抑え=2位。3枠目以降(妙味/穴系)は残りから期待値順に選ぶ。
+    ordered = list(candidates[:2])
+    tail = sorted(candidates[2:], key=lambda t: t["odds"] * t["hit_probability"], reverse=True)
+    ordered.extend(tail)
+
+    usable = max(2, min(len(weights), len(ordered), total_units))
+    usable = min(usable, len(ordered), total_units) or 1
+    roles = weights[:usable]
+    weight_sum = sum(weight for _, weight in roles) or 1.0
+
     allocation = []
     used_units = 0
-    for role, ticket, weight in roles:
-        units = max(1, int(total_units * weight))
+    for (role, weight), ticket in zip(roles, ordered):
+        units = max(1, int(total_units * weight / weight_sum))
         allocation.append(
             {
                 "role": role,
@@ -534,9 +532,9 @@ def _allocate(budget: int, candidates: list[dict], weights: list | None = None) 
             }
         )
         used_units += units
-    # 端数は本線に寄せる。予算超過した場合は妙味→抑えの順に削る。
+    # 予算超過は下位の枠から削り、端数は本線へ寄せる。
     idx = len(allocation) - 1
-    while used_units > total_units and idx > 0:
+    while used_units > total_units and idx >= 0:
         if allocation[idx]["stake"] > UNIT:
             allocation[idx]["stake"] -= UNIT
             used_units -= 1

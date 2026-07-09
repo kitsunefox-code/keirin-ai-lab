@@ -121,8 +121,25 @@ async function loadResults(date) {
   }
 }
 
+function renderRecordBar(record) {
+  const bar = el("aiRecordBar");
+  if (!bar || !record) return;
+  const cell = (item) => {
+    if (!item || !item.settled) {
+      return `<div class="record-cell"><span>${escapeHtml(item?.label || "")}</span><strong>-</strong><em>確定待ち</em></div>`;
+    }
+    return `<div class="record-cell">
+      <span>${escapeHtml(item.label)}</span>
+      <strong>本命 ${percent(item.honmei_rate)}</strong>
+      <em>3連単 ${item.trifecta_hits}本(${percent(item.trifecta_rate)}) / 車券圏 ${percent(item.in_top3_rate)} / ${item.settled}R</em>
+    </div>`;
+  };
+  bar.innerHTML = `<div class="record-title">AI成績</div>${cell(record.today)}${cell(record.week)}${cell(record.year)}`;
+}
+
 function renderResults(payload) {
   const summary = payload.summary || {};
+  renderRecordBar(payload.record);
   el("resultsDates").innerHTML = (payload.dates || [])
     .map(
       (date) => `<button class="date-chip${date === payload.date ? " active" : ""}" data-date="${escapeAttr(date)}">${shortDate(date)}</button>`
@@ -373,7 +390,25 @@ function startRaceMotion(raceKey, race, stage) {
       const x = point.x + point.nx * outside;
       const y = point.y + point.ny * outside;
       node.setAttribute("transform", `translate(${x.toFixed(1)}, ${y.toFixed(1)})`);
+      // 進行方向(接線)へ車体だけ回転。番号板は正立を保つ。
+      const body = node.querySelector("[data-body]");
+      if (body) {
+        const deg = (Math.atan2(-point.nx, point.ny) * 180) / Math.PI;
+        body.setAttribute("transform", `rotate(${deg.toFixed(1)})`);
+      }
     });
+    // 打鐘: 残り1周半のバック線通過で鐘が揺れる+ジャン音
+    const bell = svg.querySelector(".bank-bell");
+    if (bell) {
+      if (covered >= 0.5 && covered < 0.85) {
+        if (!bell.classList.contains("ringing")) {
+          bell.classList.add("ringing");
+          playBellSound();
+        }
+      } else {
+        bell.classList.remove("ringing");
+      }
+    }
     const active = plan.captions.filter((item) => covered >= item.lap).pop();
     if (active) caption.innerHTML = active.text;
     if (progress >= 1 && state.motionTimers[raceKey]) {
@@ -404,15 +439,54 @@ function motionTrackSvg() {
     <line x1="${goalX}" y1="${cy + r - 24}" x2="${goalX}" y2="${cy + r + 26}" class="goal-line" />
     <text x="${goalX + 6}" y="${cy + r + 22}" class="goal-text">GOAL</text>
     <line x1="${backX}" y1="${cy - r - 26}" x2="${backX}" y2="${cy - r + 24}" class="back-line" />
-    <text x="${backX + 8}" y="${cy - r - 14}" class="back-text">バック線(打鐘)</text>
+    <text x="${backX + 30}" y="${cy - r - 14}" class="back-text">バック線(打鐘)</text>
+    <g class="bank-bell" transform="translate(${backX + 14}, ${cy - r - 22})">
+      <g class="bell-inner">
+        <path d="M0 -6 C4.5 -6 5.5 -1 5.5 2 L6.5 4 L-6.5 4 L-5.5 2 C-5.5 -1 -4.5 -6 0 -6 Z" class="bell-dome" />
+        <circle cy="6" r="1.8" class="bell-clapper" />
+      </g>
+    </g>
   `;
+}
+
+let bellAudioCtx = null;
+
+function playBellSound() {
+  try {
+    bellAudioCtx = bellAudioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const now = bellAudioCtx.currentTime;
+    for (let i = 0; i < 4; i += 1) {
+      const osc = bellAudioCtx.createOscillator();
+      const gain = bellAudioCtx.createGain();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(1560, now + i * 0.28);
+      gain.gain.setValueAtTime(0.0001, now + i * 0.28);
+      gain.gain.exponentialRampToValueAtTime(0.18, now + i * 0.28 + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.28 + 0.24);
+      osc.connect(gain).connect(bellAudioCtx.destination);
+      osc.start(now + i * 0.28);
+      osc.stop(now + i * 0.28 + 0.26);
+    }
+  } catch {
+    // 音が出せない環境では無音のまま(視覚アニメーションのみ)
+  }
 }
 
 function motionRiderSvg(car) {
   const [fill, text] = CAR_COLORS[car] || ["#8d8f97", "#ffffff"];
+  // ステッカー風の自転車シルエット(進行方向=+x)。data-body を回転させ、番号板は正立のまま。
   return `<g data-rider="${car}" class="motion-rider">
-    <circle r="13" fill="${fill}" stroke="#2b2b2e" stroke-width="1.4" />
-    <text y="4.5" text-anchor="middle" fill="${text}" font-size="12" font-weight="700">${car}</text>
+    <g data-body>
+      <circle cx="-6.5" cy="4.5" r="4.2" class="rider-wheel" />
+      <circle cx="6.5" cy="4.5" r="4.2" class="rider-wheel" />
+      <path d="M-6.5 4.5 L-1.5 -0.5 L4 4.5 Z M-1.5 -0.5 L2 -1.5 M6.5 4.5 L2 -1.5" class="rider-frame" />
+      <path d="M-7 -2.5 C-4.5 -6.5 0.5 -7 3 -4.5 L5.5 -2 L1.5 0 L-3.5 0.5 Z" class="rider-body" />
+      <circle cx="4.6" cy="-5.6" r="2.6" fill="${fill}" stroke="#18181a" stroke-width="0.8" />
+    </g>
+    <g transform="translate(-9, -9)">
+      <rect x="-5" y="-5" width="10" height="10" rx="2" fill="${fill}" stroke="#18181a" stroke-width="0.8" />
+      <text y="3" text-anchor="middle" fill="${text}" font-size="7.5" font-weight="700">${car}</text>
+    </g>
   </g>`;
 }
 

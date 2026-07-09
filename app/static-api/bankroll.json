@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at_jst": "2026-07-09T10:35:10+09:00",
+  "generated_at_jst": "2026-07-09T10:52:19+09:00",
   "rules": [
     "全額転がしは行いません(1レース投資は残高の上限%まで)",
     "負けた後の倍賭け(マーチンゲール)は行いません",
@@ -12,7 +12,7 @@
     {
       "key": "kenjitsu",
       "label": "堅実",
-      "description": "信頼度の高いレースだけ、本線厚めの2点。損失は浅く止める。",
+      "description": "信頼度の高いレースだけ、本線厚めの最大3点。損失は浅く止める。",
       "per_race_cap_pct": 10,
       "daily_loss_limit_pct": 20,
       "max_consecutive_losses": 2,
@@ -20,11 +20,15 @@
       "weights": [
         [
           "本線",
-          0.65
+          0.55
         ],
         [
           "抑え",
-          0.35
+          0.3
+        ],
+        [
+          "妙味",
+          0.15
         ]
       ],
       "min_confidence_rank": 2,
@@ -33,7 +37,7 @@
     {
       "key": "balance",
       "label": "バランス",
-      "description": "本線・抑え・妙味の3点分散。標準の停止条件で回す。",
+      "description": "本線・抑え・妙味を最大5点に分散。標準の停止条件で回す。",
       "per_race_cap_pct": 20,
       "daily_loss_limit_pct": 30,
       "max_consecutive_losses": 3,
@@ -41,15 +45,23 @@
       "weights": [
         [
           "本線",
-          0.5
+          0.34
         ],
         [
           "抑え",
-          0.3
+          0.24
         ],
         [
           "妙味",
-          0.2
+          0.16
+        ],
+        [
+          "妙味2",
+          0.14
+        ],
+        [
+          "穴",
+          0.12
         ]
       ],
       "min_confidence_rank": 1,
@@ -58,7 +70,7 @@
     {
       "key": "bouken",
       "label": "冒険",
-      "description": "妙味厚めの3点で高配当を狙う。振れ幅と引き換えに大きく取りにいく。",
+      "description": "妙味・穴を厚めに最大6点。振れ幅と引き換えに高配当を取りにいく。",
       "per_race_cap_pct": 30,
       "daily_loss_limit_pct": 40,
       "max_consecutive_losses": 4,
@@ -66,15 +78,27 @@
       "weights": [
         [
           "本線",
-          0.4
+          0.28
         ],
         [
           "抑え",
-          0.25
+          0.2
         ],
         [
           "妙味",
-          0.35
+          0.16
+        ],
+        [
+          "妙味2",
+          0.14
+        ],
+        [
+          "穴",
+          0.12
+        ],
+        [
+          "大穴",
+          0.1
         ]
       ],
       "min_confidence_rank": 1,
@@ -82,38 +106,261 @@
     }
   ],
   "auto_buy_available": false,
-  "session": null,
-  "state": null,
-  "proposal": null,
-  "judged_races": [],
-  "last_session": {
-    "stop_reason": "手動停止",
+  "session": {
+    "id": 5,
+    "created_at": "2026-07-09T10:46:54+09:00",
+    "session_date": "2026-07-09",
+    "status": "active",
+    "stop_reason": null,
     "config": {
       "start_amount": 5000,
       "target_amount": 10000,
-      "style": "balance",
-      "per_race_cap_pct": 20,
-      "daily_loss_limit_pct": 30,
-      "max_consecutive_losses": 3,
-      "min_ev": 1.2,
+      "style": "bouken",
+      "per_race_cap_pct": 30,
+      "daily_loss_limit_pct": 40,
+      "max_consecutive_losses": 4,
+      "min_ev": 1.1,
       "auto_buy": false
-    },
-    "state": {
-      "balance": 5000,
-      "profit": 0,
-      "day_loss": 0,
-      "day_loss_limit": 1500,
-      "consecutive_losses": 0,
-      "wins": 0,
-      "losses": 0,
-      "skips": 0,
-      "pending_bet": null,
-      "bets": [],
-      "target_progress": 0.5,
-      "races_to_target": {
-        "expected": 18,
-        "fast": 2
-      }
     }
-  }
+  },
+  "state": {
+    "balance": 5000,
+    "profit": 0,
+    "day_loss": 0,
+    "day_loss_limit": 2000,
+    "consecutive_losses": 0,
+    "wins": 0,
+    "losses": 0,
+    "skips": 0,
+    "pending_bet": null,
+    "bets": [],
+    "target_progress": 0.5,
+    "races_to_target": {
+      "expected": 24,
+      "fast": 2
+    }
+  },
+  "proposal": {
+    "race_key": "winticket:2026070763:3:1",
+    "venue": "防府",
+    "race_no": 1,
+    "start_time": "10:57",
+    "race_date": "2026年7月9日",
+    "url": "https://www.winticket.jp/keirin/hofu/racecard/2026070763/3/1",
+    "confidence": "強",
+    "budget": 1500,
+    "total_stake": 1500,
+    "ev": 5.084,
+    "expected_return": 7630,
+    "tickets": [
+      {
+        "role": "本線",
+        "label": "4-3-2",
+        "stake": 700,
+        "odds": 6.7,
+        "hit_probability": 0.4619,
+        "projected_return": 4690
+      },
+      {
+        "role": "抑え",
+        "label": "4-3-1",
+        "stake": 300,
+        "odds": 10.3,
+        "hit_probability": 0.4595,
+        "projected_return": 3090
+      },
+      {
+        "role": "妙味",
+        "label": "4-2-1",
+        "stake": 200,
+        "odds": 21.1,
+        "hit_probability": 0.4384,
+        "projected_return": 4220
+      },
+      {
+        "role": "妙味2",
+        "label": "4-1-3",
+        "stake": 200,
+        "odds": 17.5,
+        "hit_probability": 0.4466,
+        "projected_return": 3500
+      },
+      {
+        "role": "穴",
+        "label": "4-2-3",
+        "stake": 100,
+        "odds": 13.9,
+        "hit_probability": 0.4513,
+        "projected_return": 1390
+      }
+    ],
+    "top_pick": {
+      "car_no": 4,
+      "name": "佐々木祐太",
+      "probability": 0.8554,
+      "score": 8.637,
+      "mark": "本命",
+      "style": "逃",
+      "comment": "自力自在。",
+      "emotion": {
+        "tone": "中立",
+        "score": 0.4,
+        "buckets": {
+          "intent": 0.4
+        },
+        "hits": [
+          {
+            "phrase": "自力",
+            "weight": 0.4,
+            "bucket": "intent"
+          }
+        ],
+        "summary": "戦法意図は見えますが、状態評価は控えめです。"
+      },
+      "reasons": [
+        "印: 本命",
+        "競走得点上位",
+        "バック数あり",
+        "前検日談話: 上向き",
+        "EX攻撃力100%",
+        "学習: 追い風"
+      ]
+    },
+    "scenario_headline": "4佐々木祐太が本線。前で動いてライン4-3-6を残す展開を重視。",
+    "copy_text": "防府1R 3連単\n本線 4-3-2 700円\n抑え 4-3-1 300円\n妙味 4-2-1 200円\n妙味2 4-1-3 200円\n穴 4-2-3 100円"
+  },
+  "judged_races": [
+    {
+      "race_key": "winticket:2026070763:3:1",
+      "venue": "防府",
+      "race_no": 1,
+      "start_time": "10:57",
+      "confidence": "強",
+      "decision": "bet",
+      "reason": "EV 5.08 / 5点分散",
+      "ev": 5.084,
+      "is_next": true
+    },
+    {
+      "race_key": "winticket:2026070844:2:2",
+      "venue": "大垣",
+      "race_no": 2,
+      "start_time": "11:10",
+      "confidence": "強",
+      "decision": "bet",
+      "reason": "EV 5.80 / 5点分散",
+      "ev": 5.799,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026070763:3:2",
+      "venue": "防府",
+      "race_no": 2,
+      "start_time": "11:23",
+      "confidence": "混戦",
+      "decision": "bet",
+      "reason": "EV 10.80 / 5点分散",
+      "ev": 10.796,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026070844:2:3",
+      "venue": "大垣",
+      "race_no": 3,
+      "start_time": "11:37",
+      "confidence": "強",
+      "decision": "bet",
+      "reason": "EV 3.94 / 5点分散",
+      "ev": 3.938,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026070763:3:3",
+      "venue": "防府",
+      "race_no": 3,
+      "start_time": "11:51",
+      "confidence": "中",
+      "decision": "bet",
+      "reason": "EV 8.95 / 5点分散",
+      "ev": 8.951,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026070844:2:4",
+      "venue": "大垣",
+      "race_no": 4,
+      "start_time": "12:05",
+      "confidence": "中",
+      "decision": "bet",
+      "reason": "EV 8.21 / 5点分散",
+      "ev": 8.214,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026070763:3:4",
+      "venue": "防府",
+      "race_no": 4,
+      "start_time": "12:19",
+      "confidence": "中",
+      "decision": "bet",
+      "reason": "EV 9.83 / 5点分散",
+      "ev": 9.831,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026070844:2:5",
+      "venue": "大垣",
+      "race_no": 5,
+      "start_time": "12:33",
+      "confidence": "強",
+      "decision": "bet",
+      "reason": "EV 3.71 / 5点分散",
+      "ev": 3.712,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026070763:3:5",
+      "venue": "防府",
+      "race_no": 5,
+      "start_time": "12:47",
+      "confidence": "強",
+      "decision": "bet",
+      "reason": "EV 5.31 / 5点分散",
+      "ev": 5.308,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026070844:2:6",
+      "venue": "大垣",
+      "race_no": 6,
+      "start_time": "13:01",
+      "confidence": "強",
+      "decision": "bet",
+      "reason": "EV 4.96 / 5点分散",
+      "ev": 4.96,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026070844:2:7",
+      "venue": "大垣",
+      "race_no": 7,
+      "start_time": "13:29",
+      "confidence": "中",
+      "decision": "bet",
+      "reason": "EV 8.01 / 5点分散",
+      "ev": 8.009,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026070763:3:7",
+      "venue": "防府",
+      "race_no": 7,
+      "start_time": "13:43",
+      "confidence": "中",
+      "decision": "bet",
+      "reason": "EV 8.83 / 5点分散",
+      "ev": 8.829,
+      "is_next": false
+    }
+  ]
 }

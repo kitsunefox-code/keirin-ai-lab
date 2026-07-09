@@ -37,6 +37,84 @@ def build_results_payload(conn: sqlite3.Connection, date: str | None = None, dat
         "dates": dates[:14],
         "summary": _summary(races),
         "venues": venue_list,
+        "record": build_record_summary(conn),
+    }
+
+
+def build_record_summary(conn: sqlite3.Connection) -> dict:
+    """AI成績の通算集計: 本日 / 直近7日 / 通年(今年)。
+
+    レースごとに「最初に保存された予想」と確定結果を突き合わせる(1クエリ)。
+    """
+    rows = conn.execute(
+        """
+        select r.race_date, r.result_json, p.ranking_json, p.tickets_json
+        from races r
+        join (select race_key, min(id) as first_id from predictions group by race_key) fp
+          on fp.race_key = r.race_key
+        join predictions p on p.id = fp.first_id
+        where r.result_json is not null and r.result_json != ''
+        """
+    ).fetchall()
+
+    today = datetime.now(JST).date()
+    week_start = today - timedelta(days=6)
+    buckets = {
+        "today": {"label": "本日", "races": []},
+        "week": {"label": "今週(直近7日)", "races": []},
+        "year": {"label": f"{today.year}年通算", "races": []},
+    }
+    for row in rows:
+        iso = _normalize_date(row["race_date"])
+        if not iso:
+            continue
+        race_date = datetime.strptime(iso, "%Y-%m-%d").date()
+        hit = _hit_flags(row)
+        if hit is None:
+            continue
+        if race_date == today:
+            buckets["today"]["races"].append(hit)
+        if week_start <= race_date <= today:
+            buckets["week"]["races"].append(hit)
+        if race_date.year == today.year:
+            buckets["year"]["races"].append(hit)
+
+    def stat(items: list[dict]) -> dict:
+        n = len(items)
+        honmei = sum(1 for hit in items if hit["honmei"])
+        top3 = sum(1 for hit in items if hit["in_top3"])
+        trifecta = sum(1 for hit in items if hit["trifecta"])
+        return {
+            "settled": n,
+            "honmei_hits": honmei,
+            "honmei_rate": round(honmei / n, 4) if n else None,
+            "in_top3_rate": round(top3 / n, 4) if n else None,
+            "trifecta_hits": trifecta,
+            "trifecta_rate": round(trifecta / n, 4) if n else None,
+        }
+
+    return {
+        "as_of": today.isoformat(),
+        "today": {"label": buckets["today"]["label"], **stat(buckets["today"]["races"])},
+        "week": {"label": buckets["week"]["label"], **stat(buckets["week"]["races"])},
+        "year": {"label": buckets["year"]["label"], **stat(buckets["year"]["races"])},
+    }
+
+
+def _hit_flags(row: sqlite3.Row) -> dict | None:
+    ranking = _json_or(row["ranking_json"], [])
+    if not ranking:
+        return None
+    order = (_json_or(row["result_json"], {}) or {}).get("finish_order") or []
+    if len(order) < 3:
+        return None
+    top_car = int(ranking[0].get("car_no") or 0)
+    tickets = [_ticket_label(t) for t in _json_or(row["tickets_json"], [])[:3]]
+    actual3 = "-".join(str(car) for car in order[:3])
+    return {
+        "honmei": top_car == int(order[0]),
+        "in_top3": top_car in [int(car) for car in order[:3]],
+        "trifecta": actual3 in tickets,
     }
 
 
