@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>モーションメーカー | Keirin AI Lab</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body data-page="motion">
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="メインナビゲーション">
+        <div class="brand">
+          <span class="brand-mark">K</span>
+          <div class="brand-copy">
+            <span class="brand-kicker">競輪予想ラボ</span>
+            <h1>KEIRIN LAB</h1>
+          </div>
+        </div>
+
+        <div class="status" id="status" role="status">読み込み中</div>
+
+        <nav class="side-nav" aria-label="ページ切替">
+          <a href="/">本日の予想</a>
+          <a href="/results">結果・的中率</a>
+          <a href="/motion" class="active">モーションメーカー</a>
+        </nav>
+
+        <p class="notice">展開はイメージです。実際のレースと異なる場合があります。</p>
+      </aside>
+
+      <main class="workspace">
+        <section class="panel active" id="panel-motionmaker">
+          <header class="page-header">
+            <div>
+              <p class="mm-kicker">展開予想をしたいあなたへ</p>
+              <h2>モーションメーカー</h2>
+            </div>
+            <span class="page-meta">理想の展開を自分で組んで再生</span>
+          </header>
+          <div class="surface-panel motion-maker">
+            <div class="mm-controls" id="mmControls">
+              <div class="empty">本日の予想を読み込み中です。</div>
+            </div>
+            <div class="motion-stage" id="mmStage" hidden>
+              <div class="motion-caption">周回中</div>
+              <svg class="motion-svg" viewBox="0 0 640 300" role="img" aria-label="カスタム展開アニメーション"></svg>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

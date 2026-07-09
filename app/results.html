@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>結果・的中率 | Keirin AI Lab</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body data-page="results">
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="メインナビゲーション">
+        <div class="brand">
+          <span class="brand-mark">K</span>
+          <div class="brand-copy">
+            <span class="brand-kicker">競輪予想ラボ</span>
+            <h1>KEIRIN LAB</h1>
+          </div>
+        </div>
+
+        <div class="status" id="status" role="status">読み込み中</div>
+
+        <nav class="side-nav" aria-label="ページ切替">
+          <a href="/">本日の予想</a>
+          <a href="/results" class="active">結果・的中率</a>
+          <a href="/motion">モーションメーカー</a>
+        </nav>
+
+        <p class="notice">予想は研究用です。車券購入や利益を保証するものではありません。</p>
+      </aside>
+
+      <main class="workspace">
+        <section class="panel active" id="panel-results">
+          <header class="page-header">
+            <div>
+              <h2>結果・的中率</h2>
+            </div>
+            <span class="page-meta" id="resultsMeta"></span>
+          </header>
+
+          <div class="ai-record" id="aiRecordBar" aria-label="AI予想成績"></div>
+
+          <div class="results-toolbar" id="resultsDates"></div>
+          <div class="metric-strip results-metrics" id="resultsSummary"></div>
+
+          <section class="surface-panel original-daily" aria-labelledby="originalDailyTitle">
+            <div class="capital-head">
+              <div>
+                <h3 id="originalDailyTitle">オリジナル運用の日次収支</h3>
+              </div>
+              <span class="page-meta">1万円×10レース勝負の記録</span>
+            </div>
+            <div id="originalDaily">
+              <div class="empty">記録を読み込み中です。</div>
+            </div>
+          </section>
+
+          <div id="resultsBody">
+            <div class="empty">結果を読み込み中です。</div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

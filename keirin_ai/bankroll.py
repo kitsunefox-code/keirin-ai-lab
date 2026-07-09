@@ -68,6 +68,20 @@ STYLES: dict[str, dict] = {
         "min_confidence_rank": 1,
         "assumed_main_odds": 12.0,
     },
+    "original": {
+        "key": "original",
+        "label": "オリジナル",
+        "description": "1万円を10レースでどこまで伸ばせるか。目標なし・見送り自由、モーニングからナイターまで通しで勝負。",
+        "per_race_cap_pct": 25,
+        "daily_loss_limit_pct": 90,
+        "max_consecutive_losses": 10,
+        "min_ev": 1.1,
+        "weights": [("本線", 0.34), ("抑え", 0.24), ("妙味", 0.16), ("妙味2", 0.14), ("穴", 0.12)],
+        "min_confidence_rank": 1,
+        "assumed_main_odds": 7.0,
+        "race_limit": 10,
+        "default_start": 10000,
+    },
 }
 
 
@@ -360,9 +374,37 @@ def session_state(conn: sqlite3.Connection, session: dict) -> dict:
     }
 
 
+def daily_history(conn: sqlite3.Connection, days: int = 14) -> list[dict]:
+    """直近N日の運用収支をスタイル別に日次で集計する(オリジナル10R勝負の記録用)。"""
+    ensure_tables(conn)
+    today = datetime.now(JST).date()
+    history = []
+    for offset in range(days):
+        date = (today - timedelta(days=offset)).isoformat()
+        sessions = sessions_on_date(conn, date)
+        if not sessions and offset > 0:
+            continue
+        original = next((s for s in sessions if s["style"] == "original"), None)
+        history.append(
+            {
+                "date": date,
+                "total_profit": sum(s["profit"] for s in sessions),
+                "sessions": sessions,
+                "original": original,
+            }
+        )
+    return history
+
+
 def evaluate_stop(config: dict, state: dict) -> str | None:
     # 停止条件は結果確定分(残高)で判定する。pending中は判定を保留しない。
-    if state["balance"] >= config["target_amount"]:
+    style = STYLES.get(config.get("style") or "balance") or STYLES["balance"]
+    race_limit = style.get("race_limit")
+    settled = state["wins"] + state["losses"]
+    if race_limit and settled >= race_limit:
+        return f"{race_limit}レース完了(収支確定 {'+' if state['profit'] >= 0 else ''}{state['profit']}円)"
+    # オリジナル(伸ばせるだけ伸ばす)は目標達成で止めない
+    if not race_limit and state["balance"] >= config["target_amount"]:
         return f"目標達成({state['balance']}円 ≥ {config['target_amount']}円)"
     if state["day_loss"] >= state["day_loss_limit"] and state["day_loss_limit"] > 0:
         return f"1日損失上限({state['day_loss']}円 ≥ {state['day_loss_limit']}円)"
@@ -390,6 +432,7 @@ def build_bankroll_payload(conn: sqlite3.Connection, data_dir: Path | str) -> di
     }
     yesterday = (datetime.now(JST).date() - timedelta(days=1)).isoformat()
     payload["yesterday"] = {"date": yesterday, "sessions": sessions_on_date(conn, yesterday)}
+    payload["daily_history"] = daily_history(conn, days=14)
     if session is None:
         last = latest_session(conn)
         if last and last["status"] == "stopped":

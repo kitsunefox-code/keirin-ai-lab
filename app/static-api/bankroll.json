@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at_jst": "2026-07-09T13:39:14+09:00",
+  "generated_at_jst": "2026-07-09T13:54:42+09:00",
   "rules": [
     "全額転がしは行いません(1レース投資は残高の上限%まで)",
     "負けた後の倍賭け(マーチンゲール)は行いません",
@@ -103,6 +103,41 @@
       ],
       "min_confidence_rank": 1,
       "assumed_main_odds": 12.0
+    },
+    {
+      "key": "original",
+      "label": "オリジナル",
+      "description": "1万円を10レースでどこまで伸ばせるか。目標なし・見送り自由、モーニングからナイターまで通しで勝負。",
+      "per_race_cap_pct": 25,
+      "daily_loss_limit_pct": 90,
+      "max_consecutive_losses": 10,
+      "min_ev": 1.1,
+      "weights": [
+        [
+          "本線",
+          0.34
+        ],
+        [
+          "抑え",
+          0.24
+        ],
+        [
+          "妙味",
+          0.16
+        ],
+        [
+          "妙味2",
+          0.14
+        ],
+        [
+          "穴",
+          0.12
+        ]
+      ],
+      "min_confidence_rank": 1,
+      "assumed_main_odds": 7.0,
+      "race_limit": 10,
+      "default_start": 10000
     }
   ],
   "auto_buy_available": false,
@@ -113,5 +148,13 @@
   "yesterday": {
     "date": "2026-07-08",
     "sessions": []
-  }
+  },
+  "daily_history": [
+    {
+      "date": "2026-07-09",
+      "total_profit": 0,
+      "sessions": [],
+      "original": null
+    }
+  ]
 }

@@ -68,10 +68,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const btn = event.target.closest(".motion-btn");
     if (btn) toggleRaceMotion(btn.dataset.race);
   });
-  loadLearnStatus();
-  loadToday();
-  loadBankroll();
-  loadResults();
+  const page = document.body.dataset.page || "home";
+  if (page === "home") {
+    loadLearnStatus();
+    loadToday();
+    loadBankroll();
+    loadResults(); // AI成績バー用
+  } else if (page === "results") {
+    loadResults();
+    loadBankroll(); // オリジナル運用の日次収支用
+  } else if (page === "motion") {
+    loadToday(); // モーションメーカーの素材
+  }
 });
 
 async function loadToday() {
@@ -142,6 +150,7 @@ function renderRecordBar(record) {
 function renderResults(payload) {
   const summary = payload.summary || {};
   renderRecordBar(payload.record);
+  if (!el("resultsBody")) return; // 結果ページ以外ではAI成績バーだけ更新
   el("resultsDates").innerHTML = (payload.dates || [])
     .map(
       (date) => `<button class="date-chip${date === payload.date ? " active" : ""}" data-date="${escapeAttr(date)}">${shortDate(date)}</button>`
@@ -155,7 +164,7 @@ function renderResults(payload) {
     ? `${payload.date} / ${summary.settled}レース確定`
     : `${payload.date || ""} / 結果待ち${summary.pending || 0}レース`;
 
-  el("resultsSummary").innerHTML = [
+  const summaryHtml = [
     ["本命的中", summary.honmei_rate != null ? percent(summary.honmei_rate) : "-", `${summary.honmei_hits ?? 0}/${summary.settled ?? 0}`, "green"],
     ["車券圏内", summary.in_top3_rate != null ? percent(summary.in_top3_rate) : "-", "本命が3着内", "blue"],
     ["3連単的中", summary.trifecta_hits ?? 0, summary.trifecta_rate != null ? percent(summary.trifecta_rate) : "-", "amber"],
@@ -163,6 +172,8 @@ function renderResults(payload) {
   ]
     .map(metric)
     .join("");
+  el("resultsSummary").innerHTML = summaryHtml;
+  renderOriginalDaily(state.bankroll?.daily_history || []);
 
   const venues = payload.venues || [];
   if (!venues.length) {
@@ -790,6 +801,10 @@ function updateStyleEstimates() {
   (state.bankroll?.styles || []).forEach((style) => {
     const node = document.getElementById(`styleEst-${style.key}`);
     if (!node) return;
+    if (style.race_limit) {
+      node.textContent = `${style.race_limit}レース勝負・目標なし(伸ばせるだけ伸ばす)`;
+      return;
+    }
     const est = styleEstimate(style, start, target);
     node.textContent = est.fast
       ? `目安 ${est.fast}〜${est.expected ?? "-"}レースで達成`
@@ -802,6 +817,11 @@ function selectBankrollStyle(key) {
   document.querySelectorAll(".style-card").forEach((node) => {
     node.classList.toggle("active", node.dataset.style === key);
   });
+  const style = (state.bankroll?.styles || []).find((item) => item.key === key);
+  if (style?.default_start && el("brStart")) {
+    el("brStart").value = style.default_start;
+  }
+  updateStyleEstimates();
 }
 
 function commitBankroll() {
@@ -861,8 +881,10 @@ async function copyProposalTickets() {
 }
 
 function renderBankroll(payload) {
+  renderOriginalDaily(payload.daily_history || []);
   const head = el("bankrollHeadActions");
   const body = el("bankrollBody");
+  if (!head || !body) return; // 運用パネルがないページ(結果ページ等)
   const session = payload.session;
   const brState = payload.state;
   const yesterday = renderYesterdayResults(payload.yesterday);
@@ -907,6 +929,55 @@ function renderBankroll(payload) {
   on("brWonBtn", "click", () => recordBankrollResult("won"));
   on("brLostBtn", "click", () => recordBankrollResult("lost"));
   on("brRefreshBtn", "click", loadBankroll);
+}
+
+function renderOriginalDaily(history) {
+  const box = el("originalDaily");
+  if (box) {
+    if (!history.length || history.every((day) => !day.sessions.length)) {
+      box.innerHTML = `<div class="empty">まだ運用記録がありません。ホームの「バンクロール運用」でオリジナル(1万円×10R)を開始すると、ここに毎日の収支が貯まります。</div>`;
+    } else {
+      const rows = history
+        .filter((day) => day.sessions.length)
+        .map((day) => {
+          const original = day.original;
+          const profitClass = (value) => (value >= 0 ? "ev-positive" : "ev-caution");
+          const originalCell = original
+            ? `<td class="${profitClass(original.profit)}">${original.profit >= 0 ? "+" : ""}${yen(original.profit)}</td>
+               <td>${yen(original.balance)}</td>
+               <td>${original.wins}勝${original.losses}敗${original.skips ? `/見送${original.skips}` : ""}</td>
+               <td>${original.target_reached ? "達成" : escapeHtml(original.stop_reason || (original.status === "active" ? "運用中" : "停止"))}</td>`
+            : `<td colspan="4" class="muted">オリジナル運用なし</td>`;
+          return `<tr>
+            <td>${escapeHtml(day.date)}</td>
+            ${originalCell}
+            <td class="${profitClass(day.total_profit)}">${day.total_profit >= 0 ? "+" : ""}${yen(day.total_profit)}</td>
+          </tr>`;
+        })
+        .join("");
+      box.innerHTML = `<div class="table-wrap"><table class="data-table compact-table">
+        <thead><tr><th>日付</th><th>オリジナル収支</th><th>最終残高</th><th>戦績</th><th>結果</th><th>全スタイル計</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div>`;
+    }
+  }
+  // 的中率サマリー(結果ページ)に本日のオリジナル収支を差し込む
+  const summaryBox = el("resultsSummary");
+  el("originalTodayMetric")?.remove();
+  if (summaryBox) {
+    const today = history[0];
+    const original = today?.original;
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = metric([
+      "オリジナル収支(本日)",
+      original ? `${original.profit >= 0 ? "+" : ""}${yen(original.profit)}` : "-",
+      original ? `残高 ${yen(original.balance)} / ${original.wins}勝${original.losses}敗` : "未運用",
+      original ? (original.profit >= 0 ? "green" : "amber") : "slate",
+    ]);
+    const node = wrapper.firstElementChild;
+    node.id = "originalTodayMetric";
+    summaryBox.appendChild(node);
+  }
 }
 
 function renderYesterdayResults(yesterday) {
@@ -987,14 +1058,18 @@ function renderBankrollStatus(session, brState) {
   const profit = brState.profit ?? 0;
   const profitClass = profit >= 0 ? "ev-positive" : "ev-caution";
   const styleLabel = styleLabelOf(config.style);
+  const styleDef = (state.bankroll?.styles || []).find((item) => item.key === config.style);
+  const raceLimit = styleDef?.race_limit;
   const estimate = brState.races_to_target || {};
-  const estimateText = estimate.fast
+  const estimateText = raceLimit
+    ? `残り${Math.max(0, raceLimit - brState.wins - brState.losses)}R`
+    : estimate.fast
     ? `${estimate.fast}〜${estimate.expected ?? "-"}R`
     : brState.balance >= config.target_amount ? "達成" : "-";
   return `<div class="bankroll-status">
-    <div class="metric metric-teal"><span>残高</span><strong>${yen(brState.balance)}</strong><em>目標 ${yen(config.target_amount)}</em></div>
+    <div class="metric metric-teal"><span>残高</span><strong>${yen(brState.balance)}</strong><em>${raceLimit ? `${raceLimit}R勝負・伸ばせるだけ` : `目標 ${yen(config.target_amount)}`}</em></div>
     <div class="metric metric-${profit >= 0 ? "green" : "amber"}"><span>損益</span><strong class="${profitClass}">${profit >= 0 ? "+" : ""}${yen(profit)}</strong><em>元手 ${yen(config.start_amount)}</em></div>
-    <div class="metric metric-blue"><span>達成目安</span><strong>${escapeHtml(estimateText)}</strong><em>${styleLabel}運用 / ${brState.wins}勝${brState.losses}敗</em></div>
+    <div class="metric metric-blue"><span>${raceLimit ? "残りレース" : "達成目安"}</span><strong>${escapeHtml(estimateText)}</strong><em>${styleLabel}運用 / ${brState.wins}勝${brState.losses}敗</em></div>
     <div class="metric metric-purple"><span>連敗</span><strong>${brState.consecutive_losses}</strong><em>${config.max_consecutive_losses}で停止</em></div>
     <div class="metric metric-slate"><span>損失余地</span><strong>${yen(Math.max(0, brState.day_loss_limit - brState.day_loss))}</strong><em>上限 ${yen(brState.day_loss_limit)}</em></div>
   </div>`;
@@ -1129,6 +1204,8 @@ function renderToday() {
   const summary = payload.summary || {};
   const learning = payload.learning_status || {};
   const schedule = payload.schedule_summary || {};
+  renderMotionMaker();
+  if (!el("todayMeta")) return; // 本日の予想パネルがないページ(モーションメーカー等)
   el("todayMeta").textContent = `${summary.target_date || ""} ${summary.after || ""}以降 / ${payload.forecast_file ? "再学習済み" : "未作成"}`;
   el("todayMetrics").innerHTML = [
     ["予想レース", summary.count ?? 0, "本日対象", "teal"],
@@ -1142,7 +1219,6 @@ function renderToday() {
     .join("");
   renderVenueBoard(payload.forecasts || []);
   renderRecommended(payload.recommended_races || []);
-  renderMotionMaker();
 
   const rows = filterForecasts(payload.forecasts || []);
   el("forecastList").innerHTML = rows.length
@@ -1212,6 +1288,7 @@ function groupForecastsByVenue(rows) {
 
 
 function renderVenueBoard(forecasts) {
+  if (!el("venueBoard")) return;
   const venues = new Map();
   for (const race of forecasts) {
     const venue = race.venue || "未設定";
@@ -1408,6 +1485,7 @@ function renderMiniEntries(entries) {
 }
 
 function renderLearn() {
+  if (!el("learnGrid")) return;
   const status = state.learning || {};
   const model = state.learnedModel || {};
   const training = model.training || {};
