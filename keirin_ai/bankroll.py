@@ -71,14 +71,14 @@ STYLES: dict[str, dict] = {
     "original": {
         "key": "original",
         "label": "オリジナル",
-        "description": "1万円×10レース勝負。開始時に本日の10レースをAIが確定し、予定表どおりに回す(差し替えは変更履歴付き)。",
-        "per_race_cap_pct": 25,
-        "daily_loss_limit_pct": 90,
-        "max_consecutive_losses": 10,
-        "min_ev": 1.1,
-        "weights": [("本線", 0.34), ("抑え", 0.24), ("妙味", 0.16), ("妙味2", 0.14), ("穴", 0.12)],
-        "min_confidence_rank": 1,
-        "assumed_main_odds": 7.0,
+        "description": "1万円を株の運用のように少しずつ増やす10レース。朝にAIが自信のあるレースだけを厳選して確定し、小さく張って複利で積み上げる(差し替えは変更履歴付き)。",
+        "per_race_cap_pct": 12,
+        "daily_loss_limit_pct": 25,
+        "max_consecutive_losses": 4,
+        "min_ev": 1.25,
+        "weights": [("本線", 0.5), ("抑え", 0.3), ("妙味", 0.2)],
+        "min_confidence_rank": 2,
+        "assumed_main_odds": 5.5,
         "race_limit": 10,
         "default_start": 10000,
     },
@@ -244,7 +244,13 @@ def build_original_plan(conn: sqlite3.Connection, data_dir, race_limit: int) -> 
         best_ticket = max((t.get("score") or 0) for t in (race.get("tickets") or [{"score": 0}]))
         return int(confidence.get("rank") or 0) * 10 + float(top.get("probability") or 0) * 8 + best_ticket * 4
 
-    picked = sorted(active, key=score, reverse=True)[: race_limit]
+    # 株運用型: まず信頼度「強・中」だけに絞って厳選。足りない分だけ次点で補う
+    strong = [race for race in active if int((race.get("confidence") or {}).get("rank") or 0) >= 2]
+    pool = sorted(strong, key=score, reverse=True)[: race_limit]
+    if len(pool) < race_limit:
+        rest = [race for race in active if race not in pool]
+        pool += sorted(rest, key=score, reverse=True)[: race_limit - len(pool)]
+    picked = pool
     picked.sort(key=lambda race: race.get("start_time") or "99:99")
     slots = [
         {
@@ -693,10 +699,18 @@ def _judge_race(race: dict, budget: int, config: dict, live_trifecta: dict | Non
         return {"summary": summary, "proposal": None}
 
     summary["decision"] = "bet"
+    if force_plan and ev < config["min_ev"]:
+        # 株運用の発想: 自信の薄い局面はポジションを半分に縮小して張る
+        half_budget = max(UNIT * 2, (budget // 2) // UNIT * UNIT)
+        if half_budget < sum(t["stake"] for t in allocation):
+            allocation = _allocate(half_budget, candidates, style["weights"])
+            total_stake = sum(t["stake"] for t in allocation)
+            expected = sum(t["stake"] * t["odds"] * t["hit_probability"] for t in allocation)
+            ev = expected / max(1, total_stake)
     live_count = sum(1 for t in allocation if t.get("odds_source") == "live")
     summary["reason"] = f"EV {ev:.2f} / {len(allocation)}点分散" + (f" / ライブ{live_count}点" if live_count else "")
     if force_plan and ev < config["min_ev"]:
-        summary["reason"] = f"予定レース実行(EV {ev:.2f} 低め・見送りも可)"
+        summary["reason"] = f"予定レース・半分に縮小して実行(EV {ev:.2f} 低め・見送りも可)"
     proposal = {
         "race_key": race.get("race_key"),
         "venue": race.get("venue") or "",

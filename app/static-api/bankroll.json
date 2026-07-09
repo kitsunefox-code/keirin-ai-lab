@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at_jst": "2026-07-10T08:25:19+09:00",
+  "generated_at_jst": "2026-07-10T08:33:43+09:00",
   "rules": [
     "全額転がしは行いません(1レース投資は残高の上限%まで)",
     "負けた後の倍賭け(マーチンゲール)は行いません",
@@ -107,35 +107,27 @@
     {
       "key": "original",
       "label": "オリジナル",
-      "description": "1万円×10レース勝負。開始時に本日の10レースをAIが確定し、予定表どおりに回す(差し替えは変更履歴付き)。",
-      "per_race_cap_pct": 25,
-      "daily_loss_limit_pct": 90,
-      "max_consecutive_losses": 10,
-      "min_ev": 1.1,
+      "description": "1万円を株の運用のように少しずつ増やす10レース。朝にAIが自信のあるレースだけを厳選して確定し、小さく張って複利で積み上げる(差し替えは変更履歴付き)。",
+      "per_race_cap_pct": 12,
+      "daily_loss_limit_pct": 25,
+      "max_consecutive_losses": 4,
+      "min_ev": 1.25,
       "weights": [
         [
           "本線",
-          0.34
+          0.5
         ],
         [
           "抑え",
-          0.24
+          0.3
         ],
         [
           "妙味",
-          0.16
-        ],
-        [
-          "妙味2",
-          0.14
-        ],
-        [
-          "穴",
-          0.12
+          0.2
         ]
       ],
-      "min_confidence_rank": 1,
-      "assumed_main_odds": 7.0,
+      "min_confidence_rank": 2,
+      "assumed_main_odds": 5.5,
       "race_limit": 10,
       "default_start": 10000
     }
@@ -410,7 +402,7 @@
       "target_progress": 0.037333333333333336,
       "races_to_target": {
         "expected": 99,
-        "fast": 12
+        "fast": 18
       }
     }
   }
