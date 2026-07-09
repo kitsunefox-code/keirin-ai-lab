@@ -101,20 +101,46 @@ def init_db(conn: sqlite3.Connection) -> None:
             updated_at text not null,
             primary key (player_id, race_key)
         );
+
+        create table if not exists venues (
+            venue_id text primary key,
+            name text,
+            slug text,
+            track_distance integer,
+            straight real,
+            angle_center text,
+            angle_straight text,
+            home_width real,
+            back_width real,
+            center_width real,
+            is_indoor integer,
+            kimarite_json text,
+            bank_bias real,
+            bank_feature text,
+            net_notes text,
+            net_checked_at text,
+            updated_at text not null
+        );
         """
     )
-    _migrate_entries_player_id(conn)
+    _migrate_columns(conn)
     conn.commit()
 
 
-def _migrate_entries_player_id(conn: sqlite3.Connection) -> None:
-    """既存DBに player_id 列がなければ追加する(古いDBからの移行用)。"""
-    columns = {row["name"] for row in conn.execute("pragma table_info(entries)").fetchall()}
-    if "player_id" not in columns:
+def _migrate_columns(conn: sqlite3.Connection) -> None:
+    """既存DBに後から足した列を補う(古いDBからの移行用)。"""
+    entry_columns = {row["name"] for row in conn.execute("pragma table_info(entries)").fetchall()}
+    if "player_id" not in entry_columns:
         conn.execute("alter table entries add column player_id text")
     race_columns = {row["name"] for row in conn.execute("pragma table_info(races)").fetchall()}
-    if "race_class_official" not in race_columns:
-        conn.execute("alter table races add column race_class_official text")
+    for column, ddl in (
+        ("race_class_official", "text"),
+        ("venue_id", "text"),
+        ("hour_type", "text"),
+        ("weather_json", "text"),
+    ):
+        if column not in race_columns:
+            conn.execute(f"alter table races add column {column} {ddl}")
 
 
 def save_player_form(conn: sqlite3.Connection, rows: list[dict]) -> int:
@@ -153,6 +179,89 @@ def save_player_form(conn: sqlite3.Connection, rows: list[dict]) -> int:
         saved += 1
     conn.commit()
     return saved
+
+
+def save_venue(conn: sqlite3.Connection, venue: dict) -> None:
+    """競輪場のバンク特徴をDBへ記憶する(場ごとに1度。ネット調査分は上書きしない)。"""
+    venue_id = str(venue.get("venue_id") or "").strip()
+    if not venue_id:
+        return
+    now = _now()
+    conn.execute(
+        """
+        insert into venues (
+            venue_id, name, slug, track_distance, straight, angle_center, angle_straight,
+            home_width, back_width, center_width, is_indoor, kimarite_json, bank_bias,
+            bank_feature, updated_at
+        ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        on conflict(venue_id) do update set
+            name=coalesce(nullif(excluded.name, ''), venues.name),
+            slug=coalesce(nullif(excluded.slug, ''), venues.slug),
+            track_distance=coalesce(excluded.track_distance, venues.track_distance),
+            straight=coalesce(excluded.straight, venues.straight),
+            angle_center=coalesce(nullif(excluded.angle_center, ''), venues.angle_center),
+            angle_straight=coalesce(nullif(excluded.angle_straight, ''), venues.angle_straight),
+            home_width=coalesce(excluded.home_width, venues.home_width),
+            back_width=coalesce(excluded.back_width, venues.back_width),
+            center_width=coalesce(excluded.center_width, venues.center_width),
+            is_indoor=coalesce(excluded.is_indoor, venues.is_indoor),
+            kimarite_json=coalesce(nullif(excluded.kimarite_json, ''), venues.kimarite_json),
+            bank_bias=coalesce(excluded.bank_bias, venues.bank_bias),
+            bank_feature=coalesce(nullif(excluded.bank_feature, ''), venues.bank_feature),
+            updated_at=excluded.updated_at
+        """,
+        (
+            venue_id,
+            venue.get("name"),
+            venue.get("slug"),
+            venue.get("track_distance"),
+            venue.get("straight"),
+            venue.get("angle_center"),
+            venue.get("angle_straight"),
+            venue.get("home_width"),
+            venue.get("back_width"),
+            venue.get("center_width"),
+            1 if venue.get("is_indoor") else 0 if venue.get("is_indoor") is not None else None,
+            _dump(venue.get("kimarite")) if venue.get("kimarite") is not None else None,
+            venue.get("bank_bias"),
+            venue.get("bank_feature"),
+            now,
+        ),
+    )
+    conn.commit()
+
+
+def save_venue_net_notes(conn: sqlite3.Connection, venue_id: str, notes: str) -> None:
+    """ネット調査で得たバンク傾向メモを記憶する。"""
+    conn.execute(
+        "update venues set net_notes=?, net_checked_at=? where venue_id=?",
+        (notes, _now(), str(venue_id)),
+    )
+    conn.commit()
+
+
+def get_venue(conn: sqlite3.Connection, venue_id: str) -> dict | None:
+    row = conn.execute("select * from venues where venue_id=?", (str(venue_id),)).fetchone()
+    return _venue_row(row) if row else None
+
+
+def all_venues(conn: sqlite3.Connection) -> list[dict]:
+    rows = conn.execute("select * from venues order by name").fetchall()
+    return [_venue_row(row) for row in rows]
+
+
+def venue_ids_missing_net_notes(conn: sqlite3.Connection) -> list[str]:
+    rows = conn.execute(
+        "select venue_id from venues where net_notes is null or net_notes = '' order by updated_at"
+    ).fetchall()
+    return [row["venue_id"] for row in rows]
+
+
+def _venue_row(row: sqlite3.Row) -> dict:
+    data = dict(row)
+    data["kimarite"] = _json_or(data.pop("kimarite_json", None), None)
+    data["is_indoor"] = bool(data["is_indoor"]) if data.get("is_indoor") is not None else None
+    return data
 
 
 def line_partner_record(conn: sqlite3.Connection, player_a: str, player_b: str) -> dict | None:
@@ -250,8 +359,8 @@ def save_race(conn: sqlite3.Connection, race: dict, prediction: dict | None = No
         insert into races (
             race_key, source_name, source_url, title, venue, event, race_no, race_class,
             race_date, weather, lineup_json, result_json, raw_quality_json, fetched_at,
-            race_class_official
-        ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            race_class_official, venue_id, hour_type, weather_json
+        ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         on conflict(race_key) do update set
             source_name=excluded.source_name,
             source_url=excluded.source_url,
@@ -266,7 +375,10 @@ def save_race(conn: sqlite3.Connection, race: dict, prediction: dict | None = No
             result_json=coalesce(excluded.result_json, races.result_json),
             raw_quality_json=excluded.raw_quality_json,
             fetched_at=excluded.fetched_at,
-            race_class_official=coalesce(nullif(excluded.race_class_official, ''), races.race_class_official)
+            race_class_official=coalesce(nullif(excluded.race_class_official, ''), races.race_class_official),
+            venue_id=coalesce(nullif(excluded.venue_id, ''), races.venue_id),
+            hour_type=coalesce(nullif(excluded.hour_type, ''), races.hour_type),
+            weather_json=coalesce(nullif(excluded.weather_json, ''), races.weather_json)
         """,
         (
             key,
@@ -284,8 +396,14 @@ def save_race(conn: sqlite3.Connection, race: dict, prediction: dict | None = No
             _dump(race.get("raw_quality", {})),
             now,
             str(race.get("race_class_official") or ""),
+            str((race.get("bank") or {}).get("venue_id") or ""),
+            str(race.get("hour_type") or ""),
+            _dump(race.get("weather_info")) if race.get("weather_info") else "",
         ),
     )
+
+    for venue in race.get("all_venues") or []:
+        save_venue(conn, venue)
 
     positions = result.get("positions", {}) if result else {}
     for entrant in race.get("entrants", []):

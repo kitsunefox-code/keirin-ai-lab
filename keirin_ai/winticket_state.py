@@ -67,9 +67,13 @@ def enrich_race_from_state(race: dict, html_text: str) -> dict:
     bank = _current_bank(common)
     if bank:
         race["bank"] = bank
+    race["all_venues"] = all_venue_details(common)
     hour_type = _hour_type(common.get("race") or {})
     if hour_type:
         race["hour_type"] = hour_type
+    weather = _weather(queries, common.get("race") or {})
+    if weather:
+        race["weather_info"] = weather
 
     for entrant in race.get("entrants", []):
         car_no = int(entrant.get("car_no") or 0)
@@ -157,8 +161,38 @@ def _head_to_head_within_race(records: list, ids_in_race: set[str], name_by_play
     return result
 
 
+def venue_details(venue: dict) -> dict:
+    """WINTICKETのvenueオブジェクトをアプリ内のバンク特徴dictへ変換する。"""
+    kimarite = _kimarite_distribution(venue.get("factors"))
+    return {
+        "venue_id": str(venue.get("id") or ""),
+        "name": venue.get("name") or "",
+        "slug": venue.get("slug") or "",
+        "track_distance": venue.get("trackDistance"),
+        "straight": venue.get("trackStraightDistance"),
+        "angle_center": venue.get("trackAngleCenter"),
+        "angle_straight": venue.get("trackAngleStraight"),
+        "home_width": venue.get("homeWidth"),
+        "back_width": venue.get("backWidth"),
+        "center_width": venue.get("centerWidth"),
+        "is_indoor": venue.get("isIndoor"),
+        "kimarite": kimarite,
+        "bank_bias": _bank_bias(kimarite, venue.get("trackDistance"), venue.get("trackStraightDistance")),
+        "bank_feature": (venue.get("bankFeature") or "")[:600],
+    }
+
+
+def all_venue_details(common: dict) -> list[dict]:
+    """レースページに載っている全競輪場のバンク特徴を返す(DB蓄積用)。"""
+    details = []
+    for venue in common.get("venues") or []:
+        if venue.get("id") and venue.get("trackDistance"):
+            details.append(venue_details(venue))
+    return details
+
+
 def _current_bank(common: dict) -> dict | None:
-    """開催中バンクの周長・みなし直線・カントを取り出す。"""
+    """開催中バンクのバンク特徴を取り出す。"""
     cups = common.get("cups")
     cup = cups[0] if isinstance(cups, list) and cups else (cups if isinstance(cups, dict) else {})
     venue_id = str(cup.get("venueId") or "")
@@ -170,13 +204,49 @@ def _current_bank(common: dict) -> dict | None:
         venue = (common.get("venues") or [None])[0]
     if not venue:
         return None
-    return {
-        "venue_id": str(venue.get("id") or ""),
-        "name": venue.get("name") or "",
-        "track_distance": venue.get("trackDistance"),
-        "straight": venue.get("trackStraightDistance"),
-        "angle_center": venue.get("trackAngleCenter"),
-    }
+    return venue_details(venue)
+
+
+def _kimarite_distribution(factors) -> dict | None:
+    """factorsの「1着」決まり手分布を {逃げ,捲り,差し} の割合(合計1)に正規化する。"""
+    if not isinstance(factors, list):
+        return None
+    first = next((f for f in factors if str(f.get("title") or "").startswith("1着")), None)
+    if not first:
+        return None
+    dist = {"逃げ": 0.0, "捲り": 0.0, "差し": 0.0}
+    total = 0.0
+    for item in first.get("datasets") or []:
+        name = str(item.get("name") or "")
+        value = float(item.get("value") or 0)
+        if name in dist:
+            dist[name] += value
+            total += value
+        elif name == "マーク":  # マークは差し系として扱う
+            dist["差し"] += value
+            total += value
+    if total <= 0:
+        return None
+    return {k: round(v / total, 3) for k, v in dist.items()}
+
+
+def _bank_bias(kimarite: dict | None, track_distance, straight) -> float | None:
+    """バンクの脚質傾向を -1(差し・追込有利)〜+1(逃げ・先行有利)で表す。
+
+    決まり手分布(逃げ%-差し%)を主軸に、周長が短い/直線が短いほど先行有利へ補正。
+    """
+    parts: list[float] = []
+    if kimarite:
+        parts.append(kimarite.get("逃げ", 0.0) - kimarite.get("差し", 0.0))
+    if track_distance:
+        # 333m以下=先行有利(+)、500m=差し有利(-)。400mを中立。
+        parts.append(max(-1.0, min(1.0, (400 - float(track_distance)) / 70.0)) * 0.5)
+    if straight:
+        # 直線が短いほど逃げ残りやすい(+)。40m短→+、60m長→-。
+        parts.append(max(-1.0, min(1.0, (50.0 - float(straight)) / 15.0)) * 0.3)
+    if not parts:
+        return None
+    return round(max(-1.0, min(1.0, sum(parts))), 3)
 
 
 def _hour_type(race_meta: dict) -> str | None:
@@ -195,6 +265,32 @@ def _hour_type(race_meta: dict) -> str | None:
     if hour < 21:
         return "hourTypeNight"
     return "hourTypeMidnight"
+
+
+# WINTICKETの天気コード(数値文字列)→日本語ラベル
+WEATHER_CODES = {"100": "晴", "200": "曇", "300": "雨", "400": "雪", "500": "霧"}
+
+
+def _weather(queries: dict, race_meta: dict) -> dict | None:
+    """天気・風速・降水を取り出す。降雨は逃げ・先行有利の材料。"""
+    payload = queries.get("FETCH_KEIRIN_RACE_WEATHER") or {}
+    raw = str(payload.get("weather") or race_meta.get("weather") or "").strip()
+    if not raw and not payload:
+        return None
+    label = WEATHER_CODES.get(raw, raw)
+    try:
+        precip = float(payload.get("precipitation") or 0)
+    except (TypeError, ValueError):
+        precip = 0.0
+    is_rain = raw in {"300", "400"} or any(w in label for w in ("雨", "雪")) or precip > 0
+    return {
+        "weather": label,
+        "temperature": payload.get("temperature"),
+        "wind_speed": payload.get("windSpeed") or race_meta.get("windSpeed"),
+        "wind_direction": payload.get("windDirection"),
+        "precipitation": payload.get("precipitation"),
+        "is_rain": is_rain,
+    }
 
 
 def _rate_block(value) -> dict | None:
