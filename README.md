@@ -43,6 +43,23 @@ python server.py
 - 目標達成・損失上限到達・連敗数到達のいずれかで自動停止します
 - 自動購入は行いません。買い目コピーと購入前確認まで対応し、購入・結果は手動で記録します
 
+## 公開版(外出先・PCオフでも見られる)
+
+GitHub Pagesに閲覧専用のコピーが公開されています。どのWiFi/回線からでも、このPCが切れていても見られます。
+
+- 本日の予想: http://kusayakyu-navi.com/keirin-ai-lab/app/index.html
+- 結果・的中率: http://kusayakyu-navi.com/keirin-ai-lab/app/results.html
+- モーションメーカー: http://kusayakyu-navi.com/keirin-ai-lab/app/motion.html
+
+公開版は最後にpushした時点のスナップショットで、バンクロール運用の操作(開始/購入記録/結果入力)とライブオッズはローカル版のみです。
+
+自動更新はタスクスケジューラに登録済み(`scripts\daily_update.ps1`):
+
+- KeirinAILab-Morning(毎日08:10): 今日の予想を生成 → 静的ビルド → push
+- KeirinAILab-Night(毎日23:40): 結果・談話回収+再学習 → 静的ビルド → push
+- PCがその時刻に起動していなければ、次回起動時に実行されます(StartWhenAvailable)
+- ログ: `datauto_update.log`
+
 ## 学習
 
 画面の `保存` は出走表をDBに保存します。ページ内から確定結果を安全に読める場合だけ教師データにします。
@@ -105,9 +122,8 @@ python scripts\backfill_keirinjp_results.py --limit 120 --delay 0.4
 競輪場ごとのバンク特徴は出走表取得時に自動でvenuesテーブルへ記憶されます。クセの要約メモ付与／過去レース再予想+LightGBM再学習:
 
 ```powershell
-python scripts\collect_venue_features.py
-python scripts
-epredict_saved.py --limit 600
+python scripts/collect_venue_features.py
+python scripts/repredict_saved.py --limit 600
 ```
 
 画面の「結果・答え合わせ」で日付ごとに、AIの本命・買い目と実際の着順、本命的中/車券圏/3連単的中のバッジ、当日の的中率が確認できます。
