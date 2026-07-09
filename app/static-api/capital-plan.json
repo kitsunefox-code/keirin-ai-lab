@@ -1,7 +1,7 @@
 {
   "ok": true,
-  "generated_at": "2026-07-09T08:00:30+00:00",
-  "generated_at_jst": "2026-07-09T17:00:30+09:00",
+  "generated_at": "2026-07-09T22:36:51+00:00",
+  "generated_at_jst": "2026-07-10T07:36:51+09:00",
   "input": {
     "start_amount": 1000,
     "target_amount": 3000,
@@ -16,12 +16,12 @@
     "errors": []
   },
   "summary": {
-    "forecast_count": 55,
-    "active_forecast_count": 17,
-    "elapsed_forecast_count": 38,
-    "candidate_count": 68,
+    "forecast_count": 60,
+    "active_forecast_count": 60,
+    "elapsed_forecast_count": 0,
+    "candidate_count": 240,
     "plan_count": 8,
-    "next_race_time": "17:12",
+    "next_race_time": "08:30",
     "data_used": [
       "予想スコア",
       "前検コメント特徴",
@@ -34,27 +34,81 @@
   "plans": [
     {
       "kind": "single",
-      "title": "久留米 10R 単発",
+      "title": "函館 1R 単発",
+      "start_amount": 1000,
+      "target_amount": 3000,
+      "projected_return": 3200,
+      "shortfall": 0,
+      "multiplier": 3.2,
+      "target_ratio": 3.0,
+      "hit_probability": 0.492,
+      "risk": "低",
+      "live_odds_count": 0,
+      "races": [
+        {
+          "race_key": "winticket:2026070811:3:1",
+          "venue": "函館",
+          "race_no": 1,
+          "start_time": "16:10",
+          "ticket": "2-5-4",
+          "cars": [
+            2,
+            5,
+            4
+          ],
+          "stake": 1000,
+          "projected_return": 3200,
+          "odds": 3.2,
+          "odds_str": "3.2",
+          "odds_source": "estimated",
+          "popularity": null,
+          "confidence": "強",
+          "hit_probability": 0.492,
+          "top_pick": {
+            "car_no": 2,
+            "name": "木村優駿",
+            "probability": 0.9689
+          },
+          "rationale": [
+            "信頼度: 強",
+            "本命: 2木村優駿 96.9%",
+            "買い目スコア: 53.8",
+            "コメント/関係性あり",
+            "崩れ筋も評価"
+          ],
+          "ex_signals": [],
+          "odds_url": "https://www.winticket.jp/keirin/hakodate/odds/2026070811/3/1",
+          "url": "https://www.winticket.jp/keirin/hakodate/racecard/2026070811/3/1"
+        }
+      ],
+      "score": 0.48684,
+      "warnings": [
+        "一部は推定倍率です"
+      ]
+    },
+    {
+      "kind": "single",
+      "title": "伊東 4R 単発",
       "start_amount": 1000,
       "target_amount": 3000,
       "projected_return": 3500,
       "shortfall": 0,
       "multiplier": 3.5,
       "target_ratio": 3.0,
-      "hit_probability": 0.4912,
+      "hit_probability": 0.4924,
       "risk": "低",
       "live_odds_count": 0,
       "races": [
         {
-          "race_key": "winticket:2026070783:3:10",
-          "venue": "久留米",
-          "race_no": 10,
-          "start_time": "19:48",
-          "ticket": "1-3-4",
+          "race_key": "winticket:2026071037:1:4",
+          "venue": "伊東",
+          "race_no": 4,
+          "start_time": "17:03",
+          "ticket": "7-5-2",
           "cars": [
-            1,
-            3,
-            4
+            7,
+            5,
+            2
           ],
           "stake": 1000,
           "projected_return": 3500,
@@ -63,317 +117,209 @@
           "odds_source": "estimated",
           "popularity": null,
           "confidence": "強",
-          "hit_probability": 0.4912,
+          "hit_probability": 0.4924,
           "top_pick": {
-            "car_no": 1,
-            "name": "山原さくら",
-            "probability": 0.9591
+            "car_no": 7,
+            "name": "池田充槻",
+            "probability": 0.9595
           },
           "rationale": [
             "信頼度: 強",
-            "本命: 1山原さくら 95.9%",
-            "買い目スコア: 53.7",
+            "本命: 7池田充槻 96.0%",
+            "買い目スコア: 53.8",
             "コメント/関係性あり",
             "崩れ筋も評価"
           ],
           "ex_signals": [],
-          "odds_url": "https://www.winticket.jp/keirin/kurume/odds/2026070783/3/10",
-          "url": "https://www.winticket.jp/keirin/kurume/racecard/2026070783/3/10"
+          "odds_url": "https://www.winticket.jp/keirin/ito/odds/2026071037/1/4",
+          "url": "https://www.winticket.jp/keirin/ito/racecard/2026071037/1/4"
         }
       ],
-      "score": 0.47887,
+      "score": 0.48007,
       "warnings": [
         "一部は推定倍率です"
       ]
     },
     {
       "kind": "single",
-      "title": "久留米 6R 単発",
+      "title": "伊東 7R 単発",
       "start_amount": 1000,
       "target_amount": 3000,
-      "projected_return": 4200,
+      "projected_return": 3600,
       "shortfall": 0,
-      "multiplier": 4.2,
+      "multiplier": 3.6,
       "target_ratio": 3.0,
-      "hit_probability": 0.4833,
+      "hit_probability": 0.4927,
       "risk": "低",
       "live_odds_count": 0,
       "races": [
         {
-          "race_key": "winticket:2026070783:3:6",
-          "venue": "久留米",
-          "race_no": 6,
-          "start_time": "18:04",
-          "ticket": "1-2-3",
+          "race_key": "winticket:2026071037:1:7",
+          "venue": "伊東",
+          "race_no": 7,
+          "start_time": "18:14",
+          "ticket": "7-3-1",
           "cars": [
-            1,
-            2,
-            3
-          ],
-          "stake": 1000,
-          "projected_return": 4200,
-          "odds": 4.2,
-          "odds_str": "4.2",
-          "odds_source": "estimated",
-          "popularity": null,
-          "confidence": "強",
-          "hit_probability": 0.4833,
-          "top_pick": {
-            "car_no": 1,
-            "name": "山口留稀哉",
-            "probability": 0.9359
-          },
-          "rationale": [
-            "信頼度: 強",
-            "本命: 1山口留稀哉 93.6%",
-            "買い目スコア: 52.8",
-            "コメント/関係性あり",
-            "崩れ筋も評価"
-          ],
-          "ex_signals": [],
-          "odds_url": "https://www.winticket.jp/keirin/kurume/odds/2026070783/3/6",
-          "url": "https://www.winticket.jp/keirin/kurume/racecard/2026070783/3/6"
-        }
-      ],
-      "score": 0.45638,
-      "warnings": [
-        "一部は推定倍率です"
-      ]
-    },
-    {
-      "kind": "single",
-      "title": "久留米 10R 単発",
-      "start_amount": 1000,
-      "target_amount": 3000,
-      "projected_return": 7100,
-      "shortfall": 0,
-      "multiplier": 7.1,
-      "target_ratio": 3.0,
-      "hit_probability": 0.4897,
-      "risk": "低",
-      "live_odds_count": 0,
-      "races": [
-        {
-          "race_key": "winticket:2026070783:3:10",
-          "venue": "久留米",
-          "race_no": 10,
-          "start_time": "19:48",
-          "ticket": "1-4-3",
-          "cars": [
-            1,
-            4,
-            3
-          ],
-          "stake": 1000,
-          "projected_return": 7100,
-          "odds": 7.1,
-          "odds_str": "7.1",
-          "odds_source": "estimated",
-          "popularity": null,
-          "confidence": "強",
-          "hit_probability": 0.4897,
-          "top_pick": {
-            "car_no": 1,
-            "name": "山原さくら",
-            "probability": 0.9591
-          },
-          "rationale": [
-            "信頼度: 強",
-            "本命: 1山原さくら 95.9%",
-            "買い目スコア: 53.5",
-            "コメント/関係性あり",
-            "崩れ筋も評価"
-          ],
-          "ex_signals": [],
-          "odds_url": "https://www.winticket.jp/keirin/kurume/odds/2026070783/3/10",
-          "url": "https://www.winticket.jp/keirin/kurume/racecard/2026070783/3/10"
-        }
-      ],
-      "score": 0.42078,
-      "warnings": [
-        "一部は推定倍率です"
-      ]
-    },
-    {
-      "kind": "single",
-      "title": "久留米 5R 単発",
-      "start_amount": 1000,
-      "target_amount": 3000,
-      "projected_return": 5900,
-      "shortfall": 0,
-      "multiplier": 5.9,
-      "target_ratio": 3.0,
-      "hit_probability": 0.4669,
-      "risk": "低",
-      "live_odds_count": 0,
-      "races": [
-        {
-          "race_key": "winticket:2026070783:3:5",
-          "venue": "久留米",
-          "race_no": 5,
-          "start_time": "17:38",
-          "ticket": "5-2-1",
-          "cars": [
-            5,
-            2,
+            7,
+            3,
             1
           ],
           "stake": 1000,
-          "projected_return": 5900,
-          "odds": 5.9,
-          "odds_str": "5.9",
+          "projected_return": 3600,
+          "odds": 3.6,
+          "odds_str": "3.6",
           "odds_source": "estimated",
           "popularity": null,
           "confidence": "強",
-          "hit_probability": 0.4669,
+          "hit_probability": 0.4927,
+          "top_pick": {
+            "car_no": 7,
+            "name": "仲澤春香",
+            "probability": 0.9586
+          },
+          "rationale": [
+            "信頼度: 強",
+            "本命: 7仲澤春香 95.9%",
+            "買い目スコア: 53.8",
+            "コメント/関係性あり",
+            "崩れ筋も評価"
+          ],
+          "ex_signals": [],
+          "odds_url": "https://www.winticket.jp/keirin/ito/odds/2026071037/1/7",
+          "url": "https://www.winticket.jp/keirin/ito/racecard/2026071037/1/7"
+        }
+      ],
+      "score": 0.47811,
+      "warnings": [
+        "一部は推定倍率です"
+      ]
+    },
+    {
+      "kind": "single",
+      "title": "前橋 3R 単発",
+      "start_amount": 1000,
+      "target_amount": 3000,
+      "projected_return": 6500,
+      "shortfall": 0,
+      "multiplier": 6.5,
+      "target_ratio": 3.0,
+      "hit_probability": 0.5023,
+      "risk": "低",
+      "live_odds_count": 0,
+      "races": [
+        {
+          "race_key": "winticket:2026071022:1:3",
+          "venue": "前橋",
+          "race_no": 3,
+          "start_time": "11:54",
+          "ticket": "3-5-2",
+          "cars": [
+            3,
+            5,
+            2
+          ],
+          "stake": 1000,
+          "projected_return": 6500,
+          "odds": 6.5,
+          "odds_str": "6.5",
+          "odds_source": "estimated",
+          "popularity": null,
+          "confidence": "強",
+          "hit_probability": 0.5023,
+          "top_pick": {
+            "car_no": 3,
+            "name": "邊見竜馬",
+            "probability": 0.997
+          },
+          "rationale": [
+            "信頼度: 強",
+            "本命: 3邊見竜馬 99.7%",
+            "買い目スコア: 54.9",
+            "コメント/関係性あり",
+            "崩れ筋も評価"
+          ],
+          "ex_signals": [],
+          "odds_url": "https://www.winticket.jp/keirin/maebashi/odds/2026071022/1/3",
+          "url": "https://www.winticket.jp/keirin/maebashi/racecard/2026071022/1/3"
+        }
+      ],
+      "score": 0.44044,
+      "warnings": [
+        "一部は推定倍率です"
+      ]
+    },
+    {
+      "kind": "single",
+      "title": "広島 3R 単発",
+      "start_amount": 1000,
+      "target_amount": 3000,
+      "projected_return": 6500,
+      "shortfall": 0,
+      "multiplier": 6.5,
+      "target_ratio": 3.0,
+      "hit_probability": 0.5011,
+      "risk": "低",
+      "live_odds_count": 0,
+      "races": [
+        {
+          "race_key": "winticket:2026070862:3:3",
+          "venue": "広島",
+          "race_no": 3,
+          "start_time": "09:10",
+          "ticket": "5-1-2",
+          "cars": [
+            5,
+            1,
+            2
+          ],
+          "stake": 1000,
+          "projected_return": 6500,
+          "odds": 6.5,
+          "odds_str": "6.5",
+          "odds_source": "estimated",
+          "popularity": null,
+          "confidence": "強",
+          "hit_probability": 0.5011,
           "top_pick": {
             "car_no": 5,
-            "name": "堀航輝",
-            "probability": 0.8811
+            "name": "中川飛隆",
+            "probability": 0.9935
           },
           "rationale": [
             "信頼度: 強",
-            "本命: 5堀航輝 88.1%",
-            "買い目スコア: 51.0",
+            "本命: 5中川飛隆 99.4%",
+            "買い目スコア: 54.8",
             "コメント/関係性あり",
             "崩れ筋も評価"
           ],
           "ex_signals": [],
-          "odds_url": "https://www.winticket.jp/keirin/kurume/odds/2026070783/3/5",
-          "url": "https://www.winticket.jp/keirin/kurume/racecard/2026070783/3/5"
+          "odds_url": "https://www.winticket.jp/keirin/hiroshima/odds/2026070862/3/3",
+          "url": "https://www.winticket.jp/keirin/hiroshima/racecard/2026070862/3/3"
         }
       ],
-      "score": 0.41279,
+      "score": 0.43924,
       "warnings": [
         "一部は推定倍率です"
       ]
     },
     {
       "kind": "single",
-      "title": "久留米 6R 単発",
+      "title": "いわき平 8R 単発",
       "start_amount": 1000,
       "target_amount": 3000,
-      "projected_return": 7800,
+      "projected_return": 6500,
       "shortfall": 0,
-      "multiplier": 7.8,
+      "multiplier": 6.5,
       "target_ratio": 3.0,
-      "hit_probability": 0.4829,
+      "hit_probability": 0.5011,
       "risk": "低",
       "live_odds_count": 0,
       "races": [
         {
-          "race_key": "winticket:2026070783:3:6",
-          "venue": "久留米",
-          "race_no": 6,
-          "start_time": "18:04",
-          "ticket": "1-2-5",
-          "cars": [
-            1,
-            2,
-            5
-          ],
-          "stake": 1000,
-          "projected_return": 7800,
-          "odds": 7.8,
-          "odds_str": "7.8",
-          "odds_source": "estimated",
-          "popularity": null,
-          "confidence": "強",
-          "hit_probability": 0.4829,
-          "top_pick": {
-            "car_no": 1,
-            "name": "山口留稀哉",
-            "probability": 0.9359
-          },
-          "rationale": [
-            "信頼度: 強",
-            "本命: 1山口留稀哉 93.6%",
-            "買い目スコア: 52.8",
-            "コメント/関係性あり",
-            "崩れ筋も評価"
-          ],
-          "ex_signals": [],
-          "odds_url": "https://www.winticket.jp/keirin/kurume/odds/2026070783/3/6",
-          "url": "https://www.winticket.jp/keirin/kurume/racecard/2026070783/3/6"
-        }
-      ],
-      "score": 0.40646,
-      "warnings": [
-        "一部は推定倍率です"
-      ]
-    },
-    {
-      "kind": "single",
-      "title": "久留米 10R 単発",
-      "start_amount": 1000,
-      "target_amount": 3000,
-      "projected_return": 10700,
-      "shortfall": 0,
-      "multiplier": 10.7,
-      "target_ratio": 3.0,
-      "hit_probability": 0.4896,
-      "risk": "低",
-      "live_odds_count": 0,
-      "races": [
-        {
-          "race_key": "winticket:2026070783:3:10",
-          "venue": "久留米",
-          "race_no": 10,
-          "start_time": "19:48",
-          "ticket": "1-3-5",
-          "cars": [
-            1,
-            3,
-            5
-          ],
-          "stake": 1000,
-          "projected_return": 10700,
-          "odds": 10.7,
-          "odds_str": "10.7",
-          "odds_source": "estimated",
-          "popularity": null,
-          "confidence": "強",
-          "hit_probability": 0.4896,
-          "top_pick": {
-            "car_no": 1,
-            "name": "山原さくら",
-            "probability": 0.9591
-          },
-          "rationale": [
-            "信頼度: 強",
-            "本命: 1山原さくら 95.9%",
-            "買い目スコア: 53.5",
-            "コメント/関係性あり",
-            "崩れ筋も評価"
-          ],
-          "ex_signals": [],
-          "odds_url": "https://www.winticket.jp/keirin/kurume/odds/2026070783/3/10",
-          "url": "https://www.winticket.jp/keirin/kurume/racecard/2026070783/3/10"
-        }
-      ],
-      "score": 0.38787,
-      "warnings": [
-        "一部は推定倍率です"
-      ]
-    },
-    {
-      "kind": "single",
-      "title": "久留米 6R 単発",
-      "start_amount": 1000,
-      "target_amount": 3000,
-      "projected_return": 11400,
-      "shortfall": 0,
-      "multiplier": 11.4,
-      "target_ratio": 3.0,
-      "hit_probability": 0.4797,
-      "risk": "低",
-      "live_odds_count": 0,
-      "races": [
-        {
-          "race_key": "winticket:2026070783:3:6",
-          "venue": "久留米",
-          "race_no": 6,
-          "start_time": "18:04",
+          "race_key": "winticket:2026071013:1:8",
+          "venue": "いわき平",
+          "race_no": 8,
+          "start_time": "23:10",
           "ticket": "1-3-2",
           "cars": [
             1,
@@ -381,85 +327,139 @@
             2
           ],
           "stake": 1000,
-          "projected_return": 11400,
-          "odds": 11.4,
-          "odds_str": "11.4",
+          "projected_return": 6500,
+          "odds": 6.5,
+          "odds_str": "6.5",
           "odds_source": "estimated",
           "popularity": null,
           "confidence": "強",
-          "hit_probability": 0.4797,
+          "hit_probability": 0.5011,
           "top_pick": {
             "car_no": 1,
-            "name": "山口留稀哉",
-            "probability": 0.9359
+            "name": "平根優大",
+            "probability": 0.9929
           },
           "rationale": [
             "信頼度: 強",
-            "本命: 1山口留稀哉 93.6%",
-            "買い目スコア: 52.4",
+            "本命: 1平根優大 99.3%",
+            "買い目スコア: 54.8",
             "コメント/関係性あり",
             "崩れ筋も評価"
           ],
           "ex_signals": [],
-          "odds_url": "https://www.winticket.jp/keirin/kurume/odds/2026070783/3/6",
-          "url": "https://www.winticket.jp/keirin/kurume/racecard/2026070783/3/6"
+          "odds_url": "https://www.winticket.jp/keirin/iwakidaira/odds/2026071013/1/8",
+          "url": "https://www.winticket.jp/keirin/iwakidaira/racecard/2026071013/1/8"
         }
       ],
-      "score": 0.3729,
+      "score": 0.43924,
       "warnings": [
         "一部は推定倍率です"
       ]
     },
     {
       "kind": "single",
-      "title": "久留米 5R 単発",
+      "title": "前橋 4R 単発",
       "start_amount": 1000,
       "target_amount": 3000,
-      "projected_return": 9500,
+      "projected_return": 6500,
       "shortfall": 0,
-      "multiplier": 9.5,
+      "multiplier": 6.5,
       "target_ratio": 3.0,
-      "hit_probability": 0.4637,
+      "hit_probability": 0.5009,
       "risk": "低",
       "live_odds_count": 0,
       "races": [
         {
-          "race_key": "winticket:2026070783:3:5",
-          "venue": "久留米",
-          "race_no": 5,
-          "start_time": "17:38",
-          "ticket": "5-2-3",
+          "race_key": "winticket:2026071022:1:4",
+          "venue": "前橋",
+          "race_no": 4,
+          "start_time": "12:22",
+          "ticket": "1-5-3",
           "cars": [
+            1,
             5,
-            2,
             3
           ],
           "stake": 1000,
-          "projected_return": 9500,
-          "odds": 9.5,
-          "odds_str": "9.5",
+          "projected_return": 6500,
+          "odds": 6.5,
+          "odds_str": "6.5",
           "odds_source": "estimated",
           "popularity": null,
           "confidence": "強",
-          "hit_probability": 0.4637,
+          "hit_probability": 0.5009,
           "top_pick": {
-            "car_no": 5,
-            "name": "堀航輝",
-            "probability": 0.8811
+            "car_no": 1,
+            "name": "三澤優樹",
+            "probability": 0.9931
           },
           "rationale": [
             "信頼度: 強",
-            "本命: 5堀航輝 88.1%",
-            "買い目スコア: 50.7",
+            "本命: 1三澤優樹 99.3%",
+            "買い目スコア: 54.7",
             "コメント/関係性あり",
             "崩れ筋も評価"
           ],
           "ex_signals": [],
-          "odds_url": "https://www.winticket.jp/keirin/kurume/odds/2026070783/3/5",
-          "url": "https://www.winticket.jp/keirin/kurume/racecard/2026070783/3/5"
+          "odds_url": "https://www.winticket.jp/keirin/maebashi/odds/2026071022/1/4",
+          "url": "https://www.winticket.jp/keirin/maebashi/racecard/2026071022/1/4"
         }
       ],
-      "score": 0.37149,
+      "score": 0.43904,
+      "warnings": [
+        "一部は推定倍率です"
+      ]
+    },
+    {
+      "kind": "single",
+      "title": "広島 5R 単発",
+      "start_amount": 1000,
+      "target_amount": 3000,
+      "projected_return": 6500,
+      "shortfall": 0,
+      "multiplier": 6.5,
+      "target_ratio": 3.0,
+      "hit_probability": 0.4992,
+      "risk": "低",
+      "live_odds_count": 0,
+      "races": [
+        {
+          "race_key": "winticket:2026070862:3:5",
+          "venue": "広島",
+          "race_no": 5,
+          "start_time": "09:50",
+          "ticket": "7-2-1",
+          "cars": [
+            7,
+            2,
+            1
+          ],
+          "stake": 1000,
+          "projected_return": 6500,
+          "odds": 6.5,
+          "odds_str": "6.5",
+          "odds_source": "estimated",
+          "popularity": null,
+          "confidence": "強",
+          "hit_probability": 0.4992,
+          "top_pick": {
+            "car_no": 7,
+            "name": "関口朗斗",
+            "probability": 0.9871
+          },
+          "rationale": [
+            "信頼度: 強",
+            "本命: 7関口朗斗 98.7%",
+            "買い目スコア: 54.5",
+            "コメント/関係性あり",
+            "崩れ筋も評価"
+          ],
+          "ex_signals": [],
+          "odds_url": "https://www.winticket.jp/keirin/hiroshima/odds/2026070862/3/5",
+          "url": "https://www.winticket.jp/keirin/hiroshima/racecard/2026070862/3/5"
+        }
+      ],
+      "score": 0.43734,
       "warnings": [
         "一部は推定倍率です"
       ]
