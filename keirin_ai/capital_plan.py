@@ -25,7 +25,7 @@ def build_capital_plan_payload(
 ) -> dict:
     start_amount = max(100, int(start_amount or 0))
     target_amount = max(start_amount, int(target_amount or start_amount))
-    max_races = max(1, min(3, int(max_races or 2)))
+    max_races = max(1, min(5, int(max_races or 2)))
     now_jst = datetime.now(JST)
     today = build_today_forecast_payload(conn, data_dir)
     forecasts = today.get("forecasts", [])
@@ -198,7 +198,7 @@ def _build_plans(candidates: list[dict], start_amount: int, target_amount: int, 
         plans.append(_single_plan(item, start_amount, target_amount))
 
     for count in range(2, max_races + 1):
-        combo_pool = candidates[:22]
+        combo_pool = candidates[:22] if count <= 3 else candidates[:12]
         for combo in itertools.combinations(combo_pool, count):
             race_keys = {item.get("race_key") for item in combo}
             if len(race_keys) != count:
@@ -224,13 +224,18 @@ def _single_plan(item: dict, start_amount: int, target_amount: int) -> dict:
     )
 
 
+ROLL_REINVEST_RATIO = 0.7  # 全額転がし禁止: 各レースは資金の7割まで再投資し、3割は残す
+
+
 def _roll_plan(items: list[dict], start_amount: int, target_amount: int) -> dict:
     current = float(start_amount)
     legs = []
     hit_probability = 1.0
     for item in items:
-        stake = _round_yen(current)
-        current = stake * item["odds"]
+        stake = max(100, _round_yen(current * ROLL_REINVEST_RATIO))
+        stake = min(stake, _round_yen(current))
+        reserve = current - stake
+        current = reserve + stake * item["odds"]
         hit_probability *= item["hit_probability"]
         legs.append(_leg(item, stake, _round_yen(current)))
     projected = _round_yen(current)
@@ -337,6 +342,8 @@ def _rationale(race: dict, ticket_score: float) -> list[str]:
 
 def _warnings(races: list[dict], projected_return: int, target_amount: int, hit_probability: float) -> list[str]:
     warnings = []
+    if len(races) >= 2:
+        warnings.append("転がしは各レース7割まで再投資(全額転がし禁止)")
     if any(race["odds_source"] != "live" for race in races):
         warnings.append("一部は推定倍率です")
     if projected_return < target_amount:

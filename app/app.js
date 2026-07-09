@@ -6,6 +6,7 @@
   learnedModel: null,
   capitalPlan: null,
   capitalPlanTimer: null,
+  bankroll: null,
 };
 
 const STATIC_API = {
@@ -13,6 +14,7 @@ const STATIC_API = {
   "/api/sample": "static-api/sample.json",
   "/api/learn/status": "static-api/learn-status.json",
   "/api/capital_plan": "static-api/capital-plan.json",
+  "/api/bankroll": "static-api/bankroll.json",
 };
 
 const el = (id) => document.getElementById(id);
@@ -64,6 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
   on("confidenceFilter", "change", renderToday);
   loadLearnStatus();
   loadToday();
+  loadBankroll();
 });
 
 async function loadToday() {
@@ -138,12 +141,313 @@ function updateCapitalPlanTimer() {
     state.capitalPlanTimer = null;
   }
   if (!el("autoRollToggle").checked) {
-    setStatus("驕狗畑繝｢繝ｼ繝峨ｒ蛛懈ｭ｢縺励∪縺励◆");
+    setStatus("自動更新を停止しました");
     return;
   }
   loadCapitalPlan();
   state.capitalPlanTimer = setInterval(loadCapitalPlan, 60000);
-  setStatus("驕狗畑繝｢繝ｼ繝峨〒自動更新中");
+  setStatus("プラン候補を自動更新中");
+}
+
+async function loadBankroll() {
+  try {
+    const res = await apiGet("/api/bankroll");
+    const payload = await res.json();
+    state.bankroll = payload;
+    renderBankroll(payload);
+  } catch (error) {
+    el("bankrollBody").innerHTML = `<div class="empty">運用状態を読み込めません: ${escapeHtml(error.message)}</div>`;
+  }
+}
+
+async function bankrollPost(path, body) {
+  try {
+    const res = await fetch(path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body || {}),
+    });
+    const payload = await res.json();
+    if (payload.ok === false) {
+      setStatus(payload.error || "運用操作に失敗しました");
+      return null;
+    }
+    state.bankroll = payload;
+    renderBankroll(payload);
+    return payload;
+  } catch {
+    setStatus("運用セッションはローカル版でのみ操作できます");
+    return null;
+  }
+}
+
+function startBankroll() {
+  bankrollPost("/api/bankroll/start", {
+    start_amount: Number(el("brStart").value || 0),
+    target_amount: Number(el("brTarget").value || 0),
+    per_race_cap_pct: Number(el("brCap").value || 20),
+    daily_loss_limit_pct: Number(el("brLossLimit").value || 30),
+    max_consecutive_losses: Number(el("brMaxLosses").value || 3),
+    min_ev: Number(el("brMinEv").value || 1.0),
+  }).then((payload) => {
+    if (payload) setStatus("運用セッションを開始しました");
+  });
+}
+
+function commitBankroll() {
+  const proposal = state.bankroll?.proposal;
+  if (!proposal) return;
+  if (!window.confirm(`${proposal.venue}${proposal.race_no}Rに合計${proposal.total_stake}円を購入した記録を付けます。実際の購入はWINTICKET等でご自身の確認のうえ行ってください。`)) {
+    return;
+  }
+  bankrollPost("/api/bankroll/commit", { proposal }).then((payload) => {
+    if (payload) setStatus("購入を記録しました。結果確定後に入力してください");
+  });
+}
+
+function skipBankroll() {
+  const proposal = state.bankroll?.proposal;
+  if (!proposal) return;
+  bankrollPost("/api/bankroll/skip", {
+    race: proposal,
+    reason: "手動見送り",
+  }).then((payload) => {
+    if (payload) setStatus("このレースを見送りました");
+  });
+}
+
+function recordBankrollResult(outcome) {
+  const pending = state.bankroll?.state?.pending_bet;
+  if (!pending) return;
+  let payout = 0;
+  if (outcome === "won") {
+    payout = Number(el("brPayout")?.value || 0);
+    if (!payout) {
+      setStatus("的中時は払戻額を入力してください");
+      return;
+    }
+  }
+  bankrollPost("/api/bankroll/result", { bet_id: pending.id, outcome, payout }).then((payload) => {
+    if (payload) setStatus(outcome === "won" ? "的中を記録しました" : "不的中を記録しました");
+  });
+}
+
+function stopBankroll() {
+  if (!window.confirm("運用セッションを停止しますか？")) return;
+  bankrollPost("/api/bankroll/stop", { reason: "手動停止" }).then((payload) => {
+    if (payload) setStatus("運用セッションを停止しました");
+  });
+}
+
+async function copyProposalTickets() {
+  const text = state.bankroll?.proposal?.copy_text || "";
+  if (!text) return;
+  try {
+    await navigator.clipboard.writeText(text);
+    setStatus("買い目をコピーしました");
+  } catch {
+    setStatus("コピーできませんでした。手動で選択してください");
+  }
+}
+
+function renderBankroll(payload) {
+  const head = el("bankrollHeadActions");
+  const body = el("bankrollBody");
+  const session = payload.session;
+  const brState = payload.state;
+
+  if (!session) {
+    head.innerHTML = "";
+    body.innerHTML = renderBankrollSetup(payload);
+    bindBankrollSetup();
+    return;
+  }
+
+  if (session.status !== "active") {
+    head.innerHTML = "";
+    body.innerHTML = `${renderBankrollStopBanner(session, brState)}
+      ${renderBankrollStatus(session, brState)}
+      ${renderBankrollHistory(brState)}
+      <div class="bankroll-restart">${renderBankrollSetup(payload)}</div>`;
+    bindBankrollSetup();
+    return;
+  }
+
+  head.innerHTML = `<button id="brStopBtn" class="button">停止</button>`;
+  on("brStopBtn", "click", stopBankroll);
+
+  const parts = [renderBankrollStatus(session, brState)];
+  if (brState.pending_bet) {
+    parts.push(renderBankrollPending(brState.pending_bet));
+  } else if (payload.proposal) {
+    parts.push(renderBankrollProposal(payload.proposal));
+  } else {
+    parts.push(`<div class="empty">${escapeHtml(payload.message || "提案できるレースがありません。しばらくして更新してください。")}</div>`);
+  }
+  if ((payload.judged_races || []).length) {
+    parts.push(renderBankrollJudged(payload.judged_races));
+  }
+  parts.push(renderBankrollHistory(brState));
+  body.innerHTML = parts.join("");
+
+  on("brCommitBtn", "click", commitBankroll);
+  on("brSkipBtn", "click", skipBankroll);
+  on("brCopyBtn", "click", copyProposalTickets);
+  on("brWonBtn", "click", () => recordBankrollResult("won"));
+  on("brLostBtn", "click", () => recordBankrollResult("lost"));
+  on("brRefreshBtn", "click", loadBankroll);
+}
+
+function renderBankrollSetup(payload) {
+  const config = payload.last_session?.config || payload.session?.config || {};
+  const lastNote = payload.last_session
+    ? `<p class="bankroll-last">前回: ${escapeHtml(payload.last_session.stop_reason || "停止")} / 最終残高 ${yen(payload.last_session.state?.balance ?? 0)}</p>`
+    : "";
+  return `<div class="bankroll-setup">
+    ${lastNote}
+    <div class="bankroll-form">
+      <label class="field compact"><span>元手</span><input id="brStart" type="number" min="300" step="100" value="${Number(config.start_amount || 1000)}" /></label>
+      <label class="field compact"><span>目標額</span><input id="brTarget" type="number" min="400" step="100" value="${Number(config.target_amount || 3000)}" /></label>
+      <label class="field compact"><span>1R上限%</span><input id="brCap" type="number" min="5" max="50" step="5" value="${Number(config.per_race_cap_pct || 20)}" /></label>
+      <label class="field compact"><span>損失上限%</span><input id="brLossLimit" type="number" min="10" max="80" step="5" value="${Number(config.daily_loss_limit_pct || 30)}" /></label>
+      <label class="field compact"><span>連敗停止</span><input id="brMaxLosses" type="number" min="1" max="10" value="${Number(config.max_consecutive_losses || 3)}" /></label>
+      <label class="field compact"><span>EV下限</span><input id="brMinEv" type="number" min="0.5" max="2" step="0.05" value="${Number(config.min_ev || 1.0)}" /></label>
+      <label class="check-field is-disabled"><input type="checkbox" disabled /><span>自動購入(未対応・常時OFF)</span></label>
+      <button id="brStartBtn" class="button primary">運用を開始</button>
+    </div>
+    <ul class="bankroll-rules">
+      ${(state.bankroll?.rules || []).map((rule) => `<li>${escapeHtml(rule)}</li>`).join("")}
+    </ul>
+  </div>`;
+}
+
+function bindBankrollSetup() {
+  on("brStartBtn", "click", startBankroll);
+}
+
+function renderBankrollStopBanner(session, brState) {
+  const profit = brState?.profit ?? 0;
+  const tone = profit >= 0 ? "is-reached" : "is-short";
+  return `<div class="bankroll-stop-banner ${tone}">
+    <strong>停止: ${escapeHtml(session.stop_reason || "停止")}</strong>
+    <span>最終残高 ${yen(brState?.balance ?? 0)}(${profit >= 0 ? "+" : ""}${yen(profit)})</span>
+  </div>`;
+}
+
+function renderBankrollStatus(session, brState) {
+  const config = session.config || {};
+  const profit = brState.profit ?? 0;
+  const profitClass = profit >= 0 ? "ev-positive" : "ev-caution";
+  return `<div class="bankroll-status">
+    <div class="metric metric-teal"><span>残高</span><strong>${yen(brState.balance)}</strong><em>目標 ${yen(config.target_amount)}</em></div>
+    <div class="metric metric-${profit >= 0 ? "green" : "amber"}"><span>損益</span><strong class="${profitClass}">${profit >= 0 ? "+" : ""}${yen(profit)}</strong><em>元手 ${yen(config.start_amount)}</em></div>
+    <div class="metric metric-blue"><span>目標進捗</span><strong>${Math.round((brState.target_progress || 0) * 100)}%</strong><em>${brState.wins}勝${brState.losses}敗</em></div>
+    <div class="metric metric-purple"><span>連敗</span><strong>${brState.consecutive_losses}</strong><em>${config.max_consecutive_losses}で停止</em></div>
+    <div class="metric metric-slate"><span>損失余地</span><strong>${yen(Math.max(0, brState.day_loss_limit - brState.day_loss))}</strong><em>上限 ${yen(brState.day_loss_limit)}</em></div>
+  </div>`;
+}
+
+function renderBankrollProposal(proposal) {
+  const top = proposal.top_pick || {};
+  return `<article class="bankroll-proposal">
+    <header class="plan-card-head">
+      <div>
+        <span class="status-dot">次の提案</span>
+        <h4>${escapeHtml(proposal.venue)} ${escapeHtml(proposal.race_no)}R <span class="time-chip">${escapeHtml(proposal.start_time)}</span></h4>
+        <p>${escapeHtml(proposal.scenario_headline || "")}</p>
+      </div>
+      <div class="plan-return">
+        <strong>投資 ${yen(proposal.total_stake)}</strong>
+        <span>EV ${escapeHtml(proposal.ev)} / 見込 ${yen(proposal.expected_return)}</span>
+      </div>
+    </header>
+    <div class="bankroll-tickets">
+      ${(proposal.tickets || []).map(renderBankrollTicket).join("")}
+    </div>
+    <div class="bankroll-proposal-meta">
+      <span>本命 ${escapeHtml(top.car_no ?? "-")} ${escapeHtml(top.name || "")}</span>
+      <span>信頼度 ${escapeHtml(proposal.confidence)}</span>
+      <span>1R予算 ${yen(proposal.budget)}</span>
+    </div>
+    <div class="bankroll-actions">
+      <button id="brCopyBtn" class="button">買い目をコピー</button>
+      <button id="brCommitBtn" class="button primary">購入を記録</button>
+      <button id="brSkipBtn" class="button">見送る</button>
+      <button id="brRefreshBtn" class="button">更新</button>
+    </div>
+    <p class="bankroll-note">自動購入は行いません。コピーした買い目をWINTICKET等で確認し、購入後に「購入を記録」を押してください。</p>
+  </article>`;
+}
+
+function renderBankrollTicket(ticket) {
+  const roleClass = ticket.role === "本線" ? "is-main" : ticket.role === "抑え" ? "is-cover" : "is-value";
+  return `<div class="bankroll-ticket ${roleClass}">
+    <span class="ticket-role">${escapeHtml(ticket.role)}</span>
+    <b>${escapeHtml(ticket.label)}</b>
+    <span>${yen(ticket.stake)}</span>
+    <em>${escapeHtml(ticket.odds)}倍 / ${percent(ticket.hit_probability)}</em>
+    <strong>見込 ${yen(ticket.projected_return)}</strong>
+  </div>`;
+}
+
+function renderBankrollPending(bet) {
+  return `<article class="bankroll-proposal is-pending">
+    <header class="plan-card-head">
+      <div>
+        <span class="status-dot">結果待ち</span>
+        <h4>${escapeHtml(bet.venue)} ${escapeHtml(bet.race_no)}R <span class="time-chip">${escapeHtml(bet.start_time || "--:--")}</span></h4>
+      </div>
+      <div class="plan-return"><strong>投資 ${yen(bet.total_stake)}</strong></div>
+    </header>
+    <div class="bankroll-tickets">
+      ${(bet.tickets || []).map(renderBankrollTicket).join("")}
+    </div>
+    <div class="bankroll-actions">
+      <label class="field compact"><span>払戻額</span><input id="brPayout" type="number" min="0" step="10" placeholder="的中時のみ" /></label>
+      <button id="brWonBtn" class="button primary">的中</button>
+      <button id="brLostBtn" class="button">不的中</button>
+    </div>
+  </article>`;
+}
+
+function renderBankrollJudged(judged) {
+  return `<div class="bankroll-judged">
+    <div class="judged-title">これからのレース判定</div>
+    ${judged
+      .map(
+        (race) => `<div class="judged-row ${race.decision === "bet" ? "is-bet" : "is-skip"}${race.is_next ? " is-next" : ""}">
+          <span class="time-chip">${escapeHtml(race.start_time || "--:--")}</span>
+          <strong>${escapeHtml(race.venue)} ${escapeHtml(race.race_no)}R</strong>
+          <span class="judged-decision">${race.decision === "bet" ? "買い" : "見送り"}</span>
+          <span class="judged-reason">${escapeHtml(race.reason || "")}</span>
+        </div>`
+      )
+      .join("")}
+  </div>`;
+}
+
+function renderBankrollHistory(brState) {
+  const bets = (brState?.bets || []).filter((bet) => bet.status !== "pending");
+  if (!bets.length) return "";
+  return `<div class="table-wrap bankroll-history">
+    <table class="data-table compact-table">
+      <thead><tr><th>レース</th><th>投資</th><th>払戻</th><th>結果</th></tr></thead>
+      <tbody>
+        ${bets
+          .map((bet) => {
+            const label =
+              bet.status === "won" ? "的中" : bet.status === "lost" ? "不的中" : `見送り${bet.note ? `(${bet.note})` : ""}`;
+            return `<tr>
+              <td>${escapeHtml(bet.venue || "")} ${escapeHtml(bet.race_no ?? "")}R ${escapeHtml(bet.start_time || "")}</td>
+              <td>${bet.total_stake ? yen(bet.total_stake) : "-"}</td>
+              <td>${bet.status === "won" ? yen(bet.payout) : bet.status === "lost" ? yen(0) : "-"}</td>
+              <td>${escapeHtml(label)}</td>
+            </tr>`;
+          })
+          .join("")}
+      </tbody>
+    </table>
+  </div>`;
 }
 
 function setStatus(text) {
@@ -230,9 +534,9 @@ function renderCapitalPlan(payload) {
   const planSummary = payload.summary || {};
   const plans = payload.plans || [];
   const summary = `<div class="plan-meta">
-    <span>${escapeHtml(payload.input?.start_amount || 0)}冁EↁE${escapeHtml(payload.input?.target_amount || 0)}冁E/span>
-    <span>ライチE${odds.fetched || 0}/${odds.attempted || 0}</span>
-    <span>対象 ${escapeHtml(planSummary.active_forecast_count ?? 0)}R / 邨ゆｺ・勁螟・${escapeHtml(planSummary.elapsed_forecast_count ?? 0)}R</span>
+    <span>${escapeHtml(payload.input?.start_amount || 0)}円 → ${escapeHtml(payload.input?.target_amount || 0)}円</span>
+    <span>ライブ ${odds.fetched || 0}/${odds.attempted || 0}</span>
+    <span>対象 ${escapeHtml(planSummary.active_forecast_count ?? 0)}R / 終了除外 ${escapeHtml(planSummary.elapsed_forecast_count ?? 0)}R</span>
     ${planSummary.next_race_time ? `<span>次 ${escapeHtml(planSummary.next_race_time)}</span>` : ""}
     <span>${el("autoRollToggle").checked ? "運用モードON" : "手動更新"}</span>
     <span>${escapeHtml((planSummary.data_used || []).slice(0, 4).join(" / "))}</span>
@@ -254,7 +558,7 @@ function renderPlanCard(plan) {
       </div>
       <div class="plan-return">
         <strong>${yen(plan.projected_return)}</strong>
-        <span>${escapeHtml(plan.multiplier)}倁E/ 逧・ｸｭ逶ｮ螳・${percent(plan.hit_probability)}</span>
+        <span>${escapeHtml(plan.multiplier)}倍 / 的中目安 ${percent(plan.hit_probability)}</span>
       </div>
     </header>
     <div class="plan-legs">
@@ -400,16 +704,16 @@ function renderForecastCard(race) {
             <p class="risk-text">${escapeHtml(race.scenario?.upset || "")}</p>
           </section>
           <section class="analysis-block">
-            <h4>ライン/髢｢菫よｧ</h4>
+            <h4>ライン/関係性</h4>
             <ul class="line-list">${lines}</ul>
           </section>
         </div>
 
         <details class="details">
-          <summary>繧ｳ繝｡繝ｳ繝域ｹ諡と全選扁E/summary>
+          <summary>コメント根拠と全選手</summary>
           <div class="detail-grid">
             <section>
-              <h4>繧ｳ繝｡繝ｳ繝医・蠢・炊繧ｷ繧ｰ繝翫Ν</h4>
+              <h4>コメントの心理シグナル</h4>
               <ul class="signal-list">${signals}</ul>
             </section>
             <section>
@@ -417,7 +721,7 @@ function renderForecastCard(race) {
               <div class="mini-table">${renderMiniEntries(race.entries || [])}</div>
             </section>
           </div>
-          <a class="source-link" href="${escapeAttr(race.url || "#")}" target="_blank" rel="noreferrer">WINTICKET縺ｧ髢九￥</a>
+          <a class="source-link" href="${escapeAttr(race.url || "#")}" target="_blank" rel="noreferrer">WINTICKETで開く</a>
         </details>
       </article>
     </div>
@@ -428,11 +732,11 @@ function renderMiniEntries(entries) {
   return `<table class="data-table compact-table">
     <thead>
       <tr>
-        <th>軁E/th>
-        <th>選扁E/th>
+        <th>車</th>
+        <th>選手</th>
         <th>脚質</th>
         <th>得点</th>
-        <th>コメンチE/th>
+        <th>コメント</th>
       </tr>
     </thead>
     <tbody>
@@ -509,7 +813,7 @@ function renderLineDiagram(lines, top3) {
   return `<div class="line-diagram" aria-label="ライン図">
     <div class="diagram-title">
       <span>ライン図</span>
-      <strong>髫雁・縺ｨ莉墓寺縺代←縺薙ｍ</strong>
+      <strong>隊列と仕掛けどころ</strong>
     </div>
     <div class="line-tracks">
       ${lines.map((line, index) => renderLineTrack(line, index, topCars)).join("")}

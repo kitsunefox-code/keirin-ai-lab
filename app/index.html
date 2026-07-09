@@ -50,6 +50,19 @@
 
           <div class="metric-strip" id="todayMetrics"></div>
 
+          <section class="bankroll-session surface-panel" aria-labelledby="bankrollTitle">
+            <div class="capital-head">
+              <div>
+                <p class="eyebrow">Bankroll Session</p>
+                <h3 id="bankrollTitle">バンクロール運用セッション</h3>
+              </div>
+              <div class="bankroll-head-actions" id="bankrollHeadActions"></div>
+            </div>
+            <div id="bankrollBody">
+              <div class="empty">運用状態を読み込み中です。</div>
+            </div>
+          </section>
+
           <section class="capital-planner surface-panel" aria-labelledby="capitalPlannerTitle">
             <div class="capital-head">
               <div>
@@ -71,6 +84,8 @@
                     <option value="1">1</option>
                     <option value="2" selected>2</option>
                     <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
                   </select>
                 </label>
                 <label class="check-field">
@@ -104,7 +119,7 @@
           <header class="page-header">
             <div>
               <p class="eyebrow">Learning</p>
-              <h2>蟄ｦ鄙偵・蜿取髪</h2>
+              <h2>学習状態</h2>
             </div>
             <span class="page-meta" id="learnModelLabel">確認中</span>
           </header>
@@ -113,7 +128,7 @@
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>鬆・岼</th>
+                  <th>項目</th>
                   <th>値</th>
                 </tr>
               </thead>

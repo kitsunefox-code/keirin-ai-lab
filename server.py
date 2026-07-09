@@ -9,6 +9,16 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
+from keirin_ai.bankroll import (
+    BankrollConfig,
+    active_session,
+    build_bankroll_payload,
+    commit_bet,
+    record_result,
+    record_skip,
+    start_session,
+    stop_session,
+)
 from keirin_ai.capital_plan import build_capital_plan_payload
 from keirin_ai.forecast_view import build_today_forecast_payload
 from keirin_ai.learner import train_win_model
@@ -59,6 +69,8 @@ class KeirinHandler(BaseHTTPRequestHandler):
             return self._handle_fetch_store(url)
         if path == "/api/learn/train":
             return self._handle_train()
+        if path == "/api/bankroll":
+            return self._handle_bankroll()
 
         self._send(404, "text/plain; charset=utf-8", "Not found")
 
@@ -66,6 +78,16 @@ class KeirinHandler(BaseHTTPRequestHandler):
         parsed = urlparse(self.path)
         if parsed.path == "/api/learn/manual_result":
             return self._handle_manual_result()
+        if parsed.path == "/api/bankroll/start":
+            return self._handle_bankroll_start()
+        if parsed.path == "/api/bankroll/commit":
+            return self._handle_bankroll_commit()
+        if parsed.path == "/api/bankroll/result":
+            return self._handle_bankroll_result()
+        if parsed.path == "/api/bankroll/skip":
+            return self._handle_bankroll_skip()
+        if parsed.path == "/api/bankroll/stop":
+            return self._handle_bankroll_stop()
         self._send(404, "text/plain; charset=utf-8", "Not found")
 
     def log_message(self, fmt: str, *args: object) -> None:
@@ -190,6 +212,96 @@ class KeirinHandler(BaseHTTPRequestHandler):
             return self._json({"ok": True, "status": status, "model": model})
         except Exception as exc:
             return self._json({"ok": False, "error": str(exc)}, status=502)
+
+    def _handle_bankroll(self) -> None:
+        try:
+            with connect() as conn:
+                payload = build_bankroll_payload(conn, DATA_DIR)
+            return self._json(payload)
+        except Exception as exc:
+            return self._json({"ok": False, "error": str(exc)}, status=502)
+
+    def _handle_bankroll_start(self) -> None:
+        try:
+            body = self._read_json_body()
+            config = BankrollConfig(
+                start_amount=int(body.get("start_amount") or 0),
+                target_amount=int(body.get("target_amount") or 0),
+                per_race_cap_pct=int(body.get("per_race_cap_pct") or 20),
+                daily_loss_limit_pct=int(body.get("daily_loss_limit_pct") or 30),
+                max_consecutive_losses=int(body.get("max_consecutive_losses") or 3),
+                min_ev=float(body.get("min_ev") or 1.0),
+            )
+            with connect() as conn:
+                start_session(conn, config)
+                payload = build_bankroll_payload(conn, DATA_DIR)
+            return self._json(payload)
+        except Exception as exc:
+            return self._json({"ok": False, "error": str(exc)}, status=502)
+
+    def _handle_bankroll_commit(self) -> None:
+        try:
+            body = self._read_json_body()
+            proposal = body.get("proposal") or {}
+            with connect() as conn:
+                session = active_session(conn)
+                if not session:
+                    return self._json({"ok": False, "error": "運用中のセッションがありません。"}, status=400)
+                commit_bet(conn, session["id"], proposal)
+                payload = build_bankroll_payload(conn, DATA_DIR)
+            return self._json(payload)
+        except ValueError as exc:
+            return self._json({"ok": False, "error": str(exc)}, status=400)
+        except Exception as exc:
+            return self._json({"ok": False, "error": str(exc)}, status=502)
+
+    def _handle_bankroll_result(self) -> None:
+        try:
+            body = self._read_json_body()
+            with connect() as conn:
+                record_result(
+                    conn,
+                    bet_id=int(body.get("bet_id") or 0),
+                    outcome=str(body.get("outcome") or ""),
+                    payout=int(body.get("payout") or 0),
+                )
+                payload = build_bankroll_payload(conn, DATA_DIR)
+            return self._json(payload)
+        except ValueError as exc:
+            return self._json({"ok": False, "error": str(exc)}, status=400)
+        except Exception as exc:
+            return self._json({"ok": False, "error": str(exc)}, status=502)
+
+    def _handle_bankroll_skip(self) -> None:
+        try:
+            body = self._read_json_body()
+            with connect() as conn:
+                session = active_session(conn)
+                if not session:
+                    return self._json({"ok": False, "error": "運用中のセッションがありません。"}, status=400)
+                record_skip(conn, session["id"], body.get("race") or {}, str(body.get("reason") or "手動見送り"))
+                payload = build_bankroll_payload(conn, DATA_DIR)
+            return self._json(payload)
+        except Exception as exc:
+            return self._json({"ok": False, "error": str(exc)}, status=502)
+
+    def _handle_bankroll_stop(self) -> None:
+        try:
+            body = self._read_json_body()
+            with connect() as conn:
+                session = active_session(conn)
+                if session:
+                    stop_session(conn, session["id"], str(body.get("reason") or "手動停止"))
+                payload = build_bankroll_payload(conn, DATA_DIR)
+            return self._json(payload)
+        except Exception as exc:
+            return self._json({"ok": False, "error": str(exc)}, status=502)
+
+    def _read_json_body(self) -> dict:
+        length = int(self.headers.get("Content-Length", "0"))
+        if length <= 0:
+            return {}
+        return json.loads(self.rfile.read(length).decode("utf-8") or "{}")
 
     def _handle_learning_status(self) -> None:
         try:

@@ -1,0 +1,41 @@
+{
+  "ok": true,
+  "generated_at_jst": "2026-07-09T09:02:52+09:00",
+  "rules": [
+    "全額転がしは行いません(1レース投資は残高の上限%まで)",
+    "負けた後の倍賭け(マーチンゲール)は行いません",
+    "期待値が下限未満のレースは見送ります",
+    "1点勝負はせず、本線・抑え・妙味に分散します",
+    "自動購入は行いません。買い目コピーと購入前確認までです"
+  ],
+  "auto_buy_available": false,
+  "session": null,
+  "state": null,
+  "proposal": null,
+  "judged_races": [],
+  "last_session": {
+    "stop_reason": "動作確認完了",
+    "config": {
+      "start_amount": 1000,
+      "target_amount": 3000,
+      "per_race_cap_pct": 20,
+      "daily_loss_limit_pct": 30,
+      "max_consecutive_losses": 3,
+      "min_ev": 1.0,
+      "auto_buy": false
+    },
+    "state": {
+      "balance": 1000,
+      "profit": 0,
+      "day_loss": 0,
+      "day_loss_limit": 300,
+      "consecutive_losses": 0,
+      "wins": 0,
+      "losses": 0,
+      "skips": 0,
+      "pending_bet": null,
+      "bets": [],
+      "target_progress": 0.3333333333333333
+    }
+  }
+}
