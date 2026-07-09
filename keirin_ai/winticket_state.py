@@ -90,6 +90,25 @@ def enrich_race_from_state(race: dict, html_text: str) -> dict:
                 "source": "winticket-state",
             }
 
+    race_meta = common.get("race") or {}
+    race_class_official = str(race_meta.get("class") or race_meta.get("raceType3") or "")
+    is_girls = "ガール" in race_class_official or "ガ" in str(race_meta.get("raceType3") or "")
+    if race_class_official:
+        race["race_class_official"] = race_class_official
+    race["is_girls"] = is_girls
+
+    ids_in_race = {str(entrant.get("player_id") or "") for entrant in race.get("entrants", []) if entrant.get("player_id")}
+    head_to_head = _head_to_head_within_race(common.get("competitionRecords") or [], ids_in_race, name_by_player)
+    if head_to_head:
+        race["head_to_head"] = head_to_head
+        head_to_head_by_player: dict[str, list[dict]] = {}
+        for record in head_to_head:
+            head_to_head_by_player.setdefault(record["player_id"], []).append(record)
+        for entrant in race.get("entrants", []):
+            matches = head_to_head_by_player.get(str(entrant.get("player_id") or ""))
+            if matches:
+                entrant["head_to_head"] = matches
+
     race["state_meta"] = {
         "has_inspection_interviews": bool(inspection),
         "has_post_race_interviews": bool(post_race),
@@ -97,6 +116,30 @@ def enrich_race_from_state(race: dict, html_text: str) -> dict:
         "player_names": name_by_player,
     }
     return race
+
+
+def _head_to_head_within_race(records: list, ids_in_race: set[str], name_by_player: dict[str, str]) -> list[dict]:
+    """対戦成績(competitionRecords)のうち、今回同時出走する2選手同士の対戦だけを抽出する。"""
+    result = []
+    for record in records:
+        player_id = str(record.get("playerId") or "")
+        opponent_id = str(record.get("opponentId") or "")
+        if player_id not in ids_in_race or opponent_id not in ids_in_race:
+            continue
+        wins = int(record.get("wins") or 0)
+        losses = int(record.get("losses") or 0)
+        if wins + losses <= 0:
+            continue
+        result.append(
+            {
+                "player_id": player_id,
+                "opponent_id": opponent_id,
+                "opponent_name": name_by_player.get(opponent_id, ""),
+                "wins": wins,
+                "losses": losses,
+            }
+        )
+    return result
 
 
 def _car_by_player(common: dict) -> dict[str, int]:

@@ -15,7 +15,7 @@ if str(ROOT) not in sys.path:
 
 from keirin_ai.predictor import predict_race
 from keirin_ai.sources import fetch_url, parse_winticket_racecard
-from keirin_ai.storage import connect, latest_player_form, save_race
+from keirin_ai.storage import attach_line_partner_stats, connect, latest_player_form, save_race
 from keirin_ai.winticket_state import enrich_race_from_state
 
 
@@ -53,6 +53,7 @@ def main() -> None:
                     if not start_time or start_time < args.after:
                         continue
                     _attach_player_form(conn, race)
+                    attach_line_partner_stats(conn, race)
                     prediction = predict_race(race)
                     key = save_race(conn, race, prediction)
                     forecasts.append(summarize_forecast(key, race, prediction))

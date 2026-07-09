@@ -2,13 +2,14 @@ from __future__ import annotations
 
 import json
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "data"
+JST = timezone(timedelta(hours=9))
 
 
 def build_today_forecast_payload(conn, data_dir: Path | str = DATA_DIR) -> dict:
@@ -21,21 +22,30 @@ def build_today_forecast_payload(conn, data_dir: Path | str = DATA_DIR) -> dict:
             "forecast_file": None,
             "summary": {"count": 0},
             "forecasts": [],
+            "recommended_races": [],
             "schedule_summary": _load_schedule_summary(data_path),
         }
 
     source = _read_json(forecast_path, {})
-    forecasts = [
+    all_forecasts = [
         _enrich_forecast(conn, item)
         for item in source.get("forecasts", [])
         if item.get("race_key")
     ]
+    now_jst = datetime.now(JST)
+    forecasts = [race for race in all_forecasts if not _is_elapsed(race, now_jst)]
+    elapsed_count = len(all_forecasts) - len(forecasts)
     forecasts.sort(key=lambda item: (item.get("start_time") or "99:99", item.get("venue") or "", item.get("race_no") or 0))
 
     confidence_counts: dict[str, int] = {}
     for item in forecasts:
         label = item.get("confidence", {}).get("label", "混戦")
         confidence_counts[label] = confidence_counts.get(label, 0) + 1
+
+    recommended = _pick_recommended(forecasts)
+    recommended_keys = {race["race_key"] for race in recommended}
+    for race in forecasts:
+        race["recommended"] = race["race_key"] in recommended_keys
 
     return {
         "ok": True,
@@ -49,6 +59,7 @@ def build_today_forecast_payload(conn, data_dir: Path | str = DATA_DIR) -> dict:
         },
         "summary": {
             "count": len(forecasts),
+            "elapsed_count": elapsed_count,
             "after": source.get("after") or "14:30",
             "target_date": source.get("target_date") or "2026-07-08",
             "high_confidence": confidence_counts.get("強", 0),
@@ -56,8 +67,54 @@ def build_today_forecast_payload(conn, data_dir: Path | str = DATA_DIR) -> dict:
             "mixed": confidence_counts.get("混戦", 0),
         },
         "forecasts": forecasts,
+        "recommended_races": recommended,
         "schedule_summary": _load_schedule_summary(data_path),
     }
+
+
+def _is_elapsed(race: dict, now_jst: datetime) -> bool:
+    starts_at = _race_start_datetime(race, now_jst)
+    if starts_at is None:
+        return False
+    return starts_at <= now_jst
+
+
+def _race_start_datetime(race: dict, now_jst: datetime) -> datetime | None:
+    start_time = str(race.get("start_time") or "").strip()
+    match = re.fullmatch(r"(\d{1,2}):(\d{2})", start_time)
+    if not match:
+        return None
+    hour, minute = int(match.group(1)), int(match.group(2))
+    race_date = _race_date(race, now_jst)
+    return datetime(race_date.year, race_date.month, race_date.day, hour, minute, tzinfo=JST)
+
+
+def _race_date(race: dict, now_jst: datetime):
+    raw = str(race.get("race_date") or "").strip()
+    iso_match = re.search(r"(\d{4})-(\d{1,2})-(\d{1,2})", raw)
+    if iso_match:
+        return datetime(int(iso_match.group(1)), int(iso_match.group(2)), int(iso_match.group(3))).date()
+    jp_match = re.search(r"(\d{4})年(\d{1,2})月(\d{1,2})日", raw)
+    if jp_match:
+        return datetime(int(jp_match.group(1)), int(jp_match.group(2)), int(jp_match.group(3))).date()
+    return now_jst.date()
+
+
+def _pick_recommended(forecasts: list[dict], limit: int = 5) -> list[dict]:
+    """信頼度・本命確率・買い目スコアから、AIが自信を持てるレースを上位表示用に選ぶ。"""
+    scored = []
+    for race in forecasts:
+        confidence = race.get("confidence") or {}
+        rank = int(confidence.get("rank") or 0)
+        if rank < 2:  # 混戦は推奨に出さない
+            continue
+        top = (race.get("top3") or [{}])[0]
+        top_prob = float(top.get("probability") or 0)
+        best_ticket_score = max((t.get("score") or 0) for t in (race.get("tickets") or [{"score": 0}]))
+        score = rank * 10 + top_prob * 8 + best_ticket_score * 4
+        scored.append((score, race))
+    scored.sort(key=lambda pair: pair[0], reverse=True)
+    return [race for _score, race in scored[:limit]]
 
 
 def _latest_forecast_file(data_path: Path) -> Path | None:
@@ -93,6 +150,7 @@ def _enrich_forecast(conn, forecast: dict) -> dict:
 
     venue = race.get("venue") or forecast.get("venue")
     race_no = race.get("race_no") or forecast.get("race_no")
+    race_class_official = race.get("race_class_official") or ""
     return {
         "race_key": race_key,
         "venue": venue,
@@ -100,6 +158,7 @@ def _enrich_forecast(conn, forecast: dict) -> dict:
         "race_no": race_no,
         "race_date": race.get("race_date") or forecast.get("race_date") or "",
         "race_class": race.get("race_class") or forecast.get("race_class") or "",
+        "is_girls": "ガール" in race_class_official,
         "start_time": forecast.get("start_time") or race.get("start_time") or "",
         "url": race.get("source_url") or forecast.get("url") or "",
         "title": _race_title(venue, race_no, race.get("event") or forecast.get("title")),
@@ -119,7 +178,7 @@ def _race_record(conn, race_key: str) -> dict:
     row = conn.execute(
         """
         select race_key, source_url, title, venue, event, race_no, race_class,
-               race_date, lineup_json, raw_quality_json
+               race_date, lineup_json, raw_quality_json, race_class_official
         from races
         where race_key=?
         """,

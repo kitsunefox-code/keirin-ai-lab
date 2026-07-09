@@ -15,6 +15,7 @@ from keirin_ai.capital_plan import (
     _round_yen,
 )
 from keirin_ai.forecast_view import build_today_forecast_payload
+from keirin_ai.odds import fetch_live_odds
 
 
 JST = timezone(timedelta(hours=9))
@@ -201,6 +202,35 @@ def latest_session(conn: sqlite3.Connection) -> dict | None:
     return _session_row(row) if row else None
 
 
+def sessions_on_date(conn: sqlite3.Connection, iso_date: str) -> list[dict]:
+    """指定日に運用した全セッションの結果をそれぞれ返す(スタイルごとに複数回運用していれば全件)。"""
+    ensure_tables(conn)
+    rows = conn.execute(
+        "select * from bankroll_sessions where session_date=? order by id", (iso_date,)
+    ).fetchall()
+    results = []
+    for row in rows:
+        session = _session_row(row)
+        state = session_state(conn, session)
+        results.append(
+            {
+                "id": session["id"],
+                "style": session["config"].get("style", "balance"),
+                "style_label": STYLES.get(session["config"].get("style", "balance"), STYLES["balance"])["label"],
+                "status": session["status"],
+                "stop_reason": session.get("stop_reason"),
+                "config": session["config"],
+                "balance": state["balance"],
+                "profit": state["profit"],
+                "wins": state["wins"],
+                "losses": state["losses"],
+                "skips": state["skips"],
+                "target_reached": state["balance"] >= session["config"]["target_amount"],
+            }
+        )
+    return results
+
+
 def commit_bet(conn: sqlite3.Connection, session_id: int, proposal: dict) -> int:
     ensure_tables(conn)
     pending = conn.execute(
@@ -358,6 +388,8 @@ def build_bankroll_payload(conn: sqlite3.Connection, data_dir: Path | str) -> di
         "proposal": None,
         "judged_races": [],
     }
+    yesterday = (datetime.now(JST).date() - timedelta(days=1)).isoformat()
+    payload["yesterday"] = {"date": yesterday, "sessions": sessions_on_date(conn, yesterday)}
     if session is None:
         last = latest_session(conn)
         if last and last["status"] == "stopped":
@@ -401,17 +433,22 @@ def _judge_races(conn, data_dir, config: dict, state: dict) -> tuple[list[dict],
 
     handled_keys = {bet["race_key"] for bet in state["bets"] if bet["race_key"]}
     budget = _race_budget(state["balance"], config)
+    pending_races = [race for race in active[:12] if race.get("race_key") not in handled_keys]
+
+    odds_status = {"attempted": 0, "fetched": 0, "failed": 0, "errors": []}
+    live_odds_by_race = _fetch_live_odds_for_races(pending_races, limit=6, odds_status=odds_status)
 
     judged: list[dict] = []
     proposal: dict | None = None
-    for race in active[:12]:
-        if race.get("race_key") in handled_keys:
-            continue
-        verdict = _judge_race(race, budget, config)
+    for race in pending_races:
+        live_trifecta = live_odds_by_race.get(race.get("race_key"))
+        verdict = _judge_race(race, budget, config, live_trifecta)
         judged.append(verdict["summary"])
         if proposal is None and verdict["proposal"] is not None:
             proposal = verdict["proposal"]
             verdict["summary"]["is_next"] = True
+    if proposal is not None:
+        proposal["odds_status"] = odds_status
     return judged, proposal
 
 
@@ -420,7 +457,7 @@ def _race_budget(balance: int, config: dict) -> int:
     return max(0, min(cap, balance))
 
 
-def _judge_race(race: dict, budget: int, config: dict) -> dict:
+def _judge_race(race: dict, budget: int, config: dict, live_trifecta: dict | None = None) -> dict:
     style = STYLES.get(config.get("style") or "balance") or STYLES["balance"]
     summary = {
         "race_key": race.get("race_key"),
@@ -437,7 +474,7 @@ def _judge_race(race: dict, budget: int, config: dict) -> dict:
     if confidence_rank < style["min_confidence_rank"]:
         summary["reason"] = f"{style['label']}運用のため混戦は見送り"
         return {"summary": summary, "proposal": None}
-    candidates = _race_tickets(race)
+    candidates = _race_tickets(race, live_trifecta)
     if len(candidates) < 2:
         summary["reason"] = "買い目候補が不足(1点勝負は行わない)"
         return {"summary": summary, "proposal": None}
@@ -455,7 +492,8 @@ def _judge_race(race: dict, budget: int, config: dict) -> dict:
         return {"summary": summary, "proposal": None}
 
     summary["decision"] = "bet"
-    summary["reason"] = f"EV {ev:.2f} / {len(allocation)}点分散"
+    live_count = sum(1 for t in allocation if t.get("odds_source") == "live")
+    summary["reason"] = f"EV {ev:.2f} / {len(allocation)}点分散" + (f" / ライブ{live_count}点" if live_count else "")
     proposal = {
         "race_key": race.get("race_key"),
         "venue": race.get("venue") or "",
@@ -469,6 +507,7 @@ def _judge_race(race: dict, budget: int, config: dict) -> dict:
         "ev": round(ev, 3),
         "expected_return": _round_yen(expected),
         "tickets": allocation,
+        "live_odds_count": live_count,
         "top_pick": (race.get("top3") or [{}])[0],
         "scenario_headline": (race.get("scenario") or {}).get("headline") or "",
         "copy_text": _copy_text(race, allocation),
@@ -476,10 +515,11 @@ def _judge_race(race: dict, budget: int, config: dict) -> dict:
     return {"summary": summary, "proposal": proposal}
 
 
-def _race_tickets(race: dict) -> list[dict]:
+def _race_tickets(race: dict, live_trifecta: dict | None = None) -> list[dict]:
     confidence = race.get("confidence") or {}
     rank = int(confidence.get("rank") or 1)
     has_signals = bool(race.get("comment_signals"))
+    live_trifecta = live_trifecta or {}
     tickets = []
     for index, ticket in enumerate((race.get("tickets") or [])[:6]):
         label = ticket.get("label") if isinstance(ticket, dict) else str(ticket)
@@ -487,15 +527,51 @@ def _race_tickets(race: dict) -> list[dict]:
             continue
         score = _float(ticket.get("score") if isinstance(ticket, dict) else None, default=0.18)
         odds = _estimated_odds(race, score, index)
+        odds_source = "estimated"
+        popularity = None
+        live = live_trifecta.get(label)
+        if live and live.get("odds"):
+            odds = float(live["odds"])
+            odds_source = "live"
+            popularity = live.get("popularity")
         tickets.append(
             {
                 "label": label,
                 "odds": odds,
+                "odds_source": odds_source,
+                "popularity": popularity,
                 "hit_probability": _hit_probability(score, rank, has_signals),
                 "ticket_rank": index + 1,
             }
         )
     return tickets
+
+
+def _fetch_live_odds_for_races(races: list[dict], limit: int, odds_status: dict) -> dict[str, dict]:
+    """発走が近いレースから順にライブオッズを取得する(公開ページ取得のため件数は絞る)。"""
+    result: dict[str, dict] = {}
+    fetched = 0
+    for race in races:
+        if fetched >= limit:
+            break
+        url = race.get("url")
+        race_key = race.get("race_key")
+        if not url or not race_key:
+            continue
+        odds_status["attempted"] += 1
+        try:
+            payload = fetch_live_odds(url, timeout=8)
+            trifecta = payload.get("trifecta") or {}
+            if trifecta:
+                result[race_key] = trifecta
+                odds_status["fetched"] += 1
+            else:
+                odds_status["failed"] += 1
+        except Exception as exc:
+            odds_status["failed"] += 1
+            odds_status["errors"].append({"race_key": race_key, "reason": str(exc)[:140]})
+        fetched += 1
+    return result
 
 
 def _allocate(budget: int, candidates: list[dict], weights: list | None = None) -> list[dict]:
@@ -527,6 +603,8 @@ def _allocate(budget: int, candidates: list[dict], weights: list | None = None) 
                 "label": ticket["label"],
                 "stake": units * UNIT,
                 "odds": ticket["odds"],
+                "odds_source": ticket.get("odds_source") or "estimated",
+                "popularity": ticket.get("popularity"),
                 "hit_probability": ticket["hit_probability"],
                 "projected_return": _round_yen(units * UNIT * ticket["odds"]),
             }

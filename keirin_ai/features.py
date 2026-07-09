@@ -33,6 +33,8 @@ FEATURE_NAMES = [
     "ex_left_behind",
     "recent_top3",
     "recent_avg_finish",
+    "partner_top3_rate",
+    "head_to_head_ratio",
 ]
 
 
@@ -75,6 +77,8 @@ def build_feature_row(race: dict, entrant: dict, emotion: dict | None = None) ->
         "ex_left_behind": min(float((entrant.get("ex") or {}).get("exLeftBehind") or 0.0), 60.0) / 60.0,
         "recent_top3": _recent_top3(entrant.get("recent_form") or []),
         "recent_avg_finish": _recent_avg_finish(entrant.get("recent_form") or []),
+        "partner_top3_rate": _partner_top3_rate(entrant.get("partner_record")),
+        "head_to_head_ratio": _head_to_head_ratio(entrant.get("head_to_head") or []),
     }
     return {name: float(row.get(name, 0.0)) for name in FEATURE_NAMES}
 
@@ -97,6 +101,22 @@ def _recent_avg_finish(form: list[int]) -> float:
         return 0.5
     average = sum(form) / len(form)
     return max(0.0, min(1.0, (9.0 - average) / 8.0))
+
+
+def _partner_top3_rate(partner_record: dict | None) -> float:
+    """ラインの相方との連携成績(過去に一緒のラインで走った時の3着内率)。データなしは中立0.45。"""
+    if not partner_record or int(partner_record.get("races") or 0) < 2:
+        return 0.45
+    return float(partner_record.get("top3_rate") or 0.45)
+
+
+def _head_to_head_ratio(records: list[dict]) -> float:
+    """対戦成績の勝率(0-1)。データなしは中立0.5。"""
+    wins = sum(int(item.get("wins") or 0) for item in records)
+    losses = sum(int(item.get("losses") or 0) for item in records)
+    if wins + losses <= 0:
+        return 0.5
+    return wins / (wins + losses)
 
 
 def dot(weights: dict[str, float], features: dict[str, float]) -> float:

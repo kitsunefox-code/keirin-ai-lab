@@ -26,7 +26,7 @@ from keirin_ai.learner import train_win_model
 from keirin_ai.odds import fetch_live_odds
 from keirin_ai.predictor import predict_race
 from keirin_ai.sources import fetch_url, parse_winticket_racecard
-from keirin_ai.storage import connect, learning_status, result_from_order, save_race
+from keirin_ai.storage import attach_line_partner_stats, connect, learning_status, result_from_order, save_race
 from keirin_ai.winticket_state import enrich_race_from_state
 
 
@@ -118,6 +118,8 @@ class KeirinHandler(BaseHTTPRequestHandler):
             html = fetch_url(url)
             race = parse_winticket_racecard(html, url)
             race = enrich_race_from_state(race, html)
+            with connect() as conn:
+                attach_line_partner_stats(conn, race)
             return self._json({"ok": True, "race": race, "prediction": predict_race(race)})
         except Exception as exc:
             return self._json({"ok": False, "error": str(exc)}, status=502)
@@ -158,8 +160,9 @@ class KeirinHandler(BaseHTTPRequestHandler):
             html = fetch_url(url)
             race = parse_winticket_racecard(html, url)
             race = enrich_race_from_state(race, html)
-            prediction = predict_race(race)
             with connect() as conn:
+                attach_line_partner_stats(conn, race)
+                prediction = predict_race(race)
                 key = save_race(conn, race, prediction)
                 status = learning_status(conn)
             model = train_win_model()

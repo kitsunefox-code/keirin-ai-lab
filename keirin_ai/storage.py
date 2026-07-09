@@ -61,6 +61,7 @@ def init_db(conn: sqlite3.Connection) -> None:
             finish_position integer,
             is_win integer,
             updated_at text not null,
+            player_id text,
             primary key (race_key, car_no)
         );
 
@@ -102,7 +103,18 @@ def init_db(conn: sqlite3.Connection) -> None:
         );
         """
     )
+    _migrate_entries_player_id(conn)
     conn.commit()
+
+
+def _migrate_entries_player_id(conn: sqlite3.Connection) -> None:
+    """既存DBに player_id 列がなければ追加する(古いDBからの移行用)。"""
+    columns = {row["name"] for row in conn.execute("pragma table_info(entries)").fetchall()}
+    if "player_id" not in columns:
+        conn.execute("alter table entries add column player_id text")
+    race_columns = {row["name"] for row in conn.execute("pragma table_info(races)").fetchall()}
+    if "race_class_official" not in race_columns:
+        conn.execute("alter table races add column race_class_official text")
 
 
 def save_player_form(conn: sqlite3.Connection, rows: list[dict]) -> int:
@@ -143,6 +155,73 @@ def save_player_form(conn: sqlite3.Connection, rows: list[dict]) -> int:
     return saved
 
 
+def line_partner_record(conn: sqlite3.Connection, player_a: str, player_b: str) -> dict | None:
+    """2選手が過去に同じラインを組んだレースでの「連携成績」(ライン内どちらかが3着内に入った割合)。"""
+    player_a, player_b = str(player_a or ""), str(player_b or "")
+    if not player_a or not player_b or player_a == player_b:
+        return None
+    rows = conn.execute(
+        """
+        select e1.race_key as race_key, e1.car_no as car_a, e2.car_no as car_b,
+               e1.finish_position as finish_a, e2.finish_position as finish_b,
+               r.lineup_json as lineup_json
+        from entries e1
+        join entries e2 on e1.race_key = e2.race_key and e2.player_id = ?
+        join races r on r.race_key = e1.race_key
+        where e1.player_id = ? and e1.finish_position is not null and e2.finish_position is not null
+        """,
+        (player_b, player_a),
+    ).fetchall()
+    races = 0
+    top3 = 0
+    for row in rows:
+        lineup = _json_or(row["lineup_json"], [])
+        if not _same_line(lineup, row["car_a"], row["car_b"]):
+            continue
+        races += 1
+        if (row["finish_a"] and row["finish_a"] <= 3) or (row["finish_b"] and row["finish_b"] <= 3):
+            top3 += 1
+    if races == 0:
+        return None
+    return {"races": races, "top3": top3, "top3_rate": round(top3 / races, 3)}
+
+
+def _same_line(lineup: list, car_a: int, car_b: int) -> bool:
+    for line in lineup or []:
+        if not isinstance(line, list):
+            continue
+        if car_a in line and car_b in line:
+            return True
+    return False
+
+
+def _json_or(value: object, default: object) -> object:
+    if value is None:
+        return default
+    if isinstance(value, (list, dict)):
+        return value
+    try:
+        return json.loads(value)
+    except Exception:
+        return default
+
+
+def attach_line_partner_stats(conn: sqlite3.Connection, race: dict) -> None:
+    """出走表のライン構成から隣接ペアの連携成績を各選手へ付与する。"""
+    entries_by_car = {int(e.get("car_no") or 0): e for e in race.get("entrants", [])}
+    for line in race.get("lineup") or []:
+        members = [entries_by_car.get(int(car)) for car in line if int(car) in entries_by_car]
+        for index, entrant in enumerate(members):
+            if not entrant or not entrant.get("player_id"):
+                continue
+            partner = members[index + 1] if index + 1 < len(members) else (members[index - 1] if index > 0 else None)
+            if not partner or not partner.get("player_id"):
+                continue
+            record = line_partner_record(conn, entrant["player_id"], partner["player_id"])
+            if record:
+                entrant["partner_record"] = {**record, "partner_name": partner.get("name") or ""}
+
+
 def latest_player_form(conn: sqlite3.Connection, player_ids: list[str]) -> dict[str, dict]:
     """各選手の直近のレース後情報(談話・着順・決まり手)を返す。"""
     result: dict[str, dict] = {}
@@ -170,8 +249,9 @@ def save_race(conn: sqlite3.Connection, race: dict, prediction: dict | None = No
         """
         insert into races (
             race_key, source_name, source_url, title, venue, event, race_no, race_class,
-            race_date, weather, lineup_json, result_json, raw_quality_json, fetched_at
-        ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            race_date, weather, lineup_json, result_json, raw_quality_json, fetched_at,
+            race_class_official
+        ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         on conflict(race_key) do update set
             source_name=excluded.source_name,
             source_url=excluded.source_url,
@@ -185,7 +265,8 @@ def save_race(conn: sqlite3.Connection, race: dict, prediction: dict | None = No
             lineup_json=excluded.lineup_json,
             result_json=coalesce(excluded.result_json, races.result_json),
             raw_quality_json=excluded.raw_quality_json,
-            fetched_at=excluded.fetched_at
+            fetched_at=excluded.fetched_at,
+            race_class_official=coalesce(nullif(excluded.race_class_official, ''), races.race_class_official)
         """,
         (
             key,
@@ -202,6 +283,7 @@ def save_race(conn: sqlite3.Connection, race: dict, prediction: dict | None = No
             _dump(result) if result else None,
             _dump(race.get("raw_quality", {})),
             now,
+            str(race.get("race_class_official") or ""),
         ),
     )
 
@@ -216,8 +298,8 @@ def save_race(conn: sqlite3.Connection, race: dict, prediction: dict | None = No
             insert into entries (
                 race_key, car_no, name, prefecture, class, age, term, ai_mark,
                 racing_score, style, gear, comment_excerpt, emotion_json, features_json,
-                finish_position, is_win, updated_at
-            ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                finish_position, is_win, updated_at, player_id
+            ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             on conflict(race_key, car_no) do update set
                 name=excluded.name,
                 prefecture=excluded.prefecture,
@@ -233,7 +315,8 @@ def save_race(conn: sqlite3.Connection, race: dict, prediction: dict | None = No
                 features_json=excluded.features_json,
                 finish_position=coalesce(excluded.finish_position, entries.finish_position),
                 is_win=coalesce(excluded.is_win, entries.is_win),
-                updated_at=excluded.updated_at
+                updated_at=excluded.updated_at,
+                player_id=coalesce(nullif(excluded.player_id, ''), entries.player_id)
             """,
             (
                 key,
@@ -253,6 +336,7 @@ def save_race(conn: sqlite3.Connection, race: dict, prediction: dict | None = No
                 finish_position,
                 1 if finish_position == 1 else (0 if finish_position else None),
                 now,
+                str(entrant.get("player_id") or ""),
             ),
         )
 

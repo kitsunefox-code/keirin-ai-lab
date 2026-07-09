@@ -6,6 +6,7 @@
   learnedModel: null,
   bankroll: null,
   bankrollStyle: null,
+  bankrollAutoTimer: null,
   results: null,
   motionTimers: {},
 };
@@ -480,8 +481,20 @@ async function loadBankroll() {
     const payload = await res.json();
     state.bankroll = payload;
     renderBankroll(payload);
+    scheduleBankrollAutoRefresh(payload);
   } catch (error) {
     el("bankrollBody").innerHTML = `<div class="empty">運用状態を読み込めません: ${escapeHtml(error.message)}</div>`;
+  }
+}
+
+function scheduleBankrollAutoRefresh(payload) {
+  if (state.bankrollAutoTimer) {
+    clearInterval(state.bankrollAutoTimer);
+    state.bankrollAutoTimer = null;
+  }
+  // セッション運用中はオッズと候補レースをライブに近い間隔で更新する
+  if (payload?.session?.status === "active") {
+    state.bankrollAutoTimer = setInterval(loadBankroll, 40000);
   }
 }
 
@@ -499,6 +512,7 @@ async function bankrollPost(path, body) {
     }
     state.bankroll = payload;
     renderBankroll(payload);
+    scheduleBankrollAutoRefresh(payload);
     return payload;
   } catch {
     setStatus("運用セッションはローカル版でのみ操作できます");
@@ -610,17 +624,18 @@ function renderBankroll(payload) {
   const body = el("bankrollBody");
   const session = payload.session;
   const brState = payload.state;
+  const yesterday = renderYesterdayResults(payload.yesterday);
 
   if (!session) {
     head.innerHTML = "";
-    body.innerHTML = renderBankrollSetup(payload);
+    body.innerHTML = `${yesterday}${renderBankrollSetup(payload)}`;
     bindBankrollSetup();
     return;
   }
 
   if (session.status !== "active") {
     head.innerHTML = "";
-    body.innerHTML = `${renderBankrollStopBanner(session, brState)}
+    body.innerHTML = `${yesterday}${renderBankrollStopBanner(session, brState)}
       ${renderBankrollStatus(session, brState)}
       ${renderBankrollHistory(brState)}
       <div class="bankroll-restart">${renderBankrollSetup(payload)}</div>`;
@@ -631,7 +646,7 @@ function renderBankroll(payload) {
   head.innerHTML = `<button id="brStopBtn" class="button">停止</button>`;
   on("brStopBtn", "click", stopBankroll);
 
-  const parts = [renderBankrollStatus(session, brState)];
+  const parts = [yesterday, renderBankrollStatus(session, brState)];
   if (brState.pending_bet) {
     parts.push(renderBankrollPending(brState.pending_bet));
   } else if (payload.proposal) {
@@ -651,6 +666,28 @@ function renderBankroll(payload) {
   on("brWonBtn", "click", () => recordBankrollResult("won"));
   on("brLostBtn", "click", () => recordBankrollResult("lost"));
   on("brRefreshBtn", "click", loadBankroll);
+}
+
+function renderYesterdayResults(yesterday) {
+  const sessions = yesterday?.sessions || [];
+  if (!sessions.length) return "";
+  const rows = sessions
+    .map((s) => {
+      const profitClass = s.profit >= 0 ? "ev-positive" : "ev-caution";
+      const reached = s.target_reached ? "目標達成" : escapeHtml(s.stop_reason || (s.status === "active" ? "運用中だった" : "停止"));
+      return `<div class="yesterday-row">
+        <span class="style-tag">${escapeHtml(s.style_label)}</span>
+        <span>元手 ${yen(s.config.start_amount)} → 最終 ${yen(s.balance)}</span>
+        <strong class="${profitClass}">${s.profit >= 0 ? "+" : ""}${yen(s.profit)}</strong>
+        <span>${s.wins}勝${s.losses}敗${s.skips ? ` / 見送り${s.skips}` : ""}</span>
+        <em>${reached}</em>
+      </div>`;
+    })
+    .join("");
+  return `<div class="yesterday-results">
+    <div class="yesterday-title">昨日(${escapeHtml(yesterday.date)})の運用結果</div>
+    ${rows}
+  </div>`;
 }
 
 function renderBankrollSetup(payload) {
@@ -748,6 +785,7 @@ function renderBankrollProposal(proposal) {
       <span>本命 ${escapeHtml(top.car_no ?? "-")} ${escapeHtml(top.name || "")}</span>
       <span>信頼度 ${escapeHtml(proposal.confidence)}</span>
       <span>1R予算 ${yen(proposal.budget)}</span>
+      <span class="${proposal.live_odds_count ? "odds-live" : "odds-estimated"}">${proposal.live_odds_count ? `ライブオッズ ${proposal.live_odds_count}点` : "推定オッズ"}</span>
     </div>
     <div class="bankroll-actions">
       <button id="brCopyBtn" class="button">買い目をコピー</button>
@@ -761,11 +799,12 @@ function renderBankrollProposal(proposal) {
 
 function renderBankrollTicket(ticket) {
   const roleClass = ticket.role === "本線" ? "is-main" : ticket.role === "抑え" ? "is-cover" : "is-value";
+  const oddsClass = ticket.odds_source === "live" ? "odds-live" : "odds-estimated";
   return `<div class="bankroll-ticket ${roleClass}">
     <span class="ticket-role">${escapeHtml(ticket.role)}</span>
     <b>${escapeHtml(ticket.label)}</b>
     <span>${yen(ticket.stake)}</span>
-    <em>${escapeHtml(ticket.odds)}倍 / ${percent(ticket.hit_probability)}</em>
+    <em class="${oddsClass}">${escapeHtml(ticket.odds)}倍 / ${ticket.odds_source === "live" ? "LIVE" : "推定"} / ${percent(ticket.hit_probability)}</em>
     <strong>見込 ${yen(ticket.projected_return)}</strong>
   </div>`;
 }
@@ -861,11 +900,31 @@ function renderToday() {
     .map(metric)
     .join("");
   renderVenueBoard(payload.forecasts || []);
+  renderRecommended(payload.recommended_races || []);
 
   const rows = filterForecasts(payload.forecasts || []);
   el("forecastList").innerHTML = rows.length
     ? renderVenueForecastSections(rows)
     : `<div class="empty">条件に合うレースがありません。</div>`;
+}
+
+function renderRecommended(races) {
+  const section = el("recommendedSection");
+  if (!section) return;
+  if (!races.length) {
+    section.innerHTML = "";
+    section.hidden = true;
+    return;
+  }
+  section.hidden = false;
+  section.innerHTML = `
+    <div class="recommended-head">
+      <span class="status-dot recommended-dot">AIオススメ</span>
+      <h3>本日の狙い目</h3>
+      <p>信頼度と本命確率、買い目スコアから絞ったレースです。</p>
+    </div>
+    <div class="venue-ribbon-list">${races.map(renderForecastCard).join("")}</div>
+  `;
 }
 
 function renderVenueForecastSections(rows) {
@@ -970,6 +1029,7 @@ function renderForecastCard(race) {
       <strong>${escapeHtml(race.race_no || "")}R</strong>
       <span class="ribbon-main">${car(top.car_no)} ${escapeHtml(top.name || "-")} <em>${percent(top.probability)}</em></span>
       <span class="ribbon-tickets">${escapeHtml(primaryTickets || "-")}</span>
+      ${race.is_girls ? badge("ガールズ", "girls-badge") : ""}
       ${badge(confidence.label || "混戦", "confidence-badge")}
     </summary>
     <div class="ribbon-body">
@@ -1053,6 +1113,7 @@ function renderMiniEntries(entries) {
         <th>脚質</th>
         <th>得点</th>
         <th>コメント</th>
+        <th>AI根拠</th>
       </tr>
     </thead>
     <tbody>
@@ -1064,6 +1125,7 @@ function renderMiniEntries(entries) {
             <td>${escapeHtml(row.style || "")}</td>
             <td>${num(row.racing_score)}</td>
             <td>${escapeHtml(row.comment || "")}</td>
+            <td>${(row.reasons || []).map((reason) => `<span class="reason-chip">${escapeHtml(reason)}</span>`).join("")}</td>
           </tr>`
         )
         .join("")}

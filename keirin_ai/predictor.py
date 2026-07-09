@@ -96,6 +96,15 @@ def _deep_signal_score(entrant: dict) -> float:
     if form:
         top3_ratio = sum(1 for finish in form if finish <= 3) / len(form)
         score += (top3_ratio - 0.4) * 0.5
+    partner = entrant.get("partner_record")
+    if partner and partner.get("races", 0) >= 2:
+        score += (partner["top3_rate"] - 0.45) * 0.4
+    h2h = entrant.get("head_to_head") or []
+    if h2h:
+        wins = sum(item["wins"] for item in h2h)
+        losses = sum(item["losses"] for item in h2h)
+        if wins + losses > 0:
+            score += (wins - losses) / (wins + losses) * 0.15
     return score
 
 
@@ -184,17 +193,25 @@ def _reasons(entrant: dict, emotion: dict, baseline: float, learned_model: dict 
     )
     if attack >= 50:
         reasons.append(f"EX攻撃力{attack:.0f}%")
-    if float(ex.get("exLeftBehind") or 0.0) >= 40:
-        reasons.append("EX置かれ注意")
+    left_behind = float(ex.get("exLeftBehind") or 0.0)
+    if left_behind >= 25:
+        reasons.append(f"ちぎられ率{left_behind:.0f}%")
     form = entrant.get("recent_form") or []
     if form and sum(1 for finish in form if finish <= 3) / len(form) >= 0.6:
         reasons.append("直近3着内多い")
+    partner = entrant.get("partner_record")
+    if partner and partner.get("races", 0) >= 2:
+        reasons.append(f"連携実績 {partner['partner_name']}と{partner['races']}戦{partner['top3']}回3着内")
+    h2h = entrant.get("head_to_head") or []
+    if h2h:
+        best = max(h2h, key=lambda item: item["wins"] + item["losses"])
+        reasons.append(f"対{best['opponent_name']} {best['wins']}勝{best['losses']}敗")
     if learned_model and abs(learned_logit) >= 0.35:
         direction = "追い風" if learned_logit > 0 else "割引"
         reasons.append(f"学習: {direction}")
     if baseline < 0:
         reasons.append("総合材料は弱め")
-    return reasons[:6] or ["目立つ強調材料は少なめ"]
+    return reasons[:7] or ["目立つ強調材料は少なめ"]
 
 
 def _race_notes(race: dict, scored: list[dict], learned_model: dict | None) -> list[str]:
@@ -208,7 +225,13 @@ def _race_notes(race: dict, scored: list[dict], learned_model: dict | None) -> l
     if any(row.get("post_race_comment") for row in scored):
         notes.append("前走レース後の談話を評価に反映しました。")
     if any(row.get("ex") for row in scored):
-        notes.append("EXデータ(スパート・置かれ等)を評価に反映しました。")
+        notes.append("EXデータ(スパート・ちぎられ率等)を評価に反映しました。")
+    if any(row.get("partner_record") for row in scored):
+        notes.append("ライン相方との過去の連携成績を評価に反映しました。")
+    if race.get("is_girls") and any(row.get("head_to_head") for row in scored):
+        notes.append("ガールズケイリンのため、出走選手同士の対戦成績を評価に反映しました。")
+    elif any(row.get("head_to_head") for row in scored):
+        notes.append("出走選手同士の対戦成績を評価に反映しました。")
     if learned_model:
         rows = learned_model.get("training", {}).get("rows", 0)
         races = learned_model.get("training", {}).get("races", 0)
