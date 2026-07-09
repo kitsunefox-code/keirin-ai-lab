@@ -9,12 +9,14 @@ from __future__ import annotations
 - 確定結果・決まり手・上がりタイム(FETCH_KEIRIN_RACE の results)
 """
 
+from datetime import datetime, timedelta, timezone
 from urllib.parse import urlparse
 
 from keirin_ai.odds import _preloaded_state
 
 
 EX_KEYS = ("exSpurt", "exThrust", "exLeftBehind", "exSplitLine", "exSnatch", "exCompete")
+JST = timezone(timedelta(hours=9))
 
 
 def raceresult_url_from_racecard(racecard_url: str) -> str:
@@ -62,6 +64,13 @@ def enrich_race_from_state(race: dict, html_text: str) -> dict:
             continue
         records_by_car[car_no] = record
 
+    bank = _current_bank(common)
+    if bank:
+        race["bank"] = bank
+    hour_type = _hour_type(common.get("race") or {})
+    if hour_type:
+        race["hour_type"] = hour_type
+
     for entrant in race.get("entrants", []):
         car_no = int(entrant.get("car_no") or 0)
         record = records_by_car.get(car_no)
@@ -70,6 +79,12 @@ def enrich_race_from_state(race: dict, html_text: str) -> dict:
             entrant["player_id"] = player_id
             entrant["ex"] = _ex_summary(record)
             entrant["recent_form"] = _recent_form(record)
+            entrant["position_stats"] = _position_stats(record)
+            entrant["venue_stats"] = _venue_stats(record)
+            if bank and bank.get("track_distance") in (333, 400, 500):
+                entrant["track_stats"] = _rate_block(record.get(f"trackDistance{bank['track_distance']}"))
+            if hour_type:
+                entrant["hour_stats"] = _rate_block(record.get(hour_type))
             if not entrant.get("comment"):
                 entrant["comment"] = str(record.get("comment") or "")
             interview = inspection.get(player_id)
@@ -140,6 +155,97 @@ def _head_to_head_within_race(records: list, ids_in_race: set[str], name_by_play
             }
         )
     return result
+
+
+def _current_bank(common: dict) -> dict | None:
+    """開催中バンクの周長・みなし直線・カントを取り出す。"""
+    cups = common.get("cups")
+    cup = cups[0] if isinstance(cups, list) and cups else (cups if isinstance(cups, dict) else {})
+    venue_id = str(cup.get("venueId") or "")
+    venue = next(
+        (v for v in common.get("venues") or [] if str(v.get("id")) == venue_id),
+        None,
+    )
+    if not venue and common.get("venues"):
+        venue = (common.get("venues") or [None])[0]
+    if not venue:
+        return None
+    return {
+        "venue_id": str(venue.get("id") or ""),
+        "name": venue.get("name") or "",
+        "track_distance": venue.get("trackDistance"),
+        "straight": venue.get("trackStraightDistance"),
+        "angle_center": venue.get("trackAngleCenter"),
+    }
+
+
+def _hour_type(race_meta: dict) -> str | None:
+    """発走時刻からrecordの時間帯別成績キー(hourType*)を決める。"""
+    start_at = race_meta.get("startAt")
+    if not start_at:
+        return None
+    try:
+        hour = datetime.fromtimestamp(int(start_at), JST).hour
+    except (ValueError, OSError, OverflowError):
+        return None
+    if hour < 11:
+        return "hourTypeMorning"
+    if hour < 17:
+        return "hourTypeNormal"
+    if hour < 21:
+        return "hourTypeNight"
+    return "hourTypeMidnight"
+
+
+def _rate_block(value) -> dict | None:
+    """{first,second,third,others,total,...Percentage} 形式の成績ブロックを正規化する。"""
+    if not isinstance(value, dict) or int(value.get("total") or 0) <= 0:
+        return None
+    total = int(value.get("total") or 0)
+    first = int(value.get("first") or 0)
+    top3 = first + int(value.get("second") or 0) + int(value.get("third") or 0)
+    return {
+        "total": total,
+        "win_rate": round(first / total, 3),
+        "top3_rate": round(top3 / total, 3),
+    }
+
+
+def _position_stats(record: dict) -> dict:
+    """ライン位置別(先頭/番手/3番手/単騎)の勝率・3着内率。"""
+    return {
+        key: block
+        for key, source in (
+            ("front", "linePositionFirst"),
+            ("second", "linePositionSecond"),
+            ("third", "linePositionThird"),
+            ("single", "lineSingleHorseman"),
+        )
+        if (block := _rate_block(record.get(source)))
+    }
+
+
+def _venue_stats(record: dict) -> dict | None:
+    """当該バンクでの直近成績(latestVenueResults)から勝率・3着内率を出す。"""
+    finishes: list[int] = []
+    for cup in record.get("latestVenueResults") or []:
+        if not isinstance(cup, dict):
+            continue
+        for item in cup.get("raceResults") or []:
+            if isinstance(item, dict):
+                order = item.get("order")
+                if isinstance(order, int) and 1 <= order <= 9:
+                    finishes.append(order)
+                elif item.get("hasAccident"):
+                    finishes.append(9)
+    if not finishes:
+        return None
+    total = len(finishes)
+    return {
+        "total": total,
+        "win_rate": round(sum(1 for f in finishes if f == 1) / total, 3),
+        "top3_rate": round(sum(1 for f in finishes if f <= 3) / total, 3),
+    }
 
 
 def _car_by_player(common: dict) -> dict[str, int]:

@@ -35,6 +35,13 @@ FEATURE_NAMES = [
     "recent_avg_finish",
     "partner_top3_rate",
     "head_to_head_ratio",
+    "pos_win_rate",
+    "pos_top3_rate",
+    "venue_top3_rate",
+    "track_top3_rate",
+    "hour_top3_rate",
+    "line_strength_score",
+    "line_strength_back",
 ]
 
 
@@ -79,6 +86,13 @@ def build_feature_row(race: dict, entrant: dict, emotion: dict | None = None) ->
         "recent_avg_finish": _recent_avg_finish(entrant.get("recent_form") or []),
         "partner_top3_rate": _partner_top3_rate(entrant.get("partner_record")),
         "head_to_head_ratio": _head_to_head_ratio(entrant.get("head_to_head") or []),
+        "pos_win_rate": _pos_stat(entrant, "win_rate", default=0.12),
+        "pos_top3_rate": _pos_stat(entrant, "top3_rate", default=0.35),
+        "venue_top3_rate": _block_rate(entrant.get("venue_stats"), min_total=4),
+        "track_top3_rate": _block_rate(entrant.get("track_stats"), min_total=8),
+        "hour_top3_rate": _block_rate(entrant.get("hour_stats"), min_total=8),
+        "line_strength_score": _line_strength(entrant, "rank_score"),
+        "line_strength_back": _line_strength(entrant, "rank_back"),
     }
     return {name: float(row.get(name, 0.0)) for name in FEATURE_NAMES}
 
@@ -101,6 +115,36 @@ def _recent_avg_finish(form: list[int]) -> float:
         return 0.5
     average = sum(form) / len(form)
     return max(0.0, min(1.0, (9.0 - average) / 8.0))
+
+
+def _pos_stat(entrant: dict, key: str, default: float) -> float:
+    """今回のライン位置に対応する位置別成績(先頭勝率/番手勝率など)。"""
+    line_rank = entrant.get("line_rank")
+    if not line_rank:
+        return default
+    if line_rank.get("line_len", 1) <= 1:
+        pos_key = "single"
+    else:
+        pos_key = {0: "front", 1: "second"}.get(line_rank.get("pos"), "third")
+    block = (entrant.get("position_stats") or {}).get(pos_key)
+    if not block or block.get("total", 0) < 5:
+        return default
+    return float(block.get(key) or default)
+
+
+def _block_rate(block: dict | None, min_total: int) -> float:
+    """成績ブロックのtop3率。サンプル不足は中立0.35。"""
+    if not block or block.get("total", 0) < min_total:
+        return 0.35
+    return float(block.get("top3_rate") or 0.35)
+
+
+def _line_strength(entrant: dict, rank_key: str) -> float:
+    line_rank = entrant.get("line_rank")
+    if not line_rank:
+        return 0.5
+    span = max(1, int(line_rank.get("line_count") or 1) - 1)
+    return 1.0 - float(line_rank.get(rank_key) or 0) / span
 
 
 def _partner_top3_rate(partner_record: dict | None) -> float:

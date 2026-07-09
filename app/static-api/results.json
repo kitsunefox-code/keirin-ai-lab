@@ -19,14 +19,14 @@
   ],
   "summary": {
     "races": 52,
-    "settled": 10,
-    "pending": 42,
-    "honmei_hits": 1,
-    "honmei_rate": 0.1,
-    "in_top3_hits": 8,
-    "in_top3_rate": 0.8,
+    "settled": 13,
+    "pending": 39,
+    "honmei_hits": 3,
+    "honmei_rate": 0.2308,
+    "in_top3_hits": 10,
+    "in_top3_rate": 0.7692,
     "trifecta_hits": 2,
-    "trifecta_rate": 0.2
+    "trifecta_rate": 0.1538
   },
   "venues": [
     {
@@ -344,12 +344,16 @@
             "1-2-7",
             "1-7-2"
           ],
-          "result_order": [],
-          "status": "pending",
+          "result_order": [
+            1,
+            3,
+            6
+          ],
+          "status": "hit_honmei",
           "hits": {
-            "honmei": null,
-            "in_top3": null,
-            "trifecta": null,
+            "honmei": true,
+            "in_top3": true,
+            "trifecta": false,
             "trifecta_label": null
           }
         },
@@ -497,7 +501,7 @@
           "race_key": "winticket:2026070844:2:9",
           "venue": "大垣",
           "race_no": 9,
-          "start_time": "",
+          "start_time": "14:25",
           "url": "https://www.winticket.jp/keirin/ogaki/racecard/2026070844/2/9",
           "top_pick": {
             "car_no": 3,
@@ -577,12 +581,16 @@
             "2-7-3",
             "2-7-1"
           ],
-          "result_order": [],
-          "status": "pending",
+          "result_order": [
+            1,
+            3,
+            4
+          ],
+          "status": "miss",
           "hits": {
-            "honmei": null,
-            "in_top3": null,
-            "trifecta": null,
+            "honmei": false,
+            "in_top3": false,
+            "trifecta": false,
             "trifecta_label": null
           }
         },
@@ -605,12 +613,16 @@
             "5-2-1",
             "5-1-2"
           ],
-          "result_order": [],
-          "status": "pending",
+          "result_order": [
+            5,
+            3,
+            6
+          ],
+          "status": "hit_honmei",
           "hits": {
-            "honmei": null,
-            "in_top3": null,
-            "trifecta": null,
+            "honmei": true,
+            "in_top3": true,
+            "trifecta": false,
             "trifecta_label": null
           }
         },
@@ -1243,74 +1255,13 @@
       ]
     },
     {
-      "venue": "弥彦",
-      "races": [
-        {
-          "race_key": "winticket:2026070721:3:1",
-          "venue": "弥彦",
-          "race_no": 1,
-          "start_time": "",
-          "url": "https://www.winticket.jp/keirin/yahiko/racecard/2026070721/3/1",
-          "top_pick": {
-            "car_no": 4,
-            "name": "鈴木康平",
-            "probability": 0.3496
-          },
-          "tickets": [
-            "4-3-1",
-            "4-3-2",
-            "4-1-3",
-            "4-2-3",
-            "4-1-2",
-            "4-2-1"
-          ],
-          "result_order": [],
-          "status": "pending",
-          "hits": {
-            "honmei": null,
-            "in_top3": null,
-            "trifecta": null,
-            "trifecta_label": null
-          }
-        },
-        {
-          "race_key": "winticket:2026070721:3:2",
-          "venue": "弥彦",
-          "race_no": 2,
-          "start_time": "",
-          "url": "https://www.winticket.jp/keirin/yahiko/racecard/2026070721/3/2",
-          "top_pick": {
-            "car_no": 2,
-            "name": "山田祐太",
-            "probability": 0.5175
-          },
-          "tickets": [
-            "2-1-3",
-            "2-1-4",
-            "2-3-1",
-            "2-4-1",
-            "2-3-4",
-            "2-4-3"
-          ],
-          "result_order": [],
-          "status": "pending",
-          "hits": {
-            "honmei": null,
-            "in_top3": null,
-            "trifecta": null,
-            "trifecta_label": null
-          }
-        }
-      ]
-    },
-    {
       "venue": "玉野",
       "races": [
         {
           "race_key": "winticket:2026070761:3:1",
           "venue": "玉野",
           "race_no": 1,
-          "start_time": "",
+          "start_time": "20:50",
           "url": "https://www.winticket.jp/keirin/tamano/racecard/2026070761/3/1",
           "top_pick": {
             "car_no": 2,
@@ -1338,7 +1289,7 @@
           "race_key": "winticket:2026070761:3:2",
           "venue": "玉野",
           "race_no": 2,
-          "start_time": "",
+          "start_time": "21:10",
           "url": "https://www.winticket.jp/keirin/tamano/racecard/2026070761/3/2",
           "top_pick": {
             "car_no": 1,
@@ -1366,7 +1317,7 @@
           "race_key": "winticket:2026070761:3:3",
           "venue": "玉野",
           "race_no": 3,
-          "start_time": "",
+          "start_time": "21:30",
           "url": "https://www.winticket.jp/keirin/tamano/racecard/2026070761/3/3",
           "top_pick": {
             "car_no": 1,
@@ -1394,7 +1345,7 @@
           "race_key": "winticket:2026070761:3:4",
           "venue": "玉野",
           "race_no": 4,
-          "start_time": "",
+          "start_time": "21:50",
           "url": "https://www.winticket.jp/keirin/tamano/racecard/2026070761/3/4",
           "top_pick": {
             "car_no": 6,
@@ -1559,36 +1510,97 @@
           }
         }
       ]
+    },
+    {
+      "venue": "弥彦",
+      "races": [
+        {
+          "race_key": "winticket:2026070721:3:1",
+          "venue": "弥彦",
+          "race_no": 1,
+          "start_time": "",
+          "url": "https://www.winticket.jp/keirin/yahiko/racecard/2026070721/3/1",
+          "top_pick": {
+            "car_no": 4,
+            "name": "鈴木康平",
+            "probability": 0.3496
+          },
+          "tickets": [
+            "4-3-1",
+            "4-3-2",
+            "4-1-3",
+            "4-2-3",
+            "4-1-2",
+            "4-2-1"
+          ],
+          "result_order": [],
+          "status": "pending",
+          "hits": {
+            "honmei": null,
+            "in_top3": null,
+            "trifecta": null,
+            "trifecta_label": null
+          }
+        },
+        {
+          "race_key": "winticket:2026070721:3:2",
+          "venue": "弥彦",
+          "race_no": 2,
+          "start_time": "",
+          "url": "https://www.winticket.jp/keirin/yahiko/racecard/2026070721/3/2",
+          "top_pick": {
+            "car_no": 2,
+            "name": "山田祐太",
+            "probability": 0.5175
+          },
+          "tickets": [
+            "2-1-3",
+            "2-1-4",
+            "2-3-1",
+            "2-4-1",
+            "2-3-4",
+            "2-4-3"
+          ],
+          "result_order": [],
+          "status": "pending",
+          "hits": {
+            "honmei": null,
+            "in_top3": null,
+            "trifecta": null,
+            "trifecta_label": null
+          }
+        }
+      ]
     }
   ],
   "record": {
     "as_of": "2026-07-09",
     "today": {
       "label": "本日",
-      "settled": 10,
-      "honmei_hits": 1,
-      "honmei_rate": 0.1,
-      "in_top3_rate": 0.8,
+      "settled": 13,
+      "honmei_hits": 3,
+      "honmei_rate": 0.2308,
+      "in_top3_rate": 0.7692,
       "trifecta_hits": 2,
-      "trifecta_rate": 0.2
+      "trifecta_rate": 0.1538
     },
     "week": {
       "label": "今週(直近7日)",
-      "settled": 258,
-      "honmei_hits": 98,
-      "honmei_rate": 0.3798,
-      "in_top3_rate": 0.7209,
+      "settled": 261,
+      "honmei_hits": 100,
+      "honmei_rate": 0.3831,
+      "in_top3_rate": 0.7203,
       "trifecta_hits": 54,
-      "trifecta_rate": 0.2093
+      "trifecta_rate": 0.2069
     },
     "year": {
       "label": "2026年通算",
-      "settled": 563,
-      "honmei_hits": 207,
-      "honmei_rate": 0.3677,
-      "in_top3_rate": 0.7211,
+      "settled": 566,
+      "honmei_hits": 209,
+      "honmei_rate": 0.3693,
+      "in_top3_rate": 0.7208,
       "trifecta_hits": 104,
-      "trifecta_rate": 0.1847
+      "trifecta_rate": 0.1837
     }
   }
 }

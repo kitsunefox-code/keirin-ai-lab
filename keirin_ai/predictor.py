@@ -22,6 +22,7 @@ def predict_race(race: dict, use_learning: bool = True) -> dict:
         return {"rankings": [], "tickets": [], "race_notes": ["出走データがありません。"]}
 
     learned_model = load_model() if use_learning else None
+    _attach_line_ranks(race)
     scored = []
     for entrant in entrants:
         emotion = analyze_comment(entrant.get("comment"))
@@ -69,11 +70,101 @@ def _baseline_score(entrant: dict, emotion: dict, lineup: list[list[int]]) -> fl
     score += MARK_BONUS.get(str(entrant.get("ai_mark") or ""), 0.0)
     score += float(emotion.get("score") or 0) * 0.18
     score += _deep_signal_score(entrant)
+    score += _line_strength_score(entrant)
+    score += _position_fit_score(entrant)
+    score += _bank_fit_score(entrant)
     score += _line_bonus(int(entrant.get("car_no") or 0), lineup)
     if entrant.get("style") == "逃":
         score += 0.12
     if entrant.get("style") == "追" and _is_second_in_line(int(entrant.get("car_no") or 0), lineup):
         score += 0.16
+    return score
+
+
+def _attach_line_ranks(race: dict) -> None:
+    """2軸ライン強度(パ部競輪方式)を各選手に付与する。
+
+    ①先頭選手の競走得点によるラインランク(本命軸)
+    ②先頭選手のバック回数によるラインランク(穴目軸)
+    それぞれA=0が最強。ライン内位置(0=先頭,1=番手,...)も併せて持つ。
+    """
+    by_car = {int(e.get("car_no") or 0): e for e in race.get("entrants", [])}
+    lines = []
+    seen: set[int] = set()
+    for raw_line in race.get("lineup") or []:
+        line = [int(c) for c in raw_line if int(c) in by_car and int(c) not in seen]
+        if line:
+            lines.append(line)
+            seen.update(line)
+    for car in by_car:
+        if car not in seen:
+            lines.append([car])
+    if len(lines) < 2:
+        return
+
+    def front_score(line: list[int]) -> float:
+        return float(by_car[line[0]].get("racing_score") or 0)
+
+    def front_back(line: list[int]) -> float:
+        return float((by_car[line[0]].get("stats") or {}).get("back_count") or 0)
+
+    by_score = sorted(range(len(lines)), key=lambda i: front_score(lines[i]), reverse=True)
+    by_back = sorted(range(len(lines)), key=lambda i: front_back(lines[i]), reverse=True)
+    rank_score = {line_idx: rank for rank, line_idx in enumerate(by_score)}
+    rank_back = {line_idx: rank for rank, line_idx in enumerate(by_back)}
+    for idx, line in enumerate(lines):
+        for pos, car in enumerate(line):
+            by_car[car]["line_rank"] = {
+                "rank_score": rank_score[idx],
+                "rank_back": rank_back[idx],
+                "pos": pos,
+                "line_len": len(line),
+                "line_count": len(lines),
+            }
+
+
+def _position_key(line_rank: dict | None) -> str:
+    if not line_rank:
+        return ""
+    if line_rank.get("line_len", 1) <= 1:
+        return "single"
+    return {0: "front", 1: "second"}.get(line_rank.get("pos"), "third")
+
+
+def _line_strength_score(entrant: dict) -> float:
+    """ライン強度×位置の加点。番手を最優位に扱う(リサーチ結果に基づく)。"""
+    line_rank = entrant.get("line_rank")
+    if not line_rank:
+        return 0.0
+    span = max(1, line_rank["line_count"] - 1)
+    strength_by_score = 1.0 - line_rank["rank_score"] / span
+    strength_by_back = 1.0 - line_rank["rank_back"] / span
+    position_factor = {0: 0.9, 1: 1.0, 2: 0.55}.get(line_rank["pos"], 0.35)
+    if line_rank.get("line_len", 1) <= 1:
+        position_factor = 0.5
+    return strength_by_score * position_factor * 0.35 + strength_by_back * position_factor * 0.22
+
+
+def _position_fit_score(entrant: dict) -> float:
+    """今回のライン位置に対応する過去の位置別勝率(先頭勝率/番手勝率/単騎)を加点する。"""
+    block = (entrant.get("position_stats") or {}).get(_position_key(entrant.get("line_rank")))
+    if not block or block.get("total", 0) < 5:
+        return 0.0
+    return (block["win_rate"] - 0.12) * 1.5 + (block["top3_rate"] - 0.35) * 0.6
+
+
+def _bank_fit_score(entrant: dict) -> float:
+    """当該バンクの過去成績・周長別成績・時間帯別成績の加点。"""
+    score = 0.0
+    venue = entrant.get("venue_stats")
+    if venue and venue.get("total", 0) >= 4:
+        score += (venue["top3_rate"] - 0.4) * 0.5
+    track = entrant.get("track_stats")
+    if track and track.get("total", 0) >= 8:
+        score += (track["top3_rate"] - 0.35) * 0.3
+    hour = entrant.get("hour_stats")
+    if hour and hour.get("total", 0) >= 8:
+        score += (hour["top3_rate"] - 0.35) * 0.2
     return score
 
 
@@ -199,6 +290,20 @@ def _reasons(entrant: dict, emotion: dict, baseline: float, learned_model: dict 
     form = entrant.get("recent_form") or []
     if form and sum(1 for finish in form if finish <= 3) / len(form) >= 0.6:
         reasons.append("直近3着内多い")
+    pos_key = _position_key(entrant.get("line_rank"))
+    pos_block = (entrant.get("position_stats") or {}).get(pos_key)
+    if pos_block and pos_block.get("total", 0) >= 5:
+        pos_label = {"front": "先頭", "second": "番手", "third": "3番手", "single": "単騎"}.get(pos_key, "")
+        if pos_block["win_rate"] >= 0.15:
+            reasons.append(f"{pos_label}勝率{pos_block['win_rate'] * 100:.0f}%")
+        elif pos_block["top3_rate"] >= 0.45:
+            reasons.append(f"{pos_label}3着内{pos_block['top3_rate'] * 100:.0f}%")
+    venue = entrant.get("venue_stats")
+    if venue and venue.get("total", 0) >= 4 and venue["top3_rate"] >= 0.5:
+        reasons.append(f"当所3着内{venue['top3_rate'] * 100:.0f}%")
+    line_rank = entrant.get("line_rank")
+    if line_rank and line_rank["rank_back"] == 0 and line_rank["rank_score"] > 0 and line_rank["pos"] <= 1:
+        reasons.append("バック数最強ライン(穴目)")
     partner = entrant.get("partner_record")
     if partner and partner.get("races", 0) >= 2:
         reasons.append(f"連携実績 {partner['partner_name']}と{partner['races']}戦{partner['top3']}回3着内")
@@ -228,6 +333,12 @@ def _race_notes(race: dict, scored: list[dict], learned_model: dict | None) -> l
         notes.append("EXデータ(スパート・ちぎられ率等)を評価に反映しました。")
     if any(row.get("partner_record") for row in scored):
         notes.append("ライン相方との過去の連携成績を評価に反映しました。")
+    if any(row.get("position_stats") for row in scored):
+        notes.append("ライン位置別成績(先頭勝率・番手勝率・単騎)を評価に反映しました。")
+    if any(row.get("venue_stats") or row.get("track_stats") for row in scored):
+        notes.append("当該バンクの過去成績と周長別成績を評価に反映しました。")
+    if any(row.get("line_rank") for row in scored):
+        notes.append("2軸ライン強度(先頭の得点とバック回数)を評価に反映しました。")
     if race.get("is_girls") and any(row.get("head_to_head") for row in scored):
         notes.append("ガールズケイリンのため、出走選手同士の対戦成績を評価に反映しました。")
     elif any(row.get("head_to_head") for row in scored):
