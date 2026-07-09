@@ -75,18 +75,19 @@ python scripts\learn_text_sources.py --url https://keirin.netkeiba.com/ --kind p
 
 ## 日次運用
 
-今日の指定時刻以降を予想してDBに保存します。
+今日の予想を作ってDBに保存します(ファイル名に日付を入れると画面が最新日付を選びます)。
 
 ```powershell
-python scripts\forecast_winticket_after.py --date 2026-07-07 --after 15:00 --max-races 80
-python scripts\report_forecast.py data\today_after_1500_forecast.json
+python scripts\forecast_winticket_after.py --date 2026-07-09 --after 09:00 --max-races 50 --out data\forecast_20260709_after_0900.json
 ```
 
-レース後は結果回収を回します。結果が取れたレースだけ教師データ化し、再学習します。
+レース後はKEIRIN.JP公式から結果を回収します。結果が取れたレースは教師データ化し、再学習まで自動で回ります。
 
 ```powershell
-python scripts\update_saved_results.py --limit 80 --delay 1
+python scripts\backfill_keirinjp_results.py --limit 120 --delay 0.4
 ```
+
+画面の「結果・答え合わせ」で日付ごとに、AIの本命・買い目と実際の着順、本命的中/車券圏/3連単的中のバッジ、当日の的中率が確認できます。
 
 予想の短縮表示:
 

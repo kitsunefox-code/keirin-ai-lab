@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -64,10 +65,13 @@ def _latest_forecast_file(data_path: Path) -> Path | None:
     if not files:
         return None
 
-    def priority(path: Path) -> tuple[int, float]:
+    def priority(path: Path) -> tuple[str, int, float]:
         name = path.name
+        # 日付が新しいファイルを最優先。同日なら refit 版を優先する。
+        date_match = re.search(r"(\d{8})", name)
+        date_key = date_match.group(1) if date_match else "00000000"
         refit = 1 if "refit" in name else 0
-        return (refit, path.stat().st_mtime)
+        return (date_key, refit, path.stat().st_mtime)
 
     return max(files, key=priority)
 

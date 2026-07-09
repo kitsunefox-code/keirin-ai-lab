@@ -20,6 +20,7 @@ from keirin_ai.bankroll import (
     stop_session,
 )
 from keirin_ai.capital_plan import build_capital_plan_payload
+from keirin_ai.results_view import build_results_payload
 from keirin_ai.forecast_view import build_today_forecast_payload
 from keirin_ai.learner import train_win_model
 from keirin_ai.odds import fetch_live_odds
@@ -71,6 +72,9 @@ class KeirinHandler(BaseHTTPRequestHandler):
             return self._handle_train()
         if path == "/api/bankroll":
             return self._handle_bankroll()
+        if path == "/api/results":
+            params = parse_qs(parsed.query)
+            return self._handle_results(params.get("date", [""])[0].strip())
 
         self._send(404, "text/plain; charset=utf-8", "Not found")
 
@@ -210,6 +214,14 @@ class KeirinHandler(BaseHTTPRequestHandler):
             with connect() as conn:
                 status = learning_status(conn)
             return self._json({"ok": True, "status": status, "model": model})
+        except Exception as exc:
+            return self._json({"ok": False, "error": str(exc)}, status=502)
+
+    def _handle_results(self, date: str) -> None:
+        try:
+            with connect() as conn:
+                payload = build_results_payload(conn, date or None, DATA_DIR)
+            return self._json(payload)
         except Exception as exc:
             return self._json({"ok": False, "error": str(exc)}, status=502)
 

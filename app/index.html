@@ -12,8 +12,8 @@
         <div class="brand">
           <span class="brand-mark">K</span>
           <div class="brand-copy">
-            <span class="brand-kicker">Race Intelligence</span>
-            <h1>Keirin AI Lab</h1>
+            <span class="brand-kicker">競輪予想ラボ</span>
+            <h1>KEIRIN LAB</h1>
           </div>
         </div>
 
@@ -41,8 +41,7 @@
         <section class="panel active" id="panel-today">
           <header class="page-header">
             <div>
-              <p class="eyebrow">Bankroll Operation</p>
-              <h2>バンクロール運用モード</h2>
+              <h2>本日の予想</h2>
             </div>
             <span class="page-meta" id="todayMeta">読み込み中</span>
           </header>
@@ -53,54 +52,12 @@
           <section class="bankroll-session surface-panel" aria-labelledby="bankrollTitle">
             <div class="capital-head">
               <div>
-                <p class="eyebrow">Bankroll Session</p>
-                <h3 id="bankrollTitle">バンクロール運用セッション</h3>
+                <h3 id="bankrollTitle">バンクロール運用</h3>
               </div>
               <div class="bankroll-head-actions" id="bankrollHeadActions"></div>
             </div>
             <div id="bankrollBody">
               <div class="empty">運用状態を読み込み中です。</div>
-            </div>
-          </section>
-
-          <section class="capital-planner surface-panel" aria-labelledby="capitalPlannerTitle">
-            <div class="capital-head">
-              <div>
-                <p class="eyebrow">Bankroll Plan</p>
-                <h3 id="capitalPlannerTitle">資金目標と買い目配分</h3>
-              </div>
-              <div class="capital-form">
-                <label class="field compact">
-                  <span>元手</span>
-                  <input id="startAmount" type="number" min="100" step="100" value="1000" />
-                </label>
-                <label class="field compact">
-                  <span>目標額</span>
-                  <input id="targetAmount" type="number" min="100" step="100" value="3000" />
-                </label>
-                <label class="field compact">
-                  <span>最大レース</span>
-                  <select id="maxPlanRaces">
-                    <option value="1">1</option>
-                    <option value="2" selected>2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                  </select>
-                </label>
-                <label class="check-field">
-                  <input id="liveOddsToggle" type="checkbox" checked />
-                  <span>ライブオッズ</span>
-                </label>
-                <label class="check-field">
-                  <input id="autoRollToggle" type="checkbox" />
-                  <span>運用モード</span>
-                </label>
-                <button id="planBtn" class="button primary">候補を出す</button>
-              </div>
-            </div>
-            <div class="plan-result" id="planResult">
-              <div class="empty">元手と目標額を入れて、候補レースと買い目配分を出してください。</div>
             </div>
           </section>
 
@@ -115,10 +72,23 @@
           <div class="race-list" id="forecastList"></div>
         </section>
 
+        <section class="panel" id="panel-results">
+          <header class="page-header">
+            <div>
+              <h2>結果・答え合わせ</h2>
+            </div>
+            <span class="page-meta" id="resultsMeta"></span>
+          </header>
+          <div class="results-toolbar" id="resultsDates"></div>
+          <div class="metric-strip results-metrics" id="resultsSummary"></div>
+          <div id="resultsBody">
+            <div class="empty">結果を読み込み中です。</div>
+          </div>
+        </section>
+
         <section class="panel" id="panel-learn">
           <header class="page-header">
             <div>
-              <p class="eyebrow">Learning</p>
               <h2>学習状態</h2>
             </div>
             <span class="page-meta" id="learnModelLabel">確認中</span>

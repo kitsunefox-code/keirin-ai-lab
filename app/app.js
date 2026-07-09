@@ -4,17 +4,16 @@
   activeTab: "today",
   learning: null,
   learnedModel: null,
-  capitalPlan: null,
-  capitalPlanTimer: null,
   bankroll: null,
+  results: null,
 };
 
 const STATIC_API = {
   "/api/today": "static-api/today.json",
   "/api/sample": "static-api/sample.json",
   "/api/learn/status": "static-api/learn-status.json",
-  "/api/capital_plan": "static-api/capital-plan.json",
   "/api/bankroll": "static-api/bankroll.json",
+  "/api/results": "static-api/results.json",
 };
 
 const el = (id) => document.getElementById(id);
@@ -61,12 +60,11 @@ async function apiPost(url, options) {
 
 document.addEventListener("DOMContentLoaded", () => {
   on("refreshTodayBtn", "click", loadToday);
-  on("planBtn", "click", loadCapitalPlan);
-  on("autoRollToggle", "change", updateCapitalPlanTimer);
   on("confidenceFilter", "change", renderToday);
   loadLearnStatus();
   loadToday();
   loadBankroll();
+  loadResults();
 });
 
 async function loadToday() {
@@ -101,52 +99,98 @@ async function loadLearnStatus() {
   }
 }
 
-async function loadCapitalPlan() {
-  const start = Number(el("startAmount").value || 0);
-  const target = Number(el("targetAmount").value || 0);
-  const maxRaces = Number(el("maxPlanRaces").value || 2);
-  const liveOdds = el("liveOddsToggle").checked ? "1" : "0";
-  if (!start || !target) {
-    el("planResult").innerHTML = `<div class="empty">元手と目標額を入力してください。</div>`;
-    return;
-  }
-  setStatus("バンクロール運用プランを作成中");
-  el("planResult").innerHTML = `<div class="empty">候補レースと買い目配分を確認中です。</div>`;
+async function loadResults(date) {
   try {
-    const params = new URLSearchParams({
-      start: String(start),
-      target: String(target),
-      max_races: String(maxRaces),
-      live_odds: liveOdds,
-    });
-    const res = await apiGet(`/api/capital_plan?${params.toString()}`);
+    const url = date ? `/api/results?date=${encodeURIComponent(date)}` : "/api/results";
+    const res = await apiGet(url);
     const payload = await res.json();
     if (!payload.ok) {
-      el("planResult").innerHTML = `<div class="empty">${escapeHtml(payload.error || "バンクロール運用プランを作れませんでした。")}</div>`;
-      setStatus("バンクロール運用プラン作成エラー");
+      el("resultsBody").innerHTML = `<div class="empty">${escapeHtml(payload.error || "結果を読み込めませんでした。")}</div>`;
       return;
     }
-    state.capitalPlan = payload;
-    renderCapitalPlan(payload);
-    setStatus(`${payload.plans?.length || 0}件の運用プランを表示中`);
+    state.results = payload;
+    renderResults(payload);
   } catch (error) {
-    el("planResult").innerHTML = `<div class="empty">${escapeHtml(error.message)}</div>`;
-    setStatus("バンクロール運用プラン作成エラー");
+    el("resultsBody").innerHTML = `<div class="empty">結果エラー: ${escapeHtml(error.message)}</div>`;
   }
 }
 
-function updateCapitalPlanTimer() {
-  if (state.capitalPlanTimer) {
-    clearInterval(state.capitalPlanTimer);
-    state.capitalPlanTimer = null;
-  }
-  if (!el("autoRollToggle").checked) {
-    setStatus("自動更新を停止しました");
+function renderResults(payload) {
+  const summary = payload.summary || {};
+  el("resultsDates").innerHTML = (payload.dates || [])
+    .map(
+      (date) => `<button class="date-chip${date === payload.date ? " active" : ""}" data-date="${escapeAttr(date)}">${shortDate(date)}</button>`
+    )
+    .join("");
+  el("resultsDates")
+    .querySelectorAll(".date-chip")
+    .forEach((btn) => btn.addEventListener("click", () => loadResults(btn.dataset.date)));
+
+  el("resultsMeta").textContent = summary.settled
+    ? `${payload.date} / ${summary.settled}レース確定`
+    : `${payload.date || ""} / 結果待ち${summary.pending || 0}レース`;
+
+  el("resultsSummary").innerHTML = [
+    ["本命的中", summary.honmei_rate != null ? percent(summary.honmei_rate) : "-", `${summary.honmei_hits ?? 0}/${summary.settled ?? 0}`, "green"],
+    ["車券圏内", summary.in_top3_rate != null ? percent(summary.in_top3_rate) : "-", "本命が3着内", "blue"],
+    ["3連単的中", summary.trifecta_hits ?? 0, summary.trifecta_rate != null ? percent(summary.trifecta_rate) : "-", "amber"],
+    ["結果待ち", summary.pending ?? 0, `全${summary.races ?? 0}レース`, "slate"],
+  ]
+    .map(metric)
+    .join("");
+
+  const venues = payload.venues || [];
+  if (!venues.length) {
+    el("resultsBody").innerHTML = `<div class="empty">この日の予想データがありません。</div>`;
     return;
   }
-  loadCapitalPlan();
-  state.capitalPlanTimer = setInterval(loadCapitalPlan, 60000);
-  setStatus("プラン候補を自動更新中");
+  el("resultsBody").innerHTML = venues
+    .map(
+      (group) => `<section class="results-venue">
+        <header class="results-venue-head">
+          <h3>${escapeHtml(group.venue)}</h3>
+          <span>${group.races.length}レース</span>
+        </header>
+        <div class="results-rows">
+          ${group.races.map(renderResultRow).join("")}
+        </div>
+      </section>`
+    )
+    .join("");
+}
+
+function renderResultRow(race) {
+  const pick = race.top_pick || {};
+  const badge = resultBadge(race.status);
+  const tickets = (race.tickets || [])
+    .map((label) => {
+      const hit = race.hits?.trifecta_label === label;
+      return `<span class="result-ticket${hit ? " is-hit" : ""}">${escapeHtml(label)}</span>`;
+    })
+    .join("");
+  const order = (race.result_order || []).map((carNo) => car(carNo)).join("");
+  return `<div class="result-row is-${race.status}">
+    <span class="time-chip">${escapeHtml(race.start_time || "--:--")}</span>
+    <strong class="result-race">${escapeHtml(race.race_no || "")}R</strong>
+    <span class="result-pick">${car(pick.car_no)} ${escapeHtml(pick.name || "")} <em>${percent(pick.probability)}</em></span>
+    <span class="result-tickets">${tickets}</span>
+    <span class="result-order">${order || '<em class="pending-text">結果待ち</em>'}</span>
+    ${badge}
+  </div>`;
+}
+
+function resultBadge(status) {
+  if (status === "hit_trifecta") return `<span class="hit-badge hit-trifecta">3連単的中</span>`;
+  if (status === "hit_honmei") return `<span class="hit-badge hit-honmei">本命的中</span>`;
+  if (status === "in_top3") return `<span class="hit-badge hit-top3">車券圏</span>`;
+  if (status === "miss") return `<span class="hit-badge hit-miss">ハズレ</span>`;
+  return `<span class="hit-badge hit-pending">結果待ち</span>`;
+}
+
+function shortDate(iso) {
+  const parts = String(iso || "").split("-");
+  if (parts.length !== 3) return iso;
+  return `${Number(parts[1])}/${Number(parts[2])}`;
 }
 
 async function loadBankroll() {
@@ -188,7 +232,7 @@ function startBankroll() {
     per_race_cap_pct: Number(el("brCap").value || 20),
     daily_loss_limit_pct: Number(el("brLossLimit").value || 30),
     max_consecutive_losses: Number(el("brMaxLosses").value || 3),
-    min_ev: Number(el("brMinEv").value || 1.0),
+    min_ev: Number(el("brMinEv").value || 1.2),
   }).then((payload) => {
     if (payload) setStatus("運用セッションを開始しました");
   });
@@ -311,7 +355,7 @@ function renderBankrollSetup(payload) {
       <label class="field compact"><span>1R上限%</span><input id="brCap" type="number" min="5" max="50" step="5" value="${Number(config.per_race_cap_pct || 20)}" /></label>
       <label class="field compact"><span>損失上限%</span><input id="brLossLimit" type="number" min="10" max="80" step="5" value="${Number(config.daily_loss_limit_pct || 30)}" /></label>
       <label class="field compact"><span>連敗停止</span><input id="brMaxLosses" type="number" min="1" max="10" value="${Number(config.max_consecutive_losses || 3)}" /></label>
-      <label class="field compact"><span>EV下限</span><input id="brMinEv" type="number" min="0.5" max="2" step="0.05" value="${Number(config.min_ev || 1.0)}" /></label>
+      <label class="field compact"><span>EV下限</span><input id="brMinEv" type="number" min="0.5" max="2" step="0.05" value="${Number(config.min_ev || 1.2)}" /></label>
       <label class="check-field is-disabled"><input type="checkbox" disabled /><span>自動購入(未対応・常時OFF)</span></label>
       <button id="brStartBtn" class="button primary">運用を開始</button>
     </div>
@@ -529,79 +573,6 @@ function groupForecastsByVenue(rows) {
     .sort((a, b) => String(a.races[0]?.start_time || "99:99").localeCompare(String(b.races[0]?.start_time || "99:99")));
 }
 
-function renderCapitalPlan(payload) {
-  const odds = payload.odds || {};
-  const planSummary = payload.summary || {};
-  const plans = payload.plans || [];
-  const summary = `<div class="plan-meta">
-    <span>${escapeHtml(payload.input?.start_amount || 0)}円 → ${escapeHtml(payload.input?.target_amount || 0)}円</span>
-    <span>ライブ ${odds.fetched || 0}/${odds.attempted || 0}</span>
-    <span>対象 ${escapeHtml(planSummary.active_forecast_count ?? 0)}R / 終了除外 ${escapeHtml(planSummary.elapsed_forecast_count ?? 0)}R</span>
-    ${planSummary.next_race_time ? `<span>次 ${escapeHtml(planSummary.next_race_time)}</span>` : ""}
-    <span>${el("autoRollToggle").checked ? "運用モードON" : "手動更新"}</span>
-    <span>${escapeHtml((planSummary.data_used || []).slice(0, 4).join(" / "))}</span>
-  </div>`;
-  if (!plans.length) {
-    el("planResult").innerHTML = `${summary}<div class="empty">条件に近い候補がありません。目標額か最大レース数を調整してください。</div>`;
-    return;
-  }
-  el("planResult").innerHTML = `${summary}<div class="plan-grid">${plans.map(renderPlanCard).join("")}</div>`;
-}
-
-function renderPlanCard(plan) {
-  const reached = plan.shortfall === 0 ? "is-reached" : "is-short";
-  return `<article class="plan-card ${reached}">
-    <header class="plan-card-head">
-      <div>
-        <span class="status-dot">${escapeHtml(plan.risk)}リスク</span>
-        <h4>${escapeHtml(plan.title)}</h4>
-      </div>
-      <div class="plan-return">
-        <strong>${yen(plan.projected_return)}</strong>
-        <span>${escapeHtml(plan.multiplier)}倍 / 的中目安 ${percent(plan.hit_probability)}</span>
-      </div>
-    </header>
-    <div class="plan-legs">
-      ${(plan.races || []).map(renderPlanLeg).join("")}
-    </div>
-    ${(plan.warnings || []).length ? `<div class="plan-warnings">${plan.warnings.map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</div>` : ""}
-  </article>`;
-}
-
-function renderPlanLeg(leg) {
-  const oddsClass = leg.odds_source === "live" ? "odds-live" : "odds-estimated";
-  const ev = expectedReturn(leg);
-  const edge = ev - Number(leg.stake || 0);
-  const evClass = edge >= 0 ? "ev-positive" : "ev-caution";
-  return `<div class="plan-leg">
-    <div class="plan-race">
-      <span class="time-chip">${escapeHtml(leg.start_time || "--:--")}</span>
-      <strong>${escapeHtml(leg.venue || "")} ${escapeHtml(leg.race_no || "")}R</strong>
-      <span>${escapeHtml(leg.confidence || "")}</span>
-    </div>
-    <div class="plan-ticket">
-      <b>${escapeHtml(leg.ticket || "")}</b>
-      <span class="${oddsClass}">${escapeHtml(leg.odds_str || leg.odds)}倍 / ${leg.odds_source === "live" ? "LIVE" : "推定"}</span>
-      ${leg.popularity ? `<span>${escapeHtml(leg.popularity)}人気</span>` : ""}
-    </div>
-    <div class="plan-money">
-      <span>投資 ${yen(leg.stake)}</span>
-      <strong>見込 ${yen(leg.projected_return)}</strong>
-      <em class="ev-chip ${evClass}">期待値目安 ${yen(ev)}</em>
-    </div>
-    <div class="plan-reasons">
-      ${(leg.rationale || []).map((item) => `<span>${escapeHtml(item)}</span>`).join("")}
-      ${(leg.ex_signals || []).map((item) => `<span class="ex-signal">${escapeHtml(item)}</span>`).join("")}
-    </div>
-  </div>`;
-}
-
-function expectedReturn(leg) {
-  const stake = Number(leg.stake || 0);
-  const odds = Number(leg.odds || 0);
-  const hitProbability = Number(leg.hit_probability || 0);
-  return Math.round(stake * odds * hitProbability);
-}
 
 function renderVenueBoard(forecasts) {
   const venues = new Map();

@@ -36,7 +36,7 @@ class BankrollConfig:
     per_race_cap_pct: int = 20
     daily_loss_limit_pct: int = 30
     max_consecutive_losses: int = 3
-    min_ev: float = 1.0
+    min_ev: float = 1.2
     auto_buy: bool = False  # 初期実装では常にOFF。公式APIがないため自動購入は実装しない。
 
     def normalized(self) -> "BankrollConfig":
@@ -48,7 +48,7 @@ class BankrollConfig:
             per_race_cap_pct=max(5, min(50, int(self.per_race_cap_pct or 20))),
             daily_loss_limit_pct=max(10, min(80, int(self.daily_loss_limit_pct or 30))),
             max_consecutive_losses=max(1, min(10, int(self.max_consecutive_losses or 3))),
-            min_ev=max(0.5, min(2.0, float(self.min_ev or 1.0))),
+            min_ev=max(0.5, min(2.0, float(self.min_ev or 1.2))),
             auto_buy=False,
         )
 

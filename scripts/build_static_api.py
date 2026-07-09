@@ -9,6 +9,7 @@ sys.path.insert(0, str(ROOT))
 
 from keirin_ai.bankroll import build_bankroll_payload
 from keirin_ai.capital_plan import build_capital_plan_payload
+from keirin_ai.results_view import build_results_payload
 from keirin_ai.forecast_view import build_today_forecast_payload
 from keirin_ai.predictor import predict_race
 from keirin_ai.storage import connect, learning_status
@@ -85,18 +86,21 @@ def main() -> None:
     sample_race = json.loads((DATA_DIR / "sample_race.json").read_text(encoding="utf-8"))
     with connect() as conn:
         bankroll = build_bankroll_payload(conn, DATA_DIR)
+        results = build_results_payload(conn, None, DATA_DIR)
     payloads = {
         "/api/today": today,
         "/api/sample": {"ok": True, "race": sample_race, "prediction": predict_race(sample_race)},
         "/api/learn/status": {"ok": True, "status": status},
         "/api/capital_plan": capital,
         "/api/bankroll": bankroll,
+        "/api/results": results,
     }
     write_json("today.json", payloads["/api/today"])
     write_json("sample.json", payloads["/api/sample"])
     write_json("learn-status.json", payloads["/api/learn/status"])
     write_json("capital-plan.json", payloads["/api/capital_plan"])
     write_json("bankroll.json", payloads["/api/bankroll"])
+    write_json("results.json", payloads["/api/results"])
     write_preview(payloads)
 
 

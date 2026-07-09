@@ -24,9 +24,11 @@ This app should feel like a professional keirin data analysis console. Keep it s
 
 ### Visual Tokens
 
-- Colors must come from CSS variables in `app/styles.css`.
-- Use meaningfully different accent colors for confidence, metrics, line groups, warnings, and expected value.
-- Border radius should stay at 8px or less.
+- Colors must come from CSS variables in `app/styles.css`. The palette follows WINTICKET keirin: bg `#F1F1F5`, ink `#2B2B2E`, border `#E4E5EA`, primary green `#008765`, orange `#F4792A`, red `#BF0015`, gold `#FFC010`.
+- The sidebar is dark (`#18181A`) like WINTICKET's chrome; the workspace stays light.
+- Border radius: cards 12px, inputs 8px, small chips 4px, buttons and badges are pills (999px).
+- Do not add English eyebrow/kicker labels; UI copy is Japanese-first.
+- Do not use pastel gradient backgrounds or decorative blobs on metric cards; white cards with colored numbers only.
 - Use subtle shadows only: `--shadow-card` and `--shadow-panel`.
 - Main spacing should use the `--space-*` scale.
 - Text sizes should use the `--text-*` scale.
