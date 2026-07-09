@@ -291,33 +291,65 @@ function toggleRaceMotion(raceKey) {
   startRaceMotion(raceKey, race, stage);
 }
 
-function buildMotionPlan(race) {
+function normalizeOrder(order, cars) {
+  // 並び順に全車を必ず含める(欠けた車番が先頭に重なって消えるバグの対策)
+  const seen = new Set();
+  const clean = [];
+  for (const raw of order) {
+    const car = Number(raw);
+    if (cars.includes(car) && !seen.has(car)) {
+      seen.add(car);
+      clean.push(car);
+    }
+  }
+  for (const car of cars) {
+    if (!seen.has(car)) clean.push(car);
+  }
+  return clean;
+}
+
+function computeMotionBase(race) {
   const entries = race.entries || [];
   const lineup = (race.lineup || []).map((line) => line.map(Number));
   const probs = new Map(entries.map((entry) => [Number(entry.car_no), Number(entry.win_probability || 0)]));
   const styles = new Map(entries.map((entry) => [Number(entry.car_no), entry.style || ""]));
-  let cars = entries.map((entry) => Number(entry.car_no)).filter(Boolean);
-  if (!cars.length) cars = lineup.flat();
-  cars = [...new Set(cars)];
+  const names = new Map(entries.map((entry) => [Number(entry.car_no), entry.name || ""]));
+  (race.top3 || []).forEach((row) => {
+    if (row.car_no != null && !names.get(Number(row.car_no))) names.set(Number(row.car_no), row.name || "");
+  });
+  // 全車 = 出走表 ∪ ライン ∪ top3 (どれかに欠けがあっても全員走らせる)
+  const cars = [
+    ...new Set([
+      ...entries.map((entry) => Number(entry.car_no)),
+      ...lineup.flat(),
+      ...(race.top3 || []).map((row) => Number(row.car_no)),
+    ].filter((car) => Number.isFinite(car) && car > 0)),
+  ];
 
-  const initial = [...lineup.flat().filter((car) => cars.includes(car)), ...cars.filter((car) => !lineup.flat().includes(car))];
-
+  const initial = normalizeOrder(lineup.flat(), cars);
   const top3 = (race.top3 || []).map((row) => Number(row.car_no)).filter(Boolean);
   const rest = cars.filter((car) => !top3.includes(car)).sort((a, b) => (probs.get(b) || 0) - (probs.get(a) || 0));
-  const final = [...top3, ...rest];
+  const final = normalizeOrder([...top3, ...rest], cars);
 
   const escapeLine =
     lineup.find((line) => styles.get(line[0]) === "逃") ||
     lineup.find((line) => line.length >= 2) ||
     (lineup.length ? [lineup[0]].flat() : [initial[0]].filter(Boolean));
-  const afterBell = [...escapeLine.filter((car) => initial.includes(car)), ...initial.filter((car) => !escapeLine.includes(car))];
+
+  return { cars, lineup, initial, final, escapeLine, probs, styles, names };
+}
+
+function buildMotionPlan(race) {
+  const base = computeMotionBase(race);
+  const { cars, lineup, initial, final, escapeLine } = base;
+  const afterBell = normalizeOrder([...escapeLine, ...initial], cars);
 
   const topCar = final[0];
   const attackLine = lineup.find((line) => line.includes(topCar) && line !== escapeLine);
   let backStretch;
   if (attackLine) {
     const others = afterBell.filter((car) => !attackLine.includes(car));
-    backStretch = [...others.slice(0, 1), ...attackLine, ...others.slice(1)];
+    backStretch = normalizeOrder([...others.slice(0, 1), ...attackLine, ...others.slice(1)], cars);
   } else {
     backStretch = afterBell;
   }
@@ -344,10 +376,218 @@ function buildMotionPlan(race) {
   };
 }
 
-function startRaceMotion(raceKey, race, stage) {
+/* ---- モーションメーカー: 自分で展開を組む ---- */
+
+function buildCustomMotionPlan(race, opts) {
+  const base = computeMotionBase(race);
+  const { cars, lineup, initial, names, probs } = base;
+
+  // 主導権ライン(ユーザー選択。未選択ならAIの先行ライン)
+  const leadLine = (opts.leadLine && opts.leadLine.length ? opts.leadLine : base.escapeLine).filter((car) => cars.includes(car));
+
+  const bellLap = opts.earlyAttack ? 0.32 : 0.5;
+  let afterBell;
+  const captions = [{ lap: 0.0, text: "青板、先頭員の後ろで隊列を組んで周回" }];
+
+  if (opts.tsuppari && initial.length) {
+    // つっぱり先行: 元の先頭ラインが主導権を譲らず、仕掛けたラインは2番手グループへ
+    const frontLine = lineup.find((line) => line.includes(initial[0])) || [initial[0]];
+    const others = initial.filter((car) => !frontLine.includes(car) && !leadLine.includes(car));
+    afterBell = normalizeOrder([...frontLine, ...leadLine, ...others], cars);
+    captions.push({ lap: bellLap, text: opts.earlyAttack ? "打鐘前から動くが…つっぱり先行!前は譲らない!" : "🔔 打鐘!つっぱり先行、前は譲らない!" });
+  } else {
+    afterBell = normalizeOrder([...leadLine, ...initial], cars);
+    captions.push({
+      lap: bellLap,
+      text: opts.earlyAttack
+        ? `打鐘前から${leadLine[0] || "-"}番ラインがカマシ気味に動く!`
+        : `🔔 打鐘!${leadLine[0] || "-"}番ラインが主導権を取る`,
+    });
+  }
+  if (opts.earlyAttack) {
+    captions.push({ lap: 0.5, text: "🔔 打鐘!早めの主導権争いでピッチが上がる" });
+  }
+  captions.push({ lap: 1.0, text: "残り1周、ホームストレッチライン通過" });
+
+  // ちぎられ: 指定車をライン後方から切り離して後退させる
+  let backStretch = afterBell;
+  if (opts.chigirareCar && cars.includes(opts.chigirareCar)) {
+    const withoutCar = afterBell.filter((car) => car !== opts.chigirareCar);
+    backStretch = normalizeOrder([...withoutCar, opts.chigirareCar], cars);
+    captions.push({ lap: 1.4, text: `${opts.chigirareCar} ${escapeHtml(names.get(opts.chigirareCar) || "")}が番手からちぎれた!` });
+  } else {
+    captions.push({ lap: 1.5, text: "最終バック、勝負どころ!" });
+  }
+
+  // 結末: 自分で決める or AIが考える
+  let finalOrder;
+  let goalText;
+  if (opts.finishMode === "manual" && opts.finishTop3?.length) {
+    const picked = opts.finishTop3.filter((car) => cars.includes(car));
+    const rest = backStretch.filter((car) => !picked.includes(car));
+    if (opts.chigirareCar && !picked.includes(opts.chigirareCar)) {
+      const idx = rest.indexOf(opts.chigirareCar);
+      if (idx >= 0) {
+        rest.splice(idx, 1);
+        rest.push(opts.chigirareCar);
+      }
+    }
+    finalOrder = normalizeOrder([...picked, ...rest], cars);
+    goalText = `ゴール!あなたの結末 ${picked.map((car) => `${car}${escapeHtml(names.get(car) || "")}`).join(" → ")}`;
+  } else {
+    // AIが考える: 予測確率順。ただしちぎられ車は圏外へ
+    let aiFinal = base.final;
+    if (opts.chigirareCar) {
+      aiFinal = normalizeOrder([...aiFinal.filter((car) => car !== opts.chigirareCar), opts.chigirareCar], cars);
+    }
+    finalOrder = aiFinal;
+    goalText = `ゴール!AIの結末 1着 ${finalOrder[0] || "-"} ${escapeHtml(names.get(finalOrder[0]) || "")}`;
+  }
+  captions.push({ lap: 1.87, text: "直線勝負!" });
+  captions.push({ lap: 1.99, text: goalText });
+
+  return {
+    cars,
+    keyframes: [
+      { lap: 0.0, order: initial },
+      { lap: bellLap, order: afterBell },
+      { lap: opts.chigirareCar ? 1.4 : 1.5, order: backStretch },
+      { lap: 1.9, order: finalOrder },
+      { lap: 2.0, order: finalOrder },
+    ],
+    captions,
+  };
+}
+
+function renderMotionMaker() {
+  const box = el("mmControls");
+  if (!box) return;
+  const forecasts = state.today?.forecasts || [];
+  if (!forecasts.length) {
+    box.innerHTML = `<div class="empty">本日の予想がありません。</div>`;
+    return;
+  }
+  const venues = [...new Set(forecasts.map((race) => race.venue || "未設定"))];
+  const selVenue = state.mmVenue && venues.includes(state.mmVenue) ? state.mmVenue : venues[0];
+  const races = forecasts.filter((race) => (race.venue || "未設定") === selVenue);
+  const selKey = state.mmRaceKey && races.some((race) => race.race_key === state.mmRaceKey) ? state.mmRaceKey : races[0]?.race_key;
+  const race = races.find((item) => item.race_key === selKey);
+
+  box.innerHTML = `
+    <div class="mm-row">
+      <label class="field compact"><span>レース場</span>
+        <select id="mmVenue">${venues.map((v) => `<option value="${escapeAttr(v)}"${v === selVenue ? " selected" : ""}>${escapeHtml(v)}</option>`).join("")}</select>
+      </label>
+      <label class="field compact"><span>レース</span>
+        <select id="mmRace">${races.map((r) => `<option value="${escapeAttr(r.race_key)}"${r.race_key === selKey ? " selected" : ""}>${escapeHtml(r.race_no)}R ${escapeHtml(r.start_time || "")}</option>`).join("")}</select>
+      </label>
+    </div>
+    <div id="mmOptions">${race ? renderMmOptions(race) : ""}</div>
+    <div class="mm-actions">
+      <button id="mmPlayBtn" class="button primary">▶ この展開で再生</button>
+      <button id="mmAiBtn" class="button">AIの展開で再生</button>
+    </div>
+  `;
+  on("mmVenue", "change", () => {
+    state.mmVenue = el("mmVenue").value;
+    state.mmRaceKey = null;
+    renderMotionMaker();
+  });
+  on("mmRace", "change", () => {
+    state.mmVenue = selVenue;
+    state.mmRaceKey = el("mmRace").value;
+    renderMotionMaker();
+  });
+  on("mmPlayBtn", "click", () => playCustomMotion(false));
+  on("mmAiBtn", "click", () => playCustomMotion(true));
+  on("mmFinishManual", "change", updateMmFinishVisibility);
+  on("mmFinishAi", "change", updateMmFinishVisibility);
+  updateMmFinishVisibility();
+}
+
+function renderMmOptions(race) {
+  const base = computeMotionBase(race);
+  const lines = (race.lines || []).map((line) => ({
+    label: line.label,
+    cars: (line.members || []).map((m) => Number(m.car_no)).filter(Boolean),
+  })).filter((line) => line.cars.length);
+  const carOption = (car) => `<option value="${car}">${car} ${escapeHtml(base.names.get(car) || "")}</option>`;
+  const aiTop3 = base.final.slice(0, 3);
+  return `
+    <div class="mm-row">
+      <label class="field compact"><span>主導権を取るライン</span>
+        <select id="mmLeadLine">
+          <option value="">AIに任せる</option>
+          ${lines.map((line, i) => `<option value="${i}">${escapeHtml(line.label)}ライン</option>`).join("")}
+        </select>
+      </label>
+      <label class="field compact"><span>ちぎられる選手</span>
+        <select id="mmChigirare">
+          <option value="">なし</option>
+          ${base.cars.map(carOption).join("")}
+        </select>
+      </label>
+    </div>
+    <div class="mm-row mm-checks">
+      <label class="check-field"><input type="checkbox" id="mmTsuppari" /><span>つっぱり先行(前が譲らない)</span></label>
+      <label class="check-field"><input type="checkbox" id="mmEarly" /><span>打鐘前から動く(カマシ)</span></label>
+    </div>
+    <div class="mm-row mm-finish">
+      <span class="mm-label">結末:</span>
+      <label class="check-field"><input type="radio" name="mmFinish" id="mmFinishAi" checked /><span>AIが考える</span></label>
+      <label class="check-field"><input type="radio" name="mmFinish" id="mmFinishManual" /><span>自分で決める</span></label>
+      <span id="mmFinishPicks" hidden>
+        <label class="field compact"><span>1着</span><select id="mm1st">${base.cars.map((car) => `<option value="${car}"${car === aiTop3[0] ? " selected" : ""}>${car} ${escapeHtml(base.names.get(car) || "")}</option>`).join("")}</select></label>
+        <label class="field compact"><span>2着</span><select id="mm2nd">${base.cars.map((car) => `<option value="${car}"${car === aiTop3[1] ? " selected" : ""}>${car} ${escapeHtml(base.names.get(car) || "")}</option>`).join("")}</select></label>
+        <label class="field compact"><span>3着</span><select id="mm3rd">${base.cars.map((car) => `<option value="${car}"${car === aiTop3[2] ? " selected" : ""}>${car} ${escapeHtml(base.names.get(car) || "")}</option>`).join("")}</select></label>
+      </span>
+    </div>
+  `;
+}
+
+function updateMmFinishVisibility() {
+  const picks = el("mmFinishPicks");
+  if (picks) picks.hidden = !el("mmFinishManual")?.checked;
+}
+
+function playCustomMotion(useAiPlan) {
+  const raceKey = el("mmRace")?.value;
+  const race = (state.today?.forecasts || []).find((item) => item.race_key === raceKey);
+  const stage = el("mmStage");
+  if (!race || !stage) return;
+
+  let plan = null;
+  if (!useAiPlan) {
+    const base = computeMotionBase(race);
+    const lines = (race.lines || []).map((line) => (line.members || []).map((m) => Number(m.car_no)).filter(Boolean));
+    const leadIdx = el("mmLeadLine")?.value;
+    const finishManual = el("mmFinishManual")?.checked;
+    const picked = [Number(el("mm1st")?.value), Number(el("mm2nd")?.value), Number(el("mm3rd")?.value)];
+    const opts = {
+      leadLine: leadIdx !== "" && lines[Number(leadIdx)] ? lines[Number(leadIdx)] : null,
+      tsuppari: !!el("mmTsuppari")?.checked,
+      earlyAttack: !!el("mmEarly")?.checked,
+      chigirareCar: Number(el("mmChigirare")?.value) || null,
+      finishMode: finishManual ? "manual" : "ai",
+      finishTop3: finishManual ? [...new Set(picked.filter(Boolean))] : null,
+    };
+    plan = buildCustomMotionPlan(race, opts);
+  }
+
+  const key = "__custom__";
+  if (state.motionTimers[key]) {
+    clearInterval(state.motionTimers[key]);
+    delete state.motionTimers[key];
+  }
+  stage.hidden = false;
+  startRaceMotion(key, race, stage, plan);
+  setStatus(useAiPlan ? "AIの展開で再生中" : "あなたの展開で再生中");
+}
+
+function startRaceMotion(raceKey, race, stage, planOverride) {
   const svg = stage.querySelector(".motion-svg");
   const caption = stage.querySelector(".motion-caption");
-  const plan = buildMotionPlan(race);
+  const plan = planOverride || buildMotionPlan(race);
   if (!plan.cars.length) {
     caption.textContent = "出走データが足りないため再生できません";
     return;
@@ -902,6 +1142,7 @@ function renderToday() {
     .join("");
   renderVenueBoard(payload.forecasts || []);
   renderRecommended(payload.recommended_races || []);
+  renderMotionMaker();
 
   const rows = filterForecasts(payload.forecasts || []);
   el("forecastList").innerHTML = rows.length

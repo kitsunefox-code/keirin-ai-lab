@@ -2698,3 +2698,47 @@ h4 {
   background: var(--color-blue-soft);
   color: var(--color-blue);
 }
+
+/* Motion maker */
+.motion-maker {
+  padding: var(--space-4);
+}
+.mm-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+.mm-row .field.compact select {
+  min-width: 150px;
+}
+.mm-checks {
+  align-items: center;
+}
+.mm-finish {
+  align-items: center;
+}
+.mm-label {
+  font-size: var(--text-xs);
+  font-weight: 800;
+  color: var(--color-muted);
+}
+#mmFinishPicks {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: flex-end;
+}
+#mmFinishPicks .field.compact select {
+  min-width: 120px;
+}
+.mm-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+@media (max-width: 900px) {
+  #mmFinishPicks {
+    flex-wrap: wrap;
+  }
+}

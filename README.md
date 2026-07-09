@@ -101,7 +101,8 @@ python scripts\backfill_keirinjp_results.py --limit 120 --delay 0.4
 
 ```powershell
 python scripts\collect_venue_features.py
-python scriptsepredict_saved.py --limit 600
+python scripts
+epredict_saved.py --limit 600
 ```
 
 画面の「結果・答え合わせ」で日付ごとに、AIの本命・買い目と実際の着順、本命的中/車券圏/3連単的中のバッジ、当日の的中率が確認できます。
@@ -126,6 +127,8 @@ python scriptsepredict_saved.py --limit 600
 他のAI予想家の公開手法(パ部競輪・netkeirin AIライン等)のリサーチ結果は `docs/keirin_knowledge.md` にまとめています。
 
 連携成績・対戦成績は選手IDを紐付けた新しいレースから蓄積されるため、運用を重ねるほど精度が増します。展開カードを開くと「AI根拠」列に全選手分の判断材料がチップで表示されます。
+
+「モーションメーカー」ではレース場とレースを選び、理想の展開を自分で組んで再生できます(主導権ライン・つっぱり先行・打鐘前から動く・ちぎられる選手を選択)。結末は「自分で決める(1〜3着を指定)」と「AIが考える」の2パターンです。
 
 レースカードの「▶ 展開を再生」で、打鐘から最終バック、直線、ゴールまでの展開予想をモーションで再生できます。バンクの形・各ライン(内圏線/外帯線/イエローライン/バックストレッチライン)・打鐘のタイミング(残り1周半)はKEIRIN.JP公式ガイドの定義に合わせています。まとめは `docs/keirin_knowledge.md` を参照。展開文には戦型(2分戦/3分戦/細切れ戦/先行1車)の判定も入ります。
 
