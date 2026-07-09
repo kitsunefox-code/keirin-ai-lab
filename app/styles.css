@@ -2857,3 +2857,147 @@ h4 {
 .plan-replace-picker { display: inline-flex; gap: var(--space-1); align-items: center; }
 .plan-replace-picker select { min-height: 30px; padding: 3px 8px; width: auto; }
 .plan-replace-picker .button { min-height: 28px; padding: 3px 12px; font-size: var(--text-xs); }
+
+/* ===== ライン図: 一列レイアウトに統一 ===== */
+.line-track {
+  grid-template-columns: 1fr !important;
+  gap: var(--space-2) !important;
+}
+.line-nodes {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 2px;
+}
+.line-node {
+  flex: 0 0 auto;
+}
+.prob-tag {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-accent-dark);
+  font-weight: 800;
+}
+.unit-label {
+  display: block;
+  margin-top: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-subtle);
+}
+
+/* ===== スマホ最適化(Webアプリ表示の整理) ===== */
+@media (max-width: 768px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    position: static;
+    height: auto;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+  }
+  .sidebar .brand-mark { width: 34px; height: 34px; }
+  .brand h1 { font-size: var(--text-lg); }
+  .side-nav {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .side-nav a {
+    flex: 1 1 auto;
+    text-align: center;
+    padding: 8px 10px;
+    font-size: var(--text-xs);
+  }
+  /* サイドバーの補助UIはスマホでは畳んで場所を取らない */
+  .sidebar-group,
+  .sidebar .notice,
+  .status {
+    display: none;
+  }
+  .workspace {
+    padding: var(--space-4) var(--space-3);
+  }
+  h2 { font-size: var(--text-xl); }
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-1);
+  }
+  .page-meta { text-align: left; }
+
+  /* メトリクスは2列 */
+  .metric-strip,
+  #todayMetrics,
+  .results-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: var(--space-2);
+  }
+  .metric { min-height: 68px; padding: var(--space-3); }
+  .metric strong { font-size: 20px; }
+
+  /* レース一覧の各行を折り返し式に(潰れ防止・全項目維持) */
+  .ribbon-summary {
+    display: flex !important;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px var(--space-2);
+    min-height: 0;
+    padding: 10px var(--space-3);
+  }
+  .ribbon-main {
+    flex: 1 1 100%;
+    order: 2;
+  }
+  .ribbon-time { order: 1; }
+  .ribbon-summary strong { order: 1; }
+  .ribbon-summary .confidence-badge,
+  .ribbon-summary .badge { order: 1; margin-left: auto; }
+  .ribbon-tickets {
+    flex: 1 1 100%;
+    order: 3;
+    white-space: normal;
+  }
+
+  /* 結果行を縦積み */
+  .result-row {
+    grid-template-columns: 1fr auto !important;
+    row-gap: 4px;
+  }
+  .result-pick, .result-tickets, .result-order { grid-column: 1 / -1; }
+
+  /* 予定レース・プラン行 */
+  .plan-row { gap: var(--space-1) var(--space-2); padding: 8px var(--space-3); }
+  .plan-replace-btn { margin-left: 0; }
+
+  /* モーションメーカー: コントロール全幅 */
+  .mm-row { flex-direction: column; align-items: stretch; }
+  .mm-row .field.compact,
+  .mm-row .field.compact select { width: 100%; min-width: 0; }
+  #mmFinishPicks { flex-direction: column; align-items: stretch; }
+  .mm-actions { flex-direction: column; }
+  .mm-actions .button { width: 100%; }
+
+  /* バンクロール操作 */
+  .style-cards { grid-template-columns: 1fr; }
+  .bankroll-form, .bankroll-actions { flex-direction: column; align-items: stretch; }
+  .bankroll-form .field, .bankroll-actions .button { width: 100%; }
+  .bankroll-tickets { font-size: var(--text-sm); }
+
+  /* テーブルは横スクロール(縮小しない) */
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .data-table { min-width: 520px; }
+
+  /* 日付チップは横スクロール1行 */
+  .results-toolbar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .date-chip { flex: 0 0 auto; }
+
+  /* モーション再生SVGは全幅 */
+  .motion-svg { width: 100%; height: auto; }
+}

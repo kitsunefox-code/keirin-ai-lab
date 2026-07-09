@@ -718,9 +718,15 @@ function startRaceMotion(raceKey, race, stage, planOverride) {
     const eased = local * local * (3 - 2 * local);
     const posA = Math.max(0, a.order.indexOf(car));
     const posB = Math.max(0, b.order.indexOf(car));
-    const gap = (posA + (posB - posA) * eased) * gapStep;
+    const smoothPos = posA + (posB - posA) * eased;
+    // 直線〜ゴールにかけて車間を広げ、実際のレースのように縦に散らす
+    const finishApproach = Math.max(0, (coveredLaps - 1.5) / 0.5); // 0→1 (残り半周〜ゴール)
+    const spread = 1 + finishApproach * finishApproach * 2.6; // ゴール手前で最大3.6倍の車間
+    const gap = smoothPos * gapStep * spread;
+    // 追い比べで内外にばらける横位置(1列棒状にしない)
     const overtaking = posB < posA ? Math.sin(local * Math.PI) : 0;
-    return { gap, outside: overtaking * 12 };
+    const fan = finishApproach * (((posB % 3) - 1) * 5); // 着順で内・中・外へ振り分け
+    return { gap, outside: overtaking * 12 + fan };
   };
 
   const tick = () => {
@@ -1551,7 +1557,7 @@ function renderForecastCard(race) {
     <summary class="ribbon-summary">
       <span class="ribbon-time">${escapeHtml(race.start_time || "--:--")}</span>
       <strong>${escapeHtml(race.race_no || "")}R</strong>
-      <span class="ribbon-main">${car(top.car_no)} ${escapeHtml(top.name || "-")} <em>${percent(top.probability)}</em></span>
+      <span class="ribbon-main">${car(top.car_no)} ${escapeHtml(top.name || "-")} <em class="prob-tag">AI勝率${percent(top.probability)}</em></span>
       <span class="ribbon-tickets">${escapeHtml(primaryTickets || "-")}</span>
       ${race.class_group ? badge(race.class_group, race.is_girls ? "girls-badge" : "class-badge") : ""}
       ${race.hour_label && race.hour_type !== "hourTypeNormal" ? badge(race.hour_label, "hour-badge") : ""}
@@ -1575,9 +1581,9 @@ function renderForecastCard(race) {
 
         <div class="prediction-summary">
           <div class="main-pick">
-            <span>本命</span>
+            <span>本命 / AI勝率</span>
             <strong>${car(top.car_no)} ${escapeHtml(top.name || "-")}</strong>
-            <em>${percent(top.probability)}</em>
+            <em>${percent(top.probability)}<small class="unit-label">AI推定勝率</small></em>
           </div>
           <div class="top3-row">
             ${rankPill(1, top)}
