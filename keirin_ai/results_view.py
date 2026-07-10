@@ -38,6 +38,8 @@ def build_results_payload(conn: sqlite3.Connection, date: str | None = None, dat
         "summary": _summary(races),
         "venues": venue_list,
         "record": build_record_summary(conn),
+        "conditions": build_condition_stats(conn),
+        "calibration": build_calibration(conn),
     }
 
 
@@ -110,6 +112,109 @@ def build_record_summary(conn: sqlite3.Connection) -> dict:
         "last_week": {"label": buckets["last_week"]["label"], **stat(buckets["last_week"]["races"])},
         "total": {"label": buckets["total"]["label"], **stat(buckets["total"]["races"])},
     }
+
+
+_HOUR_LABELS = {
+    "hourTypeMorning": "モーニング",
+    "hourTypeNormal": "デイ",
+    "hourTypeNight": "ナイター",
+    "hourTypeMidnight": "ミッドナイト",
+}
+
+
+def _settled_rows(conn: sqlite3.Connection) -> list[sqlite3.Row]:
+    """答え合わせ対象(最初の予想×確定結果)の行。条件列付き。"""
+    return conn.execute(
+        """
+        select r.race_date, r.venue, r.hour_type, r.race_class_official,
+               r.result_json, r.payouts_json, p.ranking_json, p.tickets_json
+        from races r
+        join (select race_key, min(id) as first_id from predictions group by race_key) fp
+          on fp.race_key = r.race_key
+        join predictions p on p.id = fp.first_id
+        where r.result_json is not null and r.result_json != ''
+        """
+    ).fetchall()
+
+
+def build_condition_stats(conn: sqlite3.Connection) -> list[dict]:
+    """AIの得意条件: 会場/時間帯/車立て/級班ごとの2車単平坦買い回収率。
+
+    実払戻(確定オッズ)があるレースだけで集計する。n<10の条件はノイズなので出さない。
+    """
+    groups: dict[tuple[str, str], dict] = {}
+    for row in _settled_rows(conn):
+        hit = _hit_flags(row)
+        if not hit or not hit.get("exacta_stake"):
+            continue
+        ranking = _json_or(row["ranking_json"], [])
+        cls = str(row["race_class_official"] or "")
+        girls = "ガール" in cls
+        grade = "ガールズ" if girls else ("S級" if "S級" in cls[:4] else "A級" if "A級" in cls[:4] else "その他")
+        keys = [
+            ("会場", row["venue"] or "不明"),
+            ("時間帯", _HOUR_LABELS.get(str(row["hour_type"] or ""), "デイ")),
+            ("車立て", f"{len(ranking)}車"),
+            ("級班", grade),
+        ]
+        for category, label in keys:
+            g = groups.setdefault((category, label), {"stake": 0, "payout": 0, "n": 0, "hits": 0})
+            g["stake"] += hit["exacta_stake"]
+            g["payout"] += hit["exacta_payout"]
+            g["n"] += 1
+            g["hits"] += 1 if hit["exacta_payout"] > 0 else 0
+    out = []
+    for (category, label), g in groups.items():
+        if g["n"] < 10 or not g["stake"]:
+            continue
+        out.append(
+            {
+                "category": category,
+                "label": label,
+                "races": g["n"],
+                "roi": round(g["payout"] / g["stake"], 4),
+                "hit_rate": round(g["hits"] / g["n"], 4),
+            }
+        )
+    out.sort(key=lambda item: -item["roi"])
+    return out
+
+
+def build_calibration(conn: sqlite3.Connection) -> list[dict]:
+    """較正カーブ: AIが表示した本命勝率(ビン0.1刻み)ごとの実際の的中率。"""
+    bins: dict[int, dict] = {}
+    for row in _settled_rows(conn):
+        ranking = _json_or(row["ranking_json"], [])
+        order = (_json_or(row["result_json"], {}) or {}).get("finish_order") or []
+        if not ranking or not order:
+            continue
+        top = ranking[0]
+        try:
+            prob = float(top.get("win_probability") or top.get("probability") or 0)
+            won = int(top.get("car_no") or 0) == int(order[0])
+        except (TypeError, ValueError):
+            continue
+        if prob <= 0:
+            continue
+        b = min(9, int(prob * 10))
+        g = bins.setdefault(b, {"n": 0, "hits": 0, "prob_sum": 0.0})
+        g["n"] += 1
+        g["hits"] += 1 if won else 0
+        g["prob_sum"] += prob
+    out = []
+    for b in sorted(bins):
+        g = bins[b]
+        if g["n"] < 5:
+            continue
+        out.append(
+            {
+                "bin": f"{b * 10}-{b * 10 + 10}%",
+                "predicted": round(g["prob_sum"] / g["n"], 4),
+                "actual": round(g["hits"] / g["n"], 4),
+                "races": g["n"],
+            }
+        )
+    return out
 
 
 def _hit_flags(row: sqlite3.Row) -> dict | None:

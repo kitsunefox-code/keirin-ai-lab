@@ -159,6 +159,11 @@ def _enrich_forecast(conn, forecast: dict) -> dict:
     bank = _bank_info(conn, race)
     hour_type = race.get("hour_type") or ""
     weather = _json_or(race.get("weather_json"), None)
+    exacta_picks = _exacta_candidates(
+        [{"car_no": r.get("car_no"), "win_probability": r.get("win_probability") or r.get("probability") or 0} for r in ranking],
+        {"lineup": lineup, "entrants": [{"car_no": e.get("car_no"), "racing_score": e.get("racing_score")} for e in entries]},
+    )
+    value = _attach_value(exacta_picks, ranking, _json_or(race.get("latest_odds_json"), None))
     return {
         "race_key": race_key,
         "venue": venue,
@@ -174,10 +179,8 @@ def _enrich_forecast(conn, forecast: dict) -> dict:
         "title": _race_title(venue, race_no, race.get("event") or forecast.get("title")),
         "top3": top3,
         "tickets": [_ticket(ticket) for ticket in tickets[:8]],
-        "exacta": _exacta_candidates(
-            [{"car_no": r.get("car_no"), "win_probability": r.get("win_probability") or r.get("probability") or 0} for r in ranking],
-            {"lineup": lineup, "entrants": [{"car_no": e.get("car_no"), "racing_score": e.get("racing_score")} for e in entries]},
-        ),
+        "exacta": exacta_picks,
+        "value": value,
         "confidence": confidence,
         "scenario": scenario,
         "comment_signals": signals,
@@ -190,6 +193,44 @@ def _enrich_forecast(conn, forecast: dict) -> dict:
         "weather": weather,
         "notes": _notes(forecast.get("notes", []), prediction),
     }
+
+
+def _attach_value(exacta_picks: list[dict], ranking: list[dict], snapshot: dict | None) -> dict | None:
+    """AIの2車単候補に実オッズを付け、期待値(EV=較正確率×オッズ)を計算する。
+
+    的中確率はHarville近似: P(a-b) = P(a勝ち) × P(bが残りで最上位) = p_a × p_b/(1-p_a)。
+    win_probability は較正済み(実測に一致)なので、EV>1 は「市場がAIの見立てより安く売っている」目。
+    """
+    if not isinstance(snapshot, dict) or not snapshot.get("exacta"):
+        return None
+    odds_by_key = {row.get("key"): float(row.get("odds") or 0) for row in snapshot["exacta"] if row.get("key")}
+    probs = {}
+    for row in ranking:
+        try:
+            probs[int(row.get("car_no") or 0)] = float(row.get("win_probability") or row.get("probability") or 0)
+        except (TypeError, ValueError):
+            continue
+    best = None
+    for pick in exacta_picks:
+        cars = pick.get("cars") or []
+        if len(cars) != 2:
+            continue
+        odds = odds_by_key.get(pick.get("label"))
+        p_a = max(0.001, min(0.95, probs.get(int(cars[0]), 0)))
+        p_b = max(0.001, min(0.95, probs.get(int(cars[1]), 0)))
+        p_hit = p_a * min(0.9, p_b / max(0.05, 1 - p_a))
+        if not odds or odds <= 1.0:
+            continue
+        ev = odds * p_hit
+        pick["live_odds"] = round(odds, 1)
+        pick["hit_prob"] = round(p_hit, 4)
+        pick["ev"] = round(ev, 2)
+        if best is None or ev > best["ev"]:
+            best = {"label": pick.get("label"), "odds": round(odds, 1), "prob": round(p_hit, 4), "ev": round(ev, 2)}
+    if best is None:
+        return None
+    best["taken_at"] = snapshot.get("taken_at") or ""
+    return best
 
 
 def _class_group(race_class_official: str, is_girls: bool) -> str:
@@ -211,7 +252,7 @@ def _race_record(conn, race_key: str) -> dict:
         """
         select race_key, source_url, title, venue, event, race_no, race_class,
                race_date, lineup_json, raw_quality_json, race_class_official,
-               venue_id, hour_type, weather_json
+               venue_id, hour_type, weather_json, latest_odds_json
         from races
         where race_key=?
         """,

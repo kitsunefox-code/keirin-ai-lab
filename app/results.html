@@ -7,7 +7,7 @@
     <meta http-equiv="Expires" content="0" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>結果と収支 | Keirin AI Lab</title>
-    <link rel="stylesheet" href="styles.css?v=c88261f1" />
+    <link rel="stylesheet" href="styles.css?v=ee78da1f" />
   </head>
   <body data-page="results">
     <div class="app-shell">
@@ -49,6 +49,23 @@
 
           <div class="ai-record" id="aiRecordBar" aria-label="AI予想成績"></div>
 
+          <div class="insight-grid">
+            <section class="surface-panel" id="conditionsPanel" hidden>
+              <div class="capital-head">
+                <div><h3>AIの得意条件</h3></div>
+                <span class="page-meta">2車単平坦買いの条件別回収率(実払戻)</span>
+              </div>
+              <div id="conditionsBody"></div>
+            </section>
+            <section class="surface-panel" id="calibrationPanel" hidden>
+              <div class="capital-head">
+                <div><h3>AI勝率の較正</h3></div>
+                <span class="page-meta">表示した勝率どおりに当たっているか</span>
+              </div>
+              <svg id="calibrationChart" viewBox="0 0 320 240" class="calibration-chart" role="img" aria-label="較正カーブ"></svg>
+            </section>
+          </div>
+
           <div class="results-toolbar" id="resultsDates"></div>
           <div class="metric-strip results-metrics" id="resultsSummary"></div>
 
@@ -71,6 +88,6 @@
       </main>
     </div>
 
-    <script src="app.js?v=c88261f1"></script>
+    <script src="app.js?v=ee78da1f"></script>
   </body>
 </html>

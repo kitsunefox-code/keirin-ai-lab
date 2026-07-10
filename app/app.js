@@ -159,9 +159,68 @@ function renderRecordBar(record) {
   bar.innerHTML = `<div class="record-title">AI成績</div>${cell(record.week)}${cell(record.last_week)}${cell(record.total)}`;
 }
 
+// AIの得意条件テーブル(回収率100%超=緑、85%以上=中間、n>=30を「信頼できる」扱い)
+function renderConditions(conditions) {
+  const panel = el("conditionsPanel");
+  const body = el("conditionsBody");
+  if (!panel || !body) return;
+  const rows = (conditions || []).filter((c) => c.races >= 10);
+  if (!rows.length) {
+    panel.hidden = true;
+    return;
+  }
+  panel.hidden = false;
+  const roiClass = (roi) => (roi >= 1 ? "kpi-up" : roi >= 0.85 ? "" : "kpi-down");
+  body.innerHTML = `<div class="table-wrap"><table class="data-table compact-table">
+    <thead><tr><th>条件</th><th>R数</th><th>回収率</th><th>的中率</th></tr></thead>
+    <tbody>${rows
+      .slice(0, 12)
+      .map(
+        (c) => `<tr>
+        <td><small class="cond-cat">${escapeHtml(c.category)}</small> <b>${escapeHtml(c.label)}</b>${c.races >= 30 && c.roi >= 1 ? ' <span class="cond-fav">得意</span>' : ""}</td>
+        <td>${c.races}</td>
+        <td class="${roiClass(c.roi)}"><b>${(c.roi * 100).toFixed(1)}%</b></td>
+        <td>${(c.hit_rate * 100).toFixed(1)}%</td>
+      </tr>`
+      )
+      .join("")}</tbody>
+  </table></div>
+  <p class="cond-note">R数が少ない条件は偶然の可能性あり。30R以上かつ回収率100%超だけ「得意」と表示。</p>`;
+}
+
+// 較正カーブ: 対角線に乗っていれば「言った勝率どおりに当たっている」
+function renderCalibration(calibration) {
+  const panel = el("calibrationPanel");
+  const svg = el("calibrationChart");
+  if (!panel || !svg) return;
+  const rows = calibration || [];
+  if (rows.length < 3) {
+    panel.hidden = true;
+    return;
+  }
+  panel.hidden = false;
+  const W = 320, H = 240, pad = 34;
+  const x = (v) => pad + v * (W - pad - 12);
+  const y = (v) => H - pad + v * -(H - pad - 12);
+  const pts = rows.map((r) => ({ px: x(r.predicted), py: y(r.actual), r }));
+  const gridLines = [0.2, 0.4, 0.6, 0.8]
+    .map((v) => `<line x1="${x(v)}" y1="${y(0)}" x2="${x(v)}" y2="${y(1)}" class="cal-grid"/><line x1="${x(0)}" y1="${y(v)}" x2="${x(1)}" y2="${y(v)}" class="cal-grid"/>
+      <text x="${x(v)}" y="${H - pad + 14}" class="cal-tick">${v * 100}%</text><text x="${pad - 6}" y="${y(v) + 3}" class="cal-tick" text-anchor="end">${v * 100}%</text>`)
+    .join("");
+  svg.innerHTML = `
+    ${gridLines}
+    <line x1="${x(0)}" y1="${y(0)}" x2="${x(1)}" y2="${y(1)}" class="cal-diagonal"/>
+    <polyline points="${pts.map((p) => `${p.px},${p.py}`).join(" ")}" class="cal-line"/>
+    ${pts.map((p) => `<circle cx="${p.px}" cy="${p.py}" r="${Math.min(9, 3 + Math.sqrt(p.r.races) / 3)}" class="cal-dot"><title>${p.r.bin}: 表示${(p.r.predicted * 100).toFixed(1)}% → 実際${(p.r.actual * 100).toFixed(1)}% (${p.r.races}R)</title></circle>`).join("")}
+    <text x="${x(0.5)}" y="${H - 6}" class="cal-label" text-anchor="middle">AIが表示した勝率</text>
+    <text x="10" y="${y(0.5)}" class="cal-label" transform="rotate(-90 10 ${y(0.5)})" text-anchor="middle">実際の的中率</text>`;
+}
+
 function renderResults(payload) {
   const summary = payload.summary || {};
   renderRecordBar(payload.record);
+  renderConditions(payload.conditions);
+  renderCalibration(payload.calibration);
   if (!el("resultsBody")) return; // 結果ページ以外ではAI成績バーだけ更新
   el("resultsDates").innerHTML = (payload.dates || [])
     .map(
@@ -1691,6 +1750,7 @@ function renderToday() {
     .map(metric)
     .join("");
   renderVenueBoard(payload.forecasts || []);
+  renderValueBoard(payload.forecasts || []);
   renderRecommended(payload.recommended_races || []);
 
   const rows = filterForecasts(payload.forecasts || []);
@@ -1725,6 +1785,57 @@ function suggestedStake() {
   if (!brState || !config || state.bankroll?.session?.status !== "active") return null;
   const budget = Math.floor((brState.balance * config.per_race_cap_pct) / 100 / 100) * 100;
   return budget > 0 ? budget : null;
+}
+
+// 今日の妙味: 実オッズ×較正済みAI確率の期待値(EV)が高いレースを並べる。
+// EV>1 = 市場がAIの見立てより安く売っている目。オッズは取得時点のもので変動する。
+function renderValueBoard(forecasts) {
+  const section = el("valueBoard");
+  if (!section) return;
+  const rows = (forecasts || [])
+    .filter((race) => race.value && !race.elapsed)
+    .sort((a, b) => (b.value.ev || 0) - (a.value.ev || 0))
+    .slice(0, 5);
+  if (!rows.length) {
+    section.innerHTML = "";
+    section.hidden = true;
+    return;
+  }
+  const ago = (iso) => {
+    if (!iso) return "";
+    const mins = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
+    return mins < 60 ? `${mins}分前` : `${Math.floor(mins / 60)}時間前`;
+  };
+  const items = rows.map((race) => {
+    const v = race.value;
+    const evClass = v.ev >= 1.5 ? "is-hot" : v.ev >= 1.0 ? "is-good" : "";
+    const cars = String(v.label || "").split("-");
+    return `<button type="button" class="value-row ${evClass}" data-open-race="${escapeAttr(race.race_key)}">
+      <span class="value-race">${escapeHtml(race.venue || "")}${escapeHtml(race.race_no || "")}R <small>${escapeHtml(race.start_time || "")}</small></span>
+      <span class="value-ticket">${cars.map(car).join('<em class="fm-to">ー</em>')}</span>
+      <span class="value-odds">${v.odds}倍 <small>${ago(v.taken_at)}</small></span>
+      <span class="value-prob">AI ${(v.prob * 100).toFixed(1)}%</span>
+      <span class="value-ev">EV ${v.ev.toFixed(2)}</span>
+    </button>`;
+  });
+  section.hidden = false;
+  section.innerHTML = `
+    <header class="value-board-head">
+      <div>
+        <h3>💎 今日の妙味</h3>
+        <p>実オッズ × AI確率の期待値が高い2車単。オッズは取得時点のもので変動します。</p>
+      </div>
+    </header>
+    <div class="value-rows">${items.join("")}</div>`;
+  section.querySelectorAll("[data-open-race]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const target = document.getElementById(safeRaceId(btn.dataset.openRace));
+      if (target) {
+        target.open = true;
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+  });
 }
 
 function renderRecommended(races) {

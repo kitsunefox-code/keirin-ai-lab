@@ -139,9 +139,21 @@ def _migrate_columns(conn: sqlite3.Connection) -> None:
         ("hour_type", "text"),
         ("weather_json", "text"),
         ("payouts_json", "text"),
+        ("latest_odds_json", "text"),  # 発走前の2車単オッズのスナップショット(妙味=EV計算用)
     ):
         if column not in race_columns:
             conn.execute(f"alter table races add column {column} {ddl}")
+
+
+def save_race_odds_snapshot(conn: sqlite3.Connection, race_key: str, snapshot: dict) -> None:
+    """発走前オッズのスナップショットを保存する。{"exacta": [{"key":"1-5","odds":8.2},...], "taken_at": ISO}"""
+    if not snapshot:
+        return
+    conn.execute(
+        "update races set latest_odds_json=? where race_key=?",
+        (json.dumps(snapshot, ensure_ascii=False), race_key),
+    )
+    conn.commit()
 
 
 def save_race_payouts(conn: sqlite3.Connection, race_key: str, payouts: dict) -> None:

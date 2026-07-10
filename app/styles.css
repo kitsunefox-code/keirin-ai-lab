@@ -3436,3 +3436,82 @@ input, select { background: var(--color-surface-raised); border-color: var(--col
   align-items: center;
   justify-content: center;
 }
+
+/* 今日の妙味(期待値ボード) */
+.value-board {
+  margin: 0 0 var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+  overflow: hidden;
+}
+.value-board-head {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+.value-board-head h3 { color: var(--color-text); font-size: var(--text-md); }
+.value-board-head p { color: var(--color-muted); font-size: var(--text-xs); margin-top: 2px; }
+.value-rows { display: flex; flex-direction: column; }
+.value-row {
+  display: grid;
+  grid-template-columns: minmax(90px, 1fr) auto auto auto auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 8px var(--space-4);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.value-row:last-child { border-bottom: 0; }
+.value-row:hover { background: var(--color-surface-raised); }
+.value-race { font-weight: 800; }
+.value-race small, .value-odds small { color: var(--color-muted); font-weight: 400; margin-left: 4px; }
+.value-ticket { display: inline-flex; align-items: center; }
+.value-odds { font-variant-numeric: tabular-nums; }
+.value-prob { color: var(--color-muted); font-size: var(--text-sm); }
+.value-ev { font-weight: 900; font-variant-numeric: tabular-nums; color: var(--color-muted); }
+.value-row.is-good .value-ev { color: var(--color-accent); }
+.value-row.is-hot .value-ev { color: var(--color-caution); }
+@media (max-width: 720px) {
+  .value-row { grid-template-columns: 1fr auto; grid-auto-flow: row; row-gap: 2px; }
+  .value-prob { display: none; }
+}
+
+/* 得意条件 + 較正カーブ */
+.insight-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  margin: var(--space-4) 0;
+}
+@media (max-width: 900px) { .insight-grid { grid-template-columns: 1fr; } }
+.cond-cat {
+  color: var(--color-muted);
+  font-size: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 1px 4px;
+  margin-right: 2px;
+}
+.cond-fav {
+  color: var(--color-profit);
+  font-size: 10px;
+  font-weight: 900;
+  border: 1px solid rgba(66, 211, 146, 0.4);
+  background: rgba(66, 211, 146, 0.12);
+  border-radius: 4px;
+  padding: 1px 5px;
+  margin-left: 4px;
+}
+.cond-note { color: var(--color-muted); font-size: var(--text-xs); margin-top: 6px; }
+.calibration-chart { width: 100%; height: auto; display: block; }
+.cal-grid { stroke: var(--color-border); stroke-width: 1; }
+.cal-diagonal { stroke: var(--color-muted); stroke-width: 1; stroke-dasharray: 4 4; }
+.cal-line { fill: none; stroke: var(--color-accent); stroke-width: 2; }
+.cal-dot { fill: var(--color-accent); fill-opacity: 0.75; }
+.cal-tick { fill: var(--color-muted); font-size: 9px; }
+.cal-label { fill: var(--color-muted); font-size: 10px; }

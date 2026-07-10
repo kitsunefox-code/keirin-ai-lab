@@ -72,6 +72,7 @@ jobs:
             python scripts/collect_raceresults.py --limit 50 --delay 0.4
             python scripts/backfill_payouts.py --limit 80 --delay 0.3
             python scripts/settle_original.py
+            python scripts/snapshot_odds.py --window 75 --limit 16 --delay 0.4
           fi
           python scripts/build_static_api.py
 
