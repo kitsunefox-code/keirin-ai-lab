@@ -564,62 +564,68 @@ function buildCustomMotionPlan(race, opts) {
   return { cars, keyframes, captions };
 }
 
-// 展開から競輪らしい着順を推定する。実力(較正済み勝率)より「ライン内の役割」を重視し、
-// 先行ラインの番手が最も差しやすい/スジで決まりやすいという実戦の傾向を反映する。
+// 展開から着順を組み立てる。決定的(毎回同じ)。
+// 何も展開を指定しなければ AI予想の並び(base.final)をそのまま返す = 展開予想はAI予想と一致。
+// まくり・大外・ちぎれ・ペース等を指定したときだけ、その展開に応じて決定的に着順が変わる。
 function realisticFinishOrder(base, opts, leadLine) {
-  const { cars, probs, styles, lineup } = base;
+  const { cars, styles, lineup, final, escapeLine } = base;
   const lineOf = (car) => lineup.find((line) => line.includes(car)) || [car];
+
+  // 展開の上書きが無く、先行ラインもAI想定どおりなら「AI予想の着順」をそのまま使う
+  const defaultLead = escapeLine.filter((car) => cars.includes(car));
+  const sameLead =
+    leadLine.length === defaultLead.length && leadLine.every((car, i) => car === defaultLead[i]);
+  const noDrama =
+    !opts.makuriCar && !opts.closerCar && !opts.chigirareCar && !opts.accidentCar &&
+    !opts.seriCar && !opts.tsuppari && (opts.pace || "normal") === "normal" && sameLead;
+  const aiClose = _aiTopClose(base);
+  if (noDrama) {
+    return { order: normalizeOrder(final, cars), close: aiClose };
+  }
+
+  // --- ここからは「ユーザーが展開をいじった」場合。AI予想順を土台に決定的に補正する ---
   const makuriHit = opts.makuriCar && cars.includes(opts.makuriCar) && opts.makuriResult !== "fail";
   const makuriLine = makuriHit ? lineOf(opts.makuriCar) : [];
+  const rankBonus = new Map(final.map((car, i) => [car, (final.length - i) * 0.06])); // AI予想順の土台
 
   const score = new Map();
   for (const car of cars) {
-    const line = lineOf(car);
-    const pos = line.indexOf(car); // 0=先頭(自力), 1=番手, 2=3番手...
     const st = styles.get(car) || "";
-    let s = (probs.get(car) || 0.08) * 0.6; // 実力は控えめに効かせる
-
-    if (leadLine.includes(car)) {
+    let s = rankBonus.get(car) || 0;
+    if (!sameLead && leadLine.includes(car)) {
+      // 先行ラインをAIと違う線にしたときだけ、そのラインのスジを強調
       const lp = leadLine.indexOf(car);
-      if (lp === 0) s += 0.30;        // 先行: 粘る(つっぱりならさらに)
-      else if (lp === 1) s += 0.46;   // 番手: 一番おいしい差し(最有力)
-      else if (lp === 2) s += 0.24;   // 3番手: スジで連下
+      if (lp === 0) s += 0.30;
+      else if (lp === 1) s += 0.46;
+      else if (lp === 2) s += 0.24;
       else s += 0.08;
-    } else if (pos === 0) {
-      s += 0.10;                      // 別線の自力型は食い込む余地あり
     }
-
     if (makuriHit) {
       const mp = makuriLine.indexOf(car);
-      if (car === opts.makuriCar) s += 0.42;   // まくり本人が前へ
-      else if (mp === 1) s += 0.30;            // まくり番手が続く
+      if (car === opts.makuriCar) s += 0.5;
+      else if (mp === 1) s += 0.32;
       else if (mp >= 2) s += 0.12;
     }
-
-    if (opts.pace === "slow" && (st === "追" || st === "差")) s += 0.12;  // 上がり勝負
-    if (opts.pace === "high" && st === "逃") s += 0.10;                   // 消耗戦で先行有利
-    if (opts.tsuppari && leadLine[0] === car) s += 0.14;                  // つっぱりで先行が粘る
-    if (opts.seriCar === car) s += opts.seriResult === "lose" ? -0.35 : 0.12; // 番手競り
+    if (opts.pace === "slow" && (st === "追" || st === "差")) s += 0.12;
+    if (opts.pace === "high" && st === "逃") s += 0.10;
+    if (opts.tsuppari && leadLine[0] === car) s += 0.14;
+    if (opts.seriCar === car) s += opts.seriResult === "lose" ? -0.35 : 0.12;
     score.set(car, s);
   }
-
-  // 後退イベントは大きく減点(最後方確定は下で処理)
   if (opts.chigirareCar) score.set(opts.chigirareCar, (score.get(opts.chigirareCar) || 0) - 1.0);
   if (opts.accidentCar) score.set(opts.accidentCar, (score.get(opts.accidentCar) || 0) - 1.2);
 
-  // 接戦サンプリング: スコア順に固定せず、実力差に応じた揺らぎで着順を決める。
-  // 差が小さいほど入れ替わりやすく、再生するたびに違う「際どいレース」になる。
-  const NOISE = 0.20;
-  const gumbel = () => -Math.log(-Math.log(Math.max(1e-9, Math.random())));
-  const noisy = new Map(cars.map((car) => [car, (score.get(car) || 0) / NOISE + gumbel()]));
-  let ordered = [...cars].sort((a, b) => noisy.get(b) - noisy.get(a));
+  // 決定的なソート(同点はAI予想順で割る)
+  const rankIdx = new Map(final.map((car, i) => [car, i]));
+  let ordered = [...cars].sort((a, b) => {
+    const d = (score.get(b) || 0) - (score.get(a) || 0);
+    return d !== 0 ? d : (rankIdx.get(a) || 0) - (rankIdx.get(b) || 0);
+  });
 
-  // 大外一気は差し込んで2着前後まで(勝ち切りは稀)
   if (opts.closerCar && cars.includes(opts.closerCar)) {
     ordered = ordered.filter((car) => car !== opts.closerCar);
     ordered.splice(Math.min(1, ordered.length), 0, opts.closerCar);
   }
-  // ちぎれ/アクシデントは確実に最後方へ
   for (const car of [opts.chigirareCar, opts.accidentCar]) {
     if (car && ordered.includes(car)) {
       ordered = ordered.filter((c) => c !== car);
@@ -627,11 +633,19 @@ function realisticFinishOrder(base, opts, leadLine) {
     }
   }
   const order = normalizeOrder(ordered, cars);
-  // 「今回のレースが実際に際どかったか」= サンプリング後の1・2着の差で判定(ナレーション用)
-  const m1 = noisy.get(order[0]);
-  const m2 = noisy.get(order[1]);
-  const close = order.length >= 2 && m1 != null && m2 != null && m1 - m2 < 1.0;
+  const g1 = score.get(order[0]);
+  const g2 = score.get(order[1]);
+  const close = order.length >= 2 && g1 != null && g2 != null ? g1 - g2 < 0.12 : aiClose;
   return { order, close };
+}
+
+// AI予想の1着と2着の勝率差が小さければ「接戦」とみなす(展開予想の実況用・決定的)
+function _aiTopClose(base) {
+  const { final, probs } = base;
+  if (!final || final.length < 2) return false;
+  const p1 = probs.get(final[0]) || 0;
+  const p2 = probs.get(final[1]) || 0;
+  return p1 - p2 < 0.06;
 }
 
 function renderMotionMaker() {
