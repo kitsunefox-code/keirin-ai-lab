@@ -25,6 +25,7 @@ from keirin_ai.bankroll import (
     STYLES,
     UNIT,
     active_session,
+    choose_bet_type,
     commit_bet,
     record_result,
     record_skip,
@@ -72,32 +73,58 @@ def _race_result(conn, race_key: str) -> tuple[list[int] | None, dict | None]:
     return order, payouts
 
 
-def _exacta_tickets(ranking: list[dict], budget: int, weights) -> tuple[list[dict], int]:
-    """軸(1位)1着固定 × 相手(2位・3位)の2車単2点に、残高予算を配分する。"""
-    cars = [int(r.get("car_no") or 0) for r in ranking[:3]]
-    if len(cars) < 3 or 0 in cars:
-        return [], 0
-    combos = [(cars[0], cars[1]), (cars[0], cars[2])]
+def _build_tickets(ranking: list[dict], budget: int, bet_type: str) -> tuple[list[dict], int]:
+    """券種に応じた買い目に残高予算を配分する。
+
+    2車単: 軸(1位)1着固定 × 相手(2位・3位)の2点。
+    3連単: 軸1着固定のスジ4点(1着=1位, 2着=2/3位, 3着=2/3/4位)。自信レース向け。
+    """
+    cars = [int(r.get("car_no") or 0) for r in ranking[:4]]
     total_units = budget // UNIT
-    if total_units < 2:
+    if len(cars) < 3 or 0 in cars[:3]:
         return [], 0
-    w = [float(pair[1]) for pair in weights[:2]] or [0.5, 0.3]
-    wsum = sum(w) or 1.0
-    units0 = max(1, int(total_units * w[0] / wsum))
-    units1 = max(1, total_units - units0)
+
+    if bet_type == "trifecta":
+        r1, r2, r3 = cars[0], cars[1], cars[2]
+        r4 = cars[3] if len(cars) >= 4 and cars[3] else r3
+        combos = [(r1, r2, r3), (r1, r3, r2), (r1, r2, r4), (r1, r3, r4)]
+        # 重複除去(相手が3車しかいない等)
+        seen, uniq = set(), []
+        for c in combos:
+            if len(set(c)) == 3 and c not in seen:
+                seen.add(c)
+                uniq.append(c)
+        combos = uniq
+        weights = [0.4, 0.25, 0.2, 0.15][: len(combos)]
+    else:
+        combos = [(cars[0], cars[1]), (cars[0], cars[2])]
+        weights = [0.62, 0.38]
+
+    if total_units < len(combos):
+        # 点数を買えるだけに絞る(最低2点)
+        keep = max(2, total_units)
+        combos = combos[:keep]
+        weights = weights[:keep]
+    if total_units < len(combos) or len(combos) < 2:
+        return [], 0
+
+    wsum = sum(weights) or 1.0
+    units = [max(1, int(total_units * w / wsum)) for w in weights]
+    # 端数を本線へ寄せる
+    diff = total_units - sum(units)
+    if diff > 0:
+        units[0] += diff
     tickets = []
-    for (a, b), units, role in zip(combos, (units0, units1), ("本命", "対抗")):
+    for combo, u in zip(combos, units):
         tickets.append(
             {
-                "role": role,
-                "label": f"{a}-{b}",
-                "cars": [a, b],
-                "stake": units * UNIT,
-                "bet_type": "exacta",
+                "label": "-".join(str(c) for c in combo),
+                "cars": list(combo),
+                "stake": u * UNIT,
+                "bet_type": bet_type,
             }
         )
-    total_stake = sum(t["stake"] for t in tickets)
-    return tickets, total_stake
+    return tickets, sum(t["stake"] for t in tickets)
 
 
 def main() -> None:
@@ -146,25 +173,33 @@ def main() -> None:
                 "url": slot.get("url") or "",
             }
 
+            # レースごとに券種を使い分ける(自信レース=3連単スジ, それ以外=2車単)
+            top_prob = float((ranking[0].get("win_probability") if ranking else 0) or 0)
+            bet_type = choose_bet_type(top_prob)
+            need = 3 if bet_type == "trifecta" else 2
+
             tickets, total_stake = ([], 0)
-            if ranking:
-                tickets, total_stake = _exacta_tickets(ranking, budget, weights)
+            if ranking and len(order) >= need:
+                tickets, total_stake = _build_tickets(ranking, budget, bet_type)
             if not tickets:
-                record_skip(conn, session["id"], race_meta, "予算内で2点を買えず見送り")
+                # 3連単の結果(3着まで)が未確定なら保留、点数を買えないなら見送り
+                if bet_type == "trifecta" and len(order) < 3:
+                    break
+                record_skip(conn, session["id"], race_meta, "予算内で必要点数を買えず見送り")
                 recorded.add(race_key)
                 skipped += 1
                 continue
 
-            actual2 = [order[0], order[1]]
-            win_ticket = next((t for t in tickets if t["cars"] == actual2), None)
-            payoff_odds = (payouts or {}).get("exacta")
+            actual = order[:need]
+            win_ticket = next((t for t in tickets if t["cars"] == actual), None)
+            payoff_odds = (payouts or {}).get(bet_type)
 
             if win_ticket is not None and payoff_odds is None:
                 # 的中したのに確定オッズ未取得 → 捏造しないため決済保留(次回に回す)
                 held += 1
                 break
 
-            proposal = {**race_meta, "tickets": tickets, "total_stake": total_stake, "bet_type": "exacta"}
+            proposal = {**race_meta, "tickets": tickets, "total_stake": total_stake, "bet_type": bet_type}
             bet_id = commit_bet(conn, session["id"], proposal)
             if win_ticket is not None:
                 payout = int(round(win_ticket["stake"] * float(payoff_odds)))

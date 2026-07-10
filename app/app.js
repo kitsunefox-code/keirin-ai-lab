@@ -1869,6 +1869,7 @@ function renderForecastCard(race) {
       ${race.class_group ? badge(race.class_group, race.is_girls ? "girls-badge" : "class-badge") : ""}
       ${race.hour_label && race.hour_type !== "hourTypeNormal" ? badge(race.hour_label, "hour-badge") : ""}
       ${race.weather?.is_rain ? badge("雨", "rain-badge") : ""}
+      ${payoutBadge(race)}
       ${badge(confidence.label || "混戦", "confidence-badge")}
     </summary>
     <div class="ribbon-body">
@@ -1881,6 +1882,7 @@ function renderForecastCard(race) {
           </div>
           <div class="confidence-summary">
             ${badge(confidence.label || "混戦", "confidence-badge")}
+            ${payoutBadge(race)}
             ${race.scenario?.pattern ? badge(race.scenario.pattern, "pattern-badge") : ""}
             <span>${escapeHtml(confidence.reason || "")}</span>
           </div>
@@ -2076,6 +2078,26 @@ function confidenceClass(label) {
   if (label === "強" || label === "強") return "is-strong";
   if (label === "中" || label === "中") return "is-medium";
   return "is-mixed";
+}
+
+// 高配当になりそうな予想か判定する。
+// 本命(AI勝率)が抜けていない=どの車にもチャンスがある=当たれば配当が付く。
+// さらに本命の車番が大きい(外枠・非人気になりやすい)ほど妙味と見る。
+function payoutTier(race) {
+  const top = (race.top3 || [])[0] || {};
+  const p = Number(top.probability || 0);
+  if (!p) return null;
+  const outerAxis = Number(top.car_no || 0) >= 5; // 5番以降を軸=人気薄になりやすい
+  if (p <= 0.18 || (p <= 0.20 && outerAxis)) return "super"; // 大穴級(希少)
+  if (p <= 0.22 || (p <= 0.26 && outerAxis)) return "high";  // 高配当ねらい
+  return null;
+}
+
+function payoutBadge(race) {
+  const tier = payoutTier(race);
+  if (!tier) return "";
+  const label = tier === "super" ? "💰大穴級" : "💰高配当";
+  return `<span class="payout-badge${tier === "super" ? " is-super" : ""}">${label}</span>`;
 }
 
 function formatLineup(lineup) {

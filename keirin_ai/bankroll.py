@@ -81,9 +81,18 @@ STYLES: dict[str, dict] = {
         "assumed_main_odds": 5.5,
         "race_limit": 10,
         "default_start": 10000,
-        "bet_type": "exacta",
+        "bet_type": "auto",  # レースごとに3連単/2車単を使い分ける
     },
 }
+
+
+def choose_bet_type(top_probability: float) -> str:
+    """オリジナル運用の券種をレースの自信度で使い分ける。
+
+    本命が抜けているレース(AI勝率が高い=スジで決まりやすい)は3連単を少点数で買い、
+    高めの配当を取りにいく。それ以外は2車単で的中率を確保し、複利を安定させる。
+    """
+    return "trifecta" if float(top_probability or 0) >= 0.42 else "exacta"
 
 
 def estimate_races(start_amount: int, target_amount: int, style_key: str) -> dict:
@@ -723,6 +732,9 @@ def _judge_race(race: dict, budget: int, config: dict, live_trifecta: dict | Non
         summary["reason"] = f"{style['label']}運用のため混戦は見送り"
         return {"summary": summary, "proposal": None}
     bet_type = style.get("bet_type") or "trifecta"
+    if bet_type == "auto":
+        top_prob = float(((race.get("top3") or [{}])[0]).get("probability") or 0)
+        bet_type = choose_bet_type(top_prob)
     candidates = _race_tickets(race, live_trifecta, bet_type=bet_type)
     if len(candidates) < 2:
         summary["reason"] = "買い目候補が不足(1点勝負は行わない)"
