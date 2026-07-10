@@ -3306,3 +3306,24 @@ input, select { background: var(--color-surface-raised); border-color: var(--col
 }
 .venue-chip em { color: var(--color-accent); }
 .venue-board-head strong { color: var(--color-text); }
+
+/* ===== 修正2: 会場グループ見出しの白グラデ背景残りを潰す(白地に白文字対策) ===== */
+.venue-section-head { background: var(--color-surface-raised) !important; }
+.main-pick,
+.ribbon-summary, .ribbon-body,
+.line-diagram, .line-node,
+.plan-card, .plan-leg,
+.analysis-block:first-child { background: var(--color-surface-raised) !important; }
+
+/* ===== 修正3: ダーク反転で ink-900 が明色化し白文字が消えたバッジ類 ===== */
+.style-tag {
+  background: var(--color-surface-raised) !important;
+  color: var(--color-text) !important;
+  border: 1px solid var(--color-border) !important;
+}
+.badge.class-badge, .class-badge {
+  background: var(--color-surface-raised) !important;
+  color: var(--color-text) !important;
+  border-color: var(--color-border) !important;
+}
+.suji-tag { background: var(--color-accent) !important; color: #08110c !important; }
