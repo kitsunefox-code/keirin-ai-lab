@@ -1359,7 +1359,7 @@ function renderBankroll(payload) {
   head.innerHTML = `<button id="brStopBtn" class="button">停止</button>`;
   on("brStopBtn", "click", stopBankroll);
 
-  const parts = [yesterday, renderBankrollStatus(session, brState), renderStyleSwitcher(session)];
+  const parts = [yesterday, renderBankrollStatus(session, brState), renderCompareBoard(payload, brState)];
   if (payload.plan) {
     parts.push(renderOriginalPlan(payload.plan));
   }
@@ -1632,6 +1632,51 @@ function renderBankrollStopBanner(session, brState) {
   return `<div class="bankroll-stop-banner ${tone}">
     <strong>停止: ${escapeHtml(session.stop_reason || "停止")}</strong>
     <span>最終残高 ${yen(brState?.balance ?? 0)}(${profit >= 0 ? "+" : ""}${yen(profit)})</span>
+  </div>`;
+}
+
+// 並行比較ボード: オリジナル(自動)と、堅実/バランス/冒険を同じ10レースで回した結果を横並び。
+// どの乗り方が今日は良かったかを一目で比較できる。すべて自動運用・実払戻ベース。
+function renderCompareBoard(payload, brState) {
+  const compare = payload.compare || [];
+  const yen = (v) => `${(v || 0).toLocaleString()}円`;
+  const sign = (v) => (v >= 0 ? "+" : "");
+  const rows = [
+    {
+      label: "オリジナル",
+      tag: "自動",
+      balance: brState.balance,
+      profit: brState.profit,
+      wins: brState.wins,
+      losses: brState.losses,
+      main: true,
+    },
+    ...compare.map((c) => ({
+      label: c.label,
+      tag: `${c.wins + c.losses}R`,
+      balance: c.balance,
+      profit: c.profit,
+      wins: c.wins,
+      losses: c.losses,
+    })),
+  ];
+  if (rows.length <= 1) return ""; // 比較セッションがまだ無い
+  const best = Math.max(...rows.map((r) => r.profit ?? -Infinity));
+  const cards = rows
+    .map((r) => {
+      const cls = (r.profit ?? 0) >= 0 ? "ev-positive" : "ev-caution";
+      const isBest = (r.profit ?? -Infinity) === best && best > 0;
+      return `<div class="compare-card${r.main ? " is-main" : ""}${isBest ? " is-best" : ""}">
+        <div class="compare-head"><b>${escapeHtml(r.label)}</b><span>${escapeHtml(r.tag)}</span>${isBest ? '<span class="compare-best">首位</span>' : ""}</div>
+        <div class="compare-balance">${yen(r.balance)}</div>
+        <div class="compare-profit ${cls}">${sign(r.profit ?? 0)}${yen(r.profit ?? 0)}</div>
+        <div class="compare-wl">${r.wins}勝${r.losses}敗</div>
+      </div>`;
+    })
+    .join("");
+  return `<div class="compare-board">
+    <div class="compare-title">乗り方の比較 <small>同じ10レースを4スタイルで自動運用</small> <span class="help-tip" tabindex="0" data-tip="オリジナルは毎日自動で回る本命運用。堅実・バランス・冒険も同じ10レースを並行で自動運用し、実際の結果で決済しています。どの乗り方が向いているかの比較用です。">?</span></div>
+    <div class="compare-grid">${cards}</div>
   </div>`;
 }
 
@@ -1963,7 +2008,7 @@ function renderRecommended(races) {
 function renderVenueForecastSections(rows) {
   return groupForecastsByVenue(rows)
     .map((group) => {
-      const strong = group.races.filter((race) => race.confidence?.label === "強").length;
+      const strong = group.races.filter((race) => race.confidence?.rank >= 2).length;
       const first = group.races[0];
       const last = group.races[group.races.length - 1];
       return `<section class="venue-section">
@@ -1974,7 +2019,7 @@ function renderVenueForecastSections(rows) {
             <p>${group.races.length}レース / ${escapeHtml(first.start_time || "--:--")} - ${escapeHtml(last.start_time || "--:--")}</p>
           </div>
           <div class="venue-section-stats">
-            ${badge(`強 ${strong}`, "confidence-badge")}
+            ${badge(`自信 ${strong}`, "confidence-badge")}
             <span>${escapeHtml(first.race_date || "")}</span>
           </div>
         </header>
@@ -2022,7 +2067,7 @@ function renderVenueBoard(forecasts) {
       current.firstTime = race.start_time || "--:--";
       current.raceNo = race.race_no || "-";
     }
-    if (race.confidence?.label === "強" || race.confidence?.label === "強") current.strong += 1;
+    if (race.confidence?.rank >= 2) current.strong += 1;
     venues.set(venue, current);
   }
   el("venueBoard").innerHTML = [...venues.values()]
@@ -2032,7 +2077,7 @@ function renderVenueBoard(forecasts) {
         <span class="status-dot">受付中</span>
         <strong>${escapeHtml(item.venue)}</strong>
         <small>${escapeHtml(item.raceNo)}R 発走 ${escapeHtml(item.firstTime)} / ${item.count}レース</small>
-        <em>強 ${item.strong}</em>
+        <em>自信 ${item.strong}</em>
       </article>`
     )
     .join("");
@@ -2094,7 +2139,7 @@ function renderForecastCard(race) {
     <summary class="ribbon-summary">
       <span class="ribbon-time">${escapeHtml(race.start_time || "--:--")}</span>
       <strong>${escapeHtml(race.race_no || "")}R</strong>
-      <span class="ribbon-main">${car(top.car_no)} ${escapeHtml(top.name || "-")} <em class="prob-tag">AI勝率${percent(top.probability)}</em></span>
+      <span class="ribbon-main">${car(top.car_no)} ${escapeHtml(top.name || "-")} <em class="prob-tag">AI勝率${percent(top.probability)}</em>${race.hit_estimate ? `<em class="prob-tag hit">2車単的中目安${percent(race.hit_estimate.exacta)}</em>` : ""}</span>
       <span class="ribbon-tickets">${escapeHtml(primaryTickets || "-")}</span>
       ${race.class_group ? badge(race.class_group, race.is_girls ? "girls-badge" : "class-badge") : ""}
       ${race.hour_label && race.hour_type !== "hourTypeNormal" ? badge(race.hour_label, "hour-badge") : ""}
@@ -2131,12 +2176,12 @@ function renderForecastCard(race) {
             ${rankPill(3, third)}
           </div>
           <div class="bet-block">
-            <div class="bet-label">3連単候補 <small>フォーメーション(＝順不同 / ー流し)</small></div>
+            <div class="bet-label">3連単候補 <small>フォーメーション(＝順不同 / ー流し)</small>${race.hit_estimate ? `<span class="hit-est">的中目安 ${percent(race.hit_estimate.trifecta)}</span>` : ""}</div>
             ${formationHtml(race.tickets || []) || `<div class="ticket-row">${tickets}</div>`}
             <details class="ticket-detail"><summary>全${(race.tickets || []).length}点を見る</summary><div class="ticket-row">${tickets}</div></details>
           </div>
           ${(race.exacta && race.exacta.length) ? `<div class="bet-block">
-            <div class="bet-label">2車単候補 <small>軸1着固定・的中率重視</small></div>
+            <div class="bet-label">2車単候補 <small>軸1着固定・的中率重視</small>${race.hit_estimate ? `<span class="hit-est">的中目安 ${percent(race.hit_estimate.exacta)}</span>` : ""}</div>
             ${formationHtml(race.exacta) || ""}
             <details class="ticket-detail"><summary>全${race.exacta.length}点を見る</summary><div class="ticket-row exacta-row">${race.exacta.map((t) => `<span class="ticket-chip exacta-chip${t.suji ? " is-suji" : ""}">${escapeHtml(t.label)}${t.suji ? '<em class="suji-tag">スジ</em>' : ""}${t.ev ? `<em class="ev-mini">${t.live_odds}倍 EV${t.ev.toFixed(2)}</em>` : ""}</span>`).join("")}</div></details>
           </div>` : ""}
@@ -2382,8 +2427,8 @@ function car(value) {
 }
 
 function confidenceClass(label) {
-  if (label === "強" || label === "強") return "is-strong";
-  if (label === "中" || label === "中") return "is-medium";
+  if (label === "本命") return "is-strong";
+  if (label === "順当") return "is-medium";
   return "is-mixed";
 }
 

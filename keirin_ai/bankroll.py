@@ -123,9 +123,10 @@ class BankrollConfig:
     max_consecutive_losses: int = 3
     min_ev: float = 1.2
     auto_buy: bool = False  # 初期実装では常にOFF。公式APIがないため自動購入は実装しない。
+    role: str = "main"  # main=オリジナル自動運用 / compare=堅実・バランス・冒険の並行比較
 
     @classmethod
-    def from_style(cls, style: str, start_amount: int, target_amount: int) -> "BankrollConfig":
+    def from_style(cls, style: str, start_amount: int, target_amount: int, role: str = "main") -> "BankrollConfig":
         preset = STYLES.get(style) or STYLES["balance"]
         return cls(
             start_amount=start_amount,
@@ -135,6 +136,7 @@ class BankrollConfig:
             daily_loss_limit_pct=preset["daily_loss_limit_pct"],
             max_consecutive_losses=preset["max_consecutive_losses"],
             min_ev=preset["min_ev"],
+            role=role,
         )
 
     def normalized(self) -> "BankrollConfig":
@@ -150,6 +152,7 @@ class BankrollConfig:
             max_consecutive_losses=max(1, min(10, int(self.max_consecutive_losses or 3))),
             min_ev=max(0.5, min(2.0, float(self.min_ev or 1.2))),
             auto_buy=False,
+            role=self.role if self.role in ("main", "compare") else "main",
         )
 
 
@@ -193,15 +196,44 @@ def start_session(conn: sqlite3.Connection, config: BankrollConfig) -> int:
     ensure_tables(conn)
     config = config.normalized()
     now = datetime.now(JST)
-    conn.execute(
-        "update bankroll_sessions set status='stopped', stop_reason=coalesce(stop_reason, '新しいセッション開始') where status='active'"
-    )
+    # 役割が競合するアクティブセッションだけ止める。
+    # main同士は1つ、compareは同じスタイル同士で1つ。別スタイルのcompareは並行して残す。
+    for row in conn.execute("select id, config_json from bankroll_sessions where status='active'").fetchall():
+        cfg = json.loads(row["config_json"] or "{}")
+        r = cfg.get("role", "main")
+        conflict = (
+            (config.role == "main" and r == "main")
+            or (config.role == "compare" and r == "compare" and cfg.get("style") == config.style)
+        )
+        if conflict:
+            conn.execute(
+                "update bankroll_sessions set status='stopped', stop_reason=coalesce(stop_reason, '新しいセッション開始') where id=?",
+                (row["id"],),
+            )
     cursor = conn.execute(
         "insert into bankroll_sessions (created_at, session_date, status, config_json) values (?, ?, 'active', ?)",
         (now.isoformat(timespec="seconds"), now.date().isoformat(), json.dumps(asdict(config), ensure_ascii=False)),
     )
     conn.commit()
     return int(cursor.lastrowid)
+
+
+COMPARE_STYLES = ("kenjitsu", "balance", "bouken")
+
+
+def start_compare_sessions(conn: sqlite3.Connection, plan: dict, start_amount: int) -> list[int]:
+    """堅実・バランス・冒険を、メインと同じ予定10レースで並行運用する比較セッション群を作る。
+
+    同じレースを別スタイルで回すので「どの乗り方が良かったか」を横並びで比較できる。
+    冪等: 既に今日の同スタイル比較が動いていれば作り直す(残高はリセット)。
+    """
+    ids = []
+    for style_key in COMPARE_STYLES:
+        config = BankrollConfig.from_style(style_key, start_amount, start_amount * 100, role="compare")
+        session_id = start_session(conn, config)
+        set_session_plan(conn, session_id, plan)
+        ids.append(session_id)
+    return ids
 
 
 def set_session_plan(conn: sqlite3.Connection, session_id: int, plan: dict) -> None:
@@ -354,13 +386,55 @@ def stop_session(conn: sqlite3.Connection, session_id: int, reason: str) -> None
 
 
 def active_session(conn: sqlite3.Connection) -> dict | None:
+    """メイン(オリジナル)のアクティブセッションを返す。比較用は含めない。"""
     ensure_tables(conn)
-    row = conn.execute(
-        "select * from bankroll_sessions where status='active' order by id desc limit 1"
-    ).fetchone()
-    if not row:
-        return None
-    return _session_row(row)
+    rows = conn.execute(
+        "select * from bankroll_sessions where status='active' order by id desc"
+    ).fetchall()
+    for row in rows:
+        cfg = json.loads(row["config_json"] or "{}")
+        if cfg.get("role", "main") == "main":
+            return _session_row(row)
+    return None
+
+
+def active_compare_sessions(conn: sqlite3.Connection) -> list[dict]:
+    """堅実・バランス・冒険の並行比較セッション(role=compare)を返す。"""
+    ensure_tables(conn)
+    rows = conn.execute(
+        "select * from bankroll_sessions where status='active' order by id"
+    ).fetchall()
+    out = []
+    for row in rows:
+        cfg = json.loads(row["config_json"] or "{}")
+        if cfg.get("role") == "compare":
+            out.append(_session_row(row))
+    return out
+
+
+def compare_summaries(conn: sqlite3.Connection) -> list[dict]:
+    """比較セッションの残高・損益をスタイル別にまとめる(UIの比較表示用)。"""
+    out = []
+    for session in active_compare_sessions(conn):
+        state = session_state(conn, session)
+        config = session["config"]
+        style = STYLES.get(config.get("style") or "balance") or STYLES["balance"]
+        out.append(
+            {
+                "session_id": session["id"],
+                "style": config.get("style"),
+                "label": style["label"],
+                "description": style["description"],
+                "start_amount": config.get("start_amount"),
+                "balance": state["balance"],
+                "profit": state["profit"],
+                "wins": state["wins"],
+                "losses": state["losses"],
+                "settled": state["wins"] + state["losses"],
+            }
+        )
+    out.sort(key=lambda item: -(item["profit"] or 0))
+    return out
 
 
 def latest_session(conn: sqlite3.Connection) -> dict | None:
@@ -626,6 +700,7 @@ def build_bankroll_payload(conn: sqlite3.Connection, data_dir: Path | str) -> di
     payload["yesterday"] = {"date": yesterday, "sessions": sessions_on_date(conn, yesterday)}
     payload["daily_history"] = daily_history(conn, days=14)
     payload["finance"] = bankroll_finance(conn)
+    payload["compare"] = compare_summaries(conn)
     if session is None:
         last = latest_session(conn)
         if last and last["status"] == "stopped":

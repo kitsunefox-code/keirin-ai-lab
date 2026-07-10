@@ -73,29 +73,32 @@ def _race_result(conn, race_key: str) -> tuple[list[int] | None, dict | None]:
     return order, payouts
 
 
-def _build_tickets(ranking: list[dict], budget: int, bet_type: str) -> tuple[list[dict], int]:
+def _build_tickets(ranking: list[dict], budget: int, bet_type: str, points: int = 4) -> tuple[list[dict], int]:
     """券種に応じた買い目に残高予算を配分する。
 
     2車単: 軸(1位)1着固定 × 相手(2位・3位)の2点。
-    3連単: 軸1着固定のスジ4点(1着=1位, 2着=2/3位, 3着=2/3/4位)。自信レース向け。
+    3連単: 軸1着固定のスジを points 点まで(1着=1位, 2着=2/3位, 3着=2〜5位)。
+      堅実3点 / バランス5点 / 冒険6点 / オリジナル自信時4点。
     """
-    cars = [int(r.get("car_no") or 0) for r in ranking[:4]]
+    cars = [int(r.get("car_no") or 0) for r in ranking[:5]]
     total_units = budget // UNIT
     if len(cars) < 3 or 0 in cars[:3]:
         return [], 0
 
     if bet_type == "trifecta":
-        r1, r2, r3 = cars[0], cars[1], cars[2]
-        r4 = cars[3] if len(cars) >= 4 and cars[3] else r3
-        combos = [(r1, r2, r3), (r1, r3, r2), (r1, r2, r4), (r1, r3, r4)]
-        # 重複除去(相手が3車しかいない等)
-        seen, uniq = set(), []
-        for c in combos:
-            if len(set(c)) == 3 and c not in seen:
-                seen.add(c)
-                uniq.append(c)
-        combos = uniq
-        weights = [0.4, 0.25, 0.2, 0.15][: len(combos)]
+        r1 = cars[0]
+        seconds = [cars[1], cars[2]]
+        thirds = [c for c in cars[1:5] if c]
+        combos = []
+        # 近い順(番手→3番手)にスジを積む
+        for b in seconds:
+            for c in thirds:
+                combo = (r1, b, c)
+                if len(set(combo)) == 3 and combo not in combos:
+                    combos.append(combo)
+        combos = combos[: max(2, points)]
+        base_w = [0.30, 0.22, 0.18, 0.14, 0.10, 0.06]
+        weights = base_w[: len(combos)]
     else:
         combos = [(cars[0], cars[1]), (cars[0], cars[2])]
         weights = [0.62, 0.38]
@@ -127,105 +130,99 @@ def _build_tickets(ranking: list[dict], budget: int, bet_type: str) -> tuple[lis
     return tickets, sum(t["stake"] for t in tickets)
 
 
-def main() -> None:
+def _style_bet(config: dict, ranking: list, order: list, budget: int):
+    """セッションのスタイルに応じて (bet_type, need, tickets, total_stake) を決める。
+
+    オリジナル(main): 自信レースは3連単スジ4点、それ以外は2車単2点。
+    堅実/バランス/冒険(compare): 常に3連単スジ、点数はスタイル固有(3/5/6)。
+    """
+    style_key = config.get("style") or "original"
+    if style_key == "original":
+        top_prob = float((ranking[0].get("win_probability") if ranking else 0) or 0)
+        bet_type = choose_bet_type(top_prob)
+        points = 4
+    else:
+        bet_type = "trifecta"
+        points = {"kenjitsu": 3, "balance": 5, "bouken": 6}.get(style_key, 4)
+    need = 3 if bet_type == "trifecta" else 2
+    if not ranking or len(order) < need:
+        return bet_type, need, [], 0
+    tickets, total_stake = _build_tickets(ranking, budget, bet_type, points=points)
+    return bet_type, need, tickets, total_stake
+
+
+def _settle_session(conn, session: dict) -> dict:
+    """1セッションの予定レースを実結果+確定オッズで決済し、集計を返す。"""
+    config = session["config"]
+    slots = (session.get("plan") or {}).get("slots") or []
     settled = skipped = held = 0
+    if not slots:
+        final = session_state(conn, session)
+        return {"session_id": session["id"], "style": config.get("style"), "settled": 0, "skipped": 0,
+                "balance": final["balance"], "profit": final["profit"], "wins": final["wins"], "losses": final["losses"]}
+
+    recorded = {
+        row["race_key"]
+        for row in conn.execute("select race_key from bankroll_bets where session_id=?", (session["id"],)).fetchall()
+    }
+    for slot in slots:
+        race_key = slot.get("race_key")
+        if not race_key or race_key in recorded:
+            continue
+        order, payouts = _race_result(conn, race_key)
+        if not order or len(order) < 2:
+            break  # 複利の順序を守るため未確定で停止
+        ranking = _first_ranking(conn, race_key)
+        state = session_state(conn, session)
+        budget = int(state["balance"] * config["per_race_cap_pct"] / 100 // UNIT * UNIT)
+        race_meta = {
+            "race_key": race_key,
+            "venue": slot.get("venue") or "",
+            "race_no": slot.get("race_no"),
+            "start_time": slot.get("start_time") or "",
+            "url": slot.get("url") or "",
+        }
+        bet_type, need, tickets, total_stake = _style_bet(config, ranking, order, budget)
+        if not tickets:
+            if bet_type == "trifecta" and len(order) < 3:
+                break
+            record_skip(conn, session["id"], race_meta, "予算内で必要点数を買えず見送り")
+            recorded.add(race_key)
+            skipped += 1
+            continue
+        actual = order[:need]
+        win_ticket = next((t for t in tickets if t["cars"] == actual), None)
+        payoff_odds = (payouts or {}).get(bet_type)
+        if win_ticket is not None and payoff_odds is None:
+            held += 1
+            break  # 的中だがオッズ未取得 → 捏造しない
+        proposal = {**race_meta, "tickets": tickets, "total_stake": total_stake, "bet_type": bet_type}
+        bet_id = commit_bet(conn, session["id"], proposal)
+        if win_ticket is not None:
+            payout = int(round(win_ticket["stake"] * float(payoff_odds)))
+            record_result(conn, bet_id, "won", max(1, payout))
+        else:
+            record_result(conn, bet_id, "lost", 0)
+        recorded.add(race_key)
+        settled += 1
+
+    final = session_state(conn, session)
+    return {"session_id": session["id"], "style": config.get("style"), "settled": settled, "skipped": skipped,
+            "held_no_odds": held, "balance": final["balance"], "profit": final["profit"],
+            "wins": final["wins"], "losses": final["losses"]}
+
+
+def main() -> None:
+    from keirin_ai.bankroll import active_compare_sessions
+
     with connect() as conn:
         session = active_session(conn)
-        if not session:
+        sessions = ([session] if session else []) + active_compare_sessions(conn)
+        if not sessions:
             print(json.dumps({"ok": True, "action": "no-active-session"}, ensure_ascii=False))
             return
-        config = session["config"]
-        style = STYLES.get(config.get("style") or "original") or STYLES["original"]
-        weights = style.get("weights") or [("本命", 0.5), ("対抗", 0.3)]
-        plan = session.get("plan") or {}
-        slots = plan.get("slots") or []
-        if not slots:
-            print(json.dumps({"ok": True, "action": "no-plan"}, ensure_ascii=False))
-            return
-
-        # 既に記録済みのレースを把握(冪等)
-        recorded = {
-            row["race_key"]
-            for row in conn.execute(
-                "select race_key from bankroll_bets where session_id=?", (session["id"],)
-            ).fetchall()
-        }
-
-        for slot in slots:
-            race_key = slot.get("race_key")
-            if not race_key or race_key in recorded:
-                continue
-            order, payouts = _race_result(conn, race_key)
-            if not order or len(order) < 2:
-                # まだ結果が出ていない → 複利の順序を守るためここで停止
-                break
-
-            ranking = _first_ranking(conn, race_key)
-            state = session_state(conn, session)
-            balance = state["balance"]
-            budget = int(balance * config["per_race_cap_pct"] / 100 // UNIT * UNIT)
-
-            race_meta = {
-                "race_key": race_key,
-                "venue": slot.get("venue") or "",
-                "race_no": slot.get("race_no"),
-                "start_time": slot.get("start_time") or "",
-                "url": slot.get("url") or "",
-            }
-
-            # レースごとに券種を使い分ける(自信レース=3連単スジ, それ以外=2車単)
-            top_prob = float((ranking[0].get("win_probability") if ranking else 0) or 0)
-            bet_type = choose_bet_type(top_prob)
-            need = 3 if bet_type == "trifecta" else 2
-
-            tickets, total_stake = ([], 0)
-            if ranking and len(order) >= need:
-                tickets, total_stake = _build_tickets(ranking, budget, bet_type)
-            if not tickets:
-                # 3連単の結果(3着まで)が未確定なら保留、点数を買えないなら見送り
-                if bet_type == "trifecta" and len(order) < 3:
-                    break
-                record_skip(conn, session["id"], race_meta, "予算内で必要点数を買えず見送り")
-                recorded.add(race_key)
-                skipped += 1
-                continue
-
-            actual = order[:need]
-            win_ticket = next((t for t in tickets if t["cars"] == actual), None)
-            payoff_odds = (payouts or {}).get(bet_type)
-
-            if win_ticket is not None and payoff_odds is None:
-                # 的中したのに確定オッズ未取得 → 捏造しないため決済保留(次回に回す)
-                held += 1
-                break
-
-            proposal = {**race_meta, "tickets": tickets, "total_stake": total_stake, "bet_type": bet_type}
-            bet_id = commit_bet(conn, session["id"], proposal)
-            if win_ticket is not None:
-                payout = int(round(win_ticket["stake"] * float(payoff_odds)))
-                record_result(conn, bet_id, "won", max(1, payout))
-            else:
-                record_result(conn, bet_id, "lost", 0)
-            recorded.add(race_key)
-            settled += 1
-
-        final = session_state(conn, session)
-    print(
-        json.dumps(
-            {
-                "ok": True,
-                "session_id": session["id"],
-                "settled": settled,
-                "skipped": skipped,
-                "held_no_odds": held,
-                "balance": final["balance"],
-                "profit": final["profit"],
-                "wins": final["wins"],
-                "losses": final["losses"],
-            },
-            ensure_ascii=False,
-        )
-    )
+        results = [_settle_session(conn, s) for s in sessions]
+    print(json.dumps({"ok": True, "sessions": results}, ensure_ascii=False))
 
 
 if __name__ == "__main__":

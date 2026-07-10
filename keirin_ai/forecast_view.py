@@ -164,6 +164,7 @@ def _enrich_forecast(conn, forecast: dict) -> dict:
         {"lineup": lineup, "entrants": [{"car_no": e.get("car_no"), "racing_score": e.get("racing_score")} for e in entries]},
     )
     value = _attach_value(exacta_picks, ranking, _json_or(race.get("latest_odds_json"), None))
+    hit_estimate = _hit_estimate(ranking)
     return {
         "race_key": race_key,
         "venue": venue,
@@ -181,6 +182,7 @@ def _enrich_forecast(conn, forecast: dict) -> dict:
         "tickets": [_ticket(ticket) for ticket in tickets[:8]],
         "exacta": exacta_picks,
         "value": value,
+        "hit_estimate": hit_estimate,
         "confidence": confidence,
         "scenario": scenario,
         "comment_signals": signals,
@@ -193,6 +195,40 @@ def _enrich_forecast(conn, forecast: dict) -> dict:
         "weather": weather,
         "notes": _notes(forecast.get("notes", []), prediction),
     }
+
+
+def _hit_estimate(ranking: list[dict]) -> dict | None:
+    """買い目の的中目安(較正済み勝率ベース)。市場オッズがなくても出せる。
+
+    2車単: 軸1着固定で相手上位2点(1-2, 1-3)の合計的中率。
+    3連単: 軸1着固定のスジ上位6点までの合計的中率。Harville近似。
+    """
+    probs = []
+    for row in ranking[:5]:
+        try:
+            probs.append((int(row.get("car_no") or 0), max(0.001, min(0.95, float(row.get("win_probability") or row.get("probability") or 0)))))
+        except (TypeError, ValueError):
+            continue
+    if len(probs) < 3:
+        return None
+    p = {car: pr for car, pr in probs}
+    order = [car for car, _ in probs]
+    r1, r2, r3 = order[0], order[1], order[2]
+    r4 = order[3] if len(order) >= 4 else None
+
+    def p_ex(a, b):  # 2車単 a-b の的中確率
+        return p[a] * min(0.95, p[b] / max(0.05, 1 - p[a]))
+
+    def p_tri(a, b, c):  # 3連単 a-b-c
+        rem = max(0.05, 1 - p[a] - p[b])
+        return p_ex(a, b) * min(0.95, p[c] / rem)
+
+    exacta = p_ex(r1, r2) + p_ex(r1, r3)
+    tri_combos = [(r1, r2, r3), (r1, r3, r2)]
+    if r4:
+        tri_combos += [(r1, r2, r4), (r1, r3, r4)]
+    trifecta = sum(p_tri(*c) for c in tri_combos)
+    return {"exacta": round(min(0.99, exacta), 4), "trifecta": round(min(0.99, trifecta), 4)}
 
 
 def _attach_value(exacta_picks: list[dict], ranking: list[dict], snapshot: dict | None) -> dict | None:
@@ -652,15 +688,19 @@ def _comment_signals(top3: list[dict], entries: list[dict], lines: list[dict]) -
 
 
 def _confidence(top3: list[dict]) -> dict:
+    """本命の堅さで3段階に分類。しきい値は較正済み勝率(本命は中央値約29%)に合わせている。
+
+    本命戦 = 本命が抜けている堅いレース / 順当 = 本命中心の標準戦 / 混戦 = 割れ気味。
+    """
     if not top3:
         return {"label": "混戦", "rank": 0, "reason": "比較できる予想がありません。"}
     first = float(top3[0].get("probability") or 0)
     second = float(top3[1].get("probability") or 0) if len(top3) > 1 else 0
     gap = first - second
-    if first >= 0.72 and gap >= 0.22:
-        return {"label": "強", "rank": 3, "reason": f"本命確率{first * 100:.1f}%、2番手との差{gap * 100:.1f}pt。"}
-    if first >= 0.45:
-        return {"label": "中", "rank": 2, "reason": f"本命確率{first * 100:.1f}%。相手選びが重要。"}
+    if first >= 0.38 or (first >= 0.34 and gap >= 0.12):
+        return {"label": "本命", "rank": 3, "reason": f"本命確率{first * 100:.1f}%、2番手との差{gap * 100:.1f}pt。本命が抜けている。"}
+    if first >= 0.29:
+        return {"label": "順当", "rank": 2, "reason": f"本命確率{first * 100:.1f}%。本命中心で相手を絞る。"}
     return {"label": "混戦", "rank": 1, "reason": f"本命確率{first * 100:.1f}%で割れ気味。"}
 
 
