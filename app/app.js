@@ -363,9 +363,12 @@ function computeMotionBase(race) {
 
 function buildMotionPlan(race) {
   const base = computeMotionBase(race);
-  const { cars, lineup, initial, final, escapeLine } = base;
+  const { cars, lineup, initial, escapeLine } = base;
   const afterBell = normalizeOrder([...escapeLine, ...initial], cars);
 
+  // 展開ベースのリアル着順(接戦の揺らぎ入り)。再生するたびに際どいレースが生まれる。
+  const finish = realisticFinishOrder(base, {}, escapeLine.filter((car) => cars.includes(car)));
+  const final = normalizeOrder(finish.order, cars);
   const topCar = final[0];
   const attackLine = lineup.find((line) => line.includes(topCar) && line !== escapeLine);
   let backStretch;
@@ -392,8 +395,8 @@ function buildMotionPlan(race) {
       { lap: 0.5, text: "🔔 打鐘!残り1周半、先行ラインが踏み込む" },
       { lap: 1.0, text: "残り1周、ホームストレッチライン通過" },
       { lap: 1.5, text: "最終バック、まくり勢が外から仕掛ける" },
-      { lap: 1.87, text: "直線勝負!内圏線と外帯線の間で追い比べ" },
-      { lap: 1.99, text: `ゴール!1着予想 ${topCar || "-"} ${escapeHtml((race.top3?.[0]?.name) || "")}` },
+      { lap: 1.87, text: finish.close ? "ゴール前、横一線!写真判定級の大接戦!" : "直線勝負!内圏線と外帯線の間で追い比べ" },
+      { lap: 1.99, text: `ゴール!${finish.close ? "写真判定、ハナ差で" : "1着"} ${topCar || "-"} ${escapeHtml(base.names.get(topCar) || "")}` },
     ],
   };
 }
@@ -523,6 +526,7 @@ function buildCustomMotionPlan(race, opts) {
     return result;
   };
   let finalOrder;
+  let isClose = false;
   let who = "AIの結末";
   if (opts.finishMode === "manual" && opts.finishTop3?.length) {
     const picked = opts.finishTop3.filter((car) => cars.includes(car));
@@ -530,7 +534,9 @@ function buildCustomMotionPlan(race, opts) {
     who = "あなたの結末";
   } else {
     // 展開(先行ライン・番手・まくり・ペース等)から競輪らしい着順を組み立てる
-    finalOrder = N(dropTail(realisticFinishOrder(base, opts, leadLine)));
+    const finish = realisticFinishOrder(base, opts, leadLine);
+    finalOrder = N(dropTail(finish.order));
+    isClose = finish.close;
   }
 
   // 決まり手ナレーションを展開から推定
@@ -544,10 +550,11 @@ function buildCustomMotionPlan(race, opts) {
   else if (opts.seriCar === winner && opts.seriResult !== "lose") kimarite = "競り勝ちからの差し切り!";
   else kimarite = "直線強襲!";
 
-  captions.push({ lap: 1.87, text: "直線勝負!" });
+  captions.push({ lap: 1.87, text: isClose ? "ゴール前、横一線!写真判定級の大接戦!" : "直線勝負!" });
+  if (isClose) captions.push({ lap: 1.95, text: "際どい…!ハナ差の追い比べ…!" });
   captions.push({
     lap: 1.99,
-    text: `${kimarite} ${who} ${finalOrder.slice(0, 3).map((car) => escapeHtml(nameOf(car))).join(" → ")}`,
+    text: `${isClose ? "写真判定、ハナ差!" : ""}${kimarite} ${who} ${finalOrder.slice(0, 3).map((car) => escapeHtml(nameOf(car))).join(" → ")}`,
   });
 
   push(1.9, finalOrder);
@@ -600,7 +607,12 @@ function realisticFinishOrder(base, opts, leadLine) {
   if (opts.chigirareCar) score.set(opts.chigirareCar, (score.get(opts.chigirareCar) || 0) - 1.0);
   if (opts.accidentCar) score.set(opts.accidentCar, (score.get(opts.accidentCar) || 0) - 1.2);
 
-  let ordered = [...cars].sort((a, b) => (score.get(b) || 0) - (score.get(a) || 0));
+  // 接戦サンプリング: スコア順に固定せず、実力差に応じた揺らぎで着順を決める。
+  // 差が小さいほど入れ替わりやすく、再生するたびに違う「際どいレース」になる。
+  const NOISE = 0.20;
+  const gumbel = () => -Math.log(-Math.log(Math.max(1e-9, Math.random())));
+  const noisy = new Map(cars.map((car) => [car, (score.get(car) || 0) / NOISE + gumbel()]));
+  let ordered = [...cars].sort((a, b) => noisy.get(b) - noisy.get(a));
 
   // 大外一気は差し込んで2着前後まで(勝ち切りは稀)
   if (opts.closerCar && cars.includes(opts.closerCar)) {
@@ -614,7 +626,12 @@ function realisticFinishOrder(base, opts, leadLine) {
       ordered.push(car);
     }
   }
-  return normalizeOrder(ordered, cars);
+  const order = normalizeOrder(ordered, cars);
+  // 「今回のレースが実際に際どかったか」= サンプリング後の1・2着の差で判定(ナレーション用)
+  const m1 = noisy.get(order[0]);
+  const m2 = noisy.get(order[1]);
+  const close = order.length >= 2 && m1 != null && m2 != null && m1 - m2 < 1.0;
+  return { order, close };
 }
 
 function renderMotionMaker() {
@@ -848,13 +865,18 @@ function startRaceMotion(raceKey, race, stage, planOverride) {
     const posA = Math.max(0, a.order.indexOf(car));
     const posB = Math.max(0, b.order.indexOf(car));
     const smoothPos = posA + (posB - posA) * eased;
-    // 直線〜ゴールにかけて車間を広げ、実際のレースのように縦に散らす
+    // 接戦のゴール: 上位グループは車輪差まで詰まり、後方だけちぎれて離れる
     const finishApproach = Math.max(0, (coveredLaps - 1.5) / 0.5); // 0→1 (残り半周〜ゴール)
-    const spread = 1 + finishApproach * finishApproach * 2.6; // ゴール手前で最大3.6倍の車間
-    const gap = smoothPos * gapStep * spread;
-    // 追い比べで内外にばらける横位置(1列棒状にしない)
+    const t = finishApproach * finishApproach;
+    const tight = smoothPos < 3.5
+      ? smoothPos * gapStep * 0.34 // 上位4車: 約1/3の車間=タイヤ差の攻防
+      : (3.5 * 0.34 + (smoothPos - 3.5) * 1.7) * gapStep; // 後方: 大きく離される
+    const gap = smoothPos * gapStep * (1 - t) + tight * t;
+    // 直線は内・外・大外に持ち出して横に並ぶ追い比べ(縦1列にしない)
     const overtaking = posB < posA ? Math.sin(local * Math.PI) : 0;
-    const fan = finishApproach * (((posB % 3) - 1) * 5); // 着順で内・中・外へ振り分け
+    const lanes = [-3, 9, 16, 5]; // 1着=内粘り、2着=外、3着=大外、4着=中
+    const lane = posB < 4 ? lanes[posB] : ((posB % 3) - 1) * 5;
+    const fan = finishApproach * lane;
     return { gap, outside: overtaking * 12 + fan };
   };
 
