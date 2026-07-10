@@ -1900,12 +1900,14 @@ function renderForecastCard(race) {
             ${rankPill(3, third)}
           </div>
           <div class="bet-block">
-            <div class="bet-label">3連単候補</div>
-            <div class="ticket-row">${tickets}</div>
+            <div class="bet-label">3連単候補 <small>フォーメーション(＝順不同 / ー流し)</small></div>
+            ${formationHtml(race.tickets || []) || `<div class="ticket-row">${tickets}</div>`}
+            <details class="ticket-detail"><summary>全${(race.tickets || []).length}点を見る</summary><div class="ticket-row">${tickets}</div></details>
           </div>
           ${(race.exacta && race.exacta.length) ? `<div class="bet-block">
             <div class="bet-label">2車単候補 <small>軸1着固定・的中率重視</small></div>
-            <div class="ticket-row exacta-row">${race.exacta.map((t) => `<span class="ticket-chip exacta-chip${t.suji ? " is-suji" : ""}">${escapeHtml(t.label)}${t.suji ? '<em class="suji-tag">スジ</em>' : ""}</span>`).join("")}</div>
+            ${formationHtml(race.exacta) || ""}
+            <details class="ticket-detail"><summary>全${race.exacta.length}点を見る</summary><div class="ticket-row exacta-row">${race.exacta.map((t) => `<span class="ticket-chip exacta-chip${t.suji ? " is-suji" : ""}">${escapeHtml(t.label)}${t.suji ? '<em class="suji-tag">スジ</em>' : ""}</span>`).join("")}</div></details>
           </div>` : ""}
         </div>
 
@@ -2034,6 +2036,64 @@ function rankPill(rank, row) {
 function ticketChip(ticket) {
   const suji = ticket.suji ? '<em class="suji-tag">スジ</em>' : "";
   return `<span class="ticket-chip${ticket.suji ? " is-suji" : ""}">${escapeHtml(ticket.label)}${suji}</span>`;
+}
+
+// 買い目を競輪新聞式のフォーメーション表記にまとめる。
+// 軸(1着)ごとに1行=別線が別行で見やすい。＝は順不同(ボックス)、ーは流し。
+function formationHtml(combos) {
+  const cars = (combos || []).map((t) => (t.cars || []).map(Number)).filter((c) => c.length >= 2 && c.every(Number.isFinite));
+  if (!cars.length) return "";
+  const isTri = cars[0].length >= 3;
+
+  // 1着ごとに 2着集合・3着集合をまとめる
+  const byFirst = new Map();
+  for (const c of cars) {
+    if (!byFirst.has(c[0])) byFirst.set(c[0], { p2: new Set(), p3: new Set() });
+    const g = byFirst.get(c[0]);
+    g.p2.add(c[1]);
+    if (isTri && Number.isFinite(c[2])) g.p3.add(c[2]);
+  }
+  let rows = [...byFirst.entries()].map(([first, g]) => ({
+    firsts: [first],
+    p2: [...g.p2],
+    p3: isTri ? [...g.p3] : [],
+  }));
+
+  // 2車ヘッドの対称ボックス(A→Bのみ / B→Aのみ・3着が同じ)を A＝B に統合
+  const key = (arr) => [...arr].sort((x, y) => x - y).join(",");
+  const out = [];
+  const used = new Set();
+  for (let i = 0; i < rows.length; i += 1) {
+    if (used.has(i)) continue;
+    let boxed = false;
+    for (let j = i + 1; j < rows.length; j += 1) {
+      if (used.has(j)) continue;
+      const A = rows[i];
+      const B = rows[j];
+      const a = A.firsts[0];
+      const b = B.firsts[0];
+      const symmetric = A.p2.length === 1 && B.p2.length === 1 && A.p2[0] === b && B.p2[0] === a;
+      const same3 = !isTri || key(A.p3) === key(B.p3);
+      if (symmetric && same3) {
+        out.push({ firsts: [a, b], box: true, p2: [], p3: A.p3 });
+        used.add(i);
+        used.add(j);
+        boxed = true;
+        break;
+      }
+    }
+    if (!boxed && !used.has(i)) out.push({ ...rows[i], box: false });
+  }
+
+  const grp = (arr) => arr.map(car).join("");
+  const rowHtml = (r) => {
+    const head = r.box ? r.firsts.map(car).join('<em class="fm-eq">＝</em>') : car(r.firsts[0]);
+    const parts = [head];
+    if (r.p2 && r.p2.length) parts.push(grp(r.p2));
+    if (isTri && r.p3 && r.p3.length) parts.push(grp(r.p3));
+    return `<div class="formation-row">${parts.join('<em class="fm-to">ー</em>')}</div>`;
+  };
+  return `<div class="formation">${out.map(rowHtml).join("")}</div>`;
 }
 
 function renderLineDiagram(lines, top3) {
