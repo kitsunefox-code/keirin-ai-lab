@@ -19,14 +19,14 @@
   ],
   "summary": {
     "races": 60,
-    "settled": 15,
-    "pending": 45,
+    "settled": 16,
+    "pending": 44,
     "honmei_hits": 7,
-    "honmei_rate": 0.4667,
+    "honmei_rate": 0.4375,
     "in_top3_hits": 11,
-    "in_top3_rate": 0.7333,
+    "in_top3_rate": 0.6875,
     "trifecta_hits": 5,
-    "trifecta_rate": 0.3333
+    "trifecta_rate": 0.3125
   },
   "venues": [
     {
@@ -536,12 +536,16 @@
             "1-6-7",
             "1-6-5"
           ],
-          "result_order": [],
-          "status": "pending",
+          "result_order": [
+            7,
+            3,
+            4
+          ],
+          "status": "miss",
           "hits": {
-            "honmei": null,
-            "in_top3": null,
-            "trifecta": null,
+            "honmei": false,
+            "in_top3": false,
+            "trifecta": false,
             "trifecta_label": null
           }
         },
@@ -1804,15 +1808,15 @@
     "as_of": "2026-07-10",
     "week": {
       "label": "今週",
-      "settled": 253,
+      "settled": 254,
       "honmei_hits": 110,
-      "honmei_rate": 0.4348,
-      "in_top3_rate": 0.7194,
+      "honmei_rate": 0.4331,
+      "in_top3_rate": 0.7165,
       "trifecta_hits": 50,
-      "trifecta_rate": 0.1976,
-      "exacta_roi": 0.6086,
-      "exacta_priced": 251,
-      "trifecta_roi": 0.446
+      "trifecta_rate": 0.1969,
+      "exacta_roi": 0.6062,
+      "exacta_priced": 252,
+      "trifecta_roi": 0.4442
     },
     "last_week": {
       "label": "先週",
@@ -1828,15 +1832,15 @@
     },
     "total": {
       "label": "通算",
-      "settled": 633,
+      "settled": 634,
       "honmei_hits": 246,
-      "honmei_rate": 0.3886,
-      "in_top3_rate": 0.7093,
+      "honmei_rate": 0.388,
+      "in_top3_rate": 0.7082,
       "trifecta_hits": 113,
-      "trifecta_rate": 0.1785,
-      "exacta_roi": 0.593,
-      "exacta_priced": 494,
-      "trifecta_roi": 0.4858
+      "trifecta_rate": 0.1782,
+      "exacta_roi": 0.5814,
+      "exacta_priced": 574,
+      "trifecta_roi": 0.5036
     }
   }
 }
