@@ -37,6 +37,8 @@ elseif ($Mode -eq "night") {
     Write-Log "results collected (exit $LASTEXITCODE)"
     python scripts\backfill_keirinjp_results.py --limit 60 --delay 0.5 | Out-Null
     Write-Log "keirinjp fallback done (exit $LASTEXITCODE)"
+    python scriptsackfill_payouts.py --limit 200 --delay 0.4 | Out-Null
+    Write-Log "payouts backfilled (exit $LASTEXITCODE)"
 }
 
 python scripts\build_static_api.py | Out-Null

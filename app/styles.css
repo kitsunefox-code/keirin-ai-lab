@@ -3292,3 +3292,17 @@ input, select { background: var(--color-surface-raised); border-color: var(--col
   font-weight: 800;
   vertical-align: middle;
 }
+
+/* ===== 修正: 会場名が見えない(旧テーマの明色背景の残り) ===== */
+.venue-chip {
+  background: var(--color-surface-raised) !important;
+  border-color: var(--color-border) !important;
+}
+.venue-chip strong,
+.venue-section-head h3,
+.results-venue-head h3,
+.market-card header strong {
+  color: var(--color-text);
+}
+.venue-chip em { color: var(--color-accent); }
+.venue-board-head strong { color: var(--color-text); }

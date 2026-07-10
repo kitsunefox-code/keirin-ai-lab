@@ -77,6 +77,12 @@ document.addEventListener("DOMContentLoaded", () => {
   } else if (page === "results") {
     loadResults();
     loadBankroll(); // オリジナル運用の日次収支用
+    // ライブ更新: 結果・回収率・収支を60秒ごとに取り直す
+    setInterval(() => {
+      const active = state.results?.date;
+      loadResults(active);
+      loadBankroll();
+    }, 60000);
   } else if (page === "motion") {
     loadToday(); // モーションメーカーの素材
   }
