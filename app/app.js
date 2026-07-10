@@ -1359,7 +1359,7 @@ function renderBankroll(payload) {
   head.innerHTML = `<button id="brStopBtn" class="button">停止</button>`;
   on("brStopBtn", "click", stopBankroll);
 
-  const parts = [yesterday, renderBankrollStatus(session, brState), renderCompareBoard(payload, brState)];
+  const parts = [yesterday, renderBankrollStatus(session, brState)];
   if (payload.plan) {
     parts.push(renderOriginalPlan(payload.plan));
   }
@@ -1635,48 +1635,114 @@ function renderBankrollStopBanner(session, brState) {
   </div>`;
 }
 
-// 並行比較ボード: オリジナル(自動)と、堅実/バランス/冒険を同じ10レースで回した結果を横並び。
-// どの乗り方が今日は良かったかを一目で比較できる。すべて自動運用・実払戻ベース。
-function renderCompareBoard(payload, brState) {
-  const compare = payload.compare || [];
-  const yen = (v) => `${(v || 0).toLocaleString()}円`;
-  const sign = (v) => (v >= 0 ? "+" : "");
-  const rows = [
-    {
-      label: "オリジナル",
-      tag: "自動",
-      balance: brState.balance,
-      profit: brState.profit,
-      wins: brState.wins,
-      losses: brState.losses,
-      main: true,
-    },
-    ...compare.map((c) => ({
-      label: c.label,
-      tag: `${c.wins + c.losses}R`,
-      balance: c.balance,
-      profit: c.profit,
-      wins: c.wins,
-      losses: c.losses,
-    })),
-  ];
-  if (rows.length <= 1) return ""; // 比較セッションがまだ無い
-  const best = Math.max(...rows.map((r) => r.profit ?? -Infinity));
-  const cards = rows
-    .map((r) => {
-      const cls = (r.profit ?? 0) >= 0 ? "ev-positive" : "ev-caution";
-      const isBest = (r.profit ?? -Infinity) === best && best > 0;
-      return `<div class="compare-card${r.main ? " is-main" : ""}${isBest ? " is-best" : ""}">
-        <div class="compare-head"><b>${escapeHtml(r.label)}</b><span>${escapeHtml(r.tag)}</span>${isBest ? '<span class="compare-best">首位</span>' : ""}</div>
-        <div class="compare-balance">${yen(r.balance)}</div>
-        <div class="compare-profit ${cls}">${sign(r.profit ?? 0)}${yen(r.profit ?? 0)}</div>
-        <div class="compare-wl">${r.wins}勝${r.losses}敗</div>
-      </div>`;
+// スタイル別コンサル: 堅実/バランス/冒険を選ぶと、そのスタイルでの今日の買い方を提案する。
+// オリジナル(自動運用)とは別で、押した人にだけコンサルする。実際の運用はしない。
+const CONSULT_STYLES = {
+  kenjitsu: { label: "堅実", points: 3, cap: 0.10, minRank: 3, sort: "rank",
+    desc: "本命が堅いレースだけ。点数を絞って的中率を最優先。" },
+  balance: { label: "バランス", points: 5, cap: 0.20, minRank: 2, sort: "rank",
+    desc: "本命中心に手広く。的中と配当のバランス型。" },
+  bouken: { label: "冒険", points: 6, cap: 0.30, minRank: 1, sort: "ev",
+    desc: "妙味・高配当を狙う。混戦でも大きく取りにいく。" },
+};
+
+function consultCombos(race, points) {
+  const ranking = [...(race.entries || [])]
+    .filter((e) => e.win_probability != null)
+    .sort((a, b) => (b.win_probability || 0) - (a.win_probability || 0))
+    .map((e) => Number(e.car_no))
+    .filter((n) => Number.isFinite(n) && n > 0);
+  if (ranking.length < 3) return [];
+  const r1 = ranking[0];
+  const seconds = [ranking[1], ranking[2]];
+  const thirds = ranking.slice(1, 5);
+  const combos = [];
+  for (const b of seconds) {
+    for (const c of thirds) {
+      if (new Set([r1, b, c]).size === 3 && !combos.some((x) => x[0] === r1 && x[1] === b && x[2] === c)) {
+        combos.push([r1, b, c]);
+      }
+    }
+  }
+  return combos.slice(0, points).map((cars) => ({ cars, label: cars.join("-") }));
+}
+
+function renderStyleConsult() {
+  const section = el("styleConsult");
+  if (!section) return;
+  const forecasts = (state.today?.forecasts || []).filter((r) => !r.elapsed);
+  section.hidden = false;
+  const active = state.consultStyle;
+  const buttons = Object.entries(CONSULT_STYLES)
+    .map(([key, s]) => `<button type="button" class="consult-btn${key === active ? " active" : ""}" data-consult="${key}">${s.label}</button>`)
+    .join("");
+  section.innerHTML = `
+    <div class="capital-head">
+      <div><h3>スタイル別コンサル</h3></div>
+      <span class="page-meta">この乗り方なら今日どう買う？</span>
+    </div>
+    <p class="consult-lead">オリジナルは自動で運用中です。ここは<b>自分で買いたい人向け</b>に、選んだ乗り方での狙い目と買い目を提案します(運用はしません)。</p>
+    <div class="consult-buttons">${buttons}</div>
+    <div id="consultBody">${active ? consultBody(active, forecasts) : '<p class="consult-hint">↑ 乗り方を選ぶと、その日の狙い目を提案します。</p>'}</div>`;
+  section.querySelectorAll("[data-consult]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      state.consultStyle = state.consultStyle === btn.dataset.consult ? null : btn.dataset.consult;
+      renderStyleConsult();
+    });
+  });
+  section.querySelectorAll("[data-open-race]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const target = document.getElementById(safeRaceId(btn.dataset.openRace));
+      if (target) {
+        target.open = true;
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+  });
+}
+
+function consultBody(styleKey, forecasts) {
+  const s = CONSULT_STYLES[styleKey];
+  if (!s) return "";
+  let races = forecasts.filter((r) => Number(r.confidence?.rank || 1) >= s.minRank);
+  if (s.sort === "ev") {
+    races = races.sort((a, b) => (b.value?.ev || 0) - (a.value?.ev || 0) || (b.top3?.[0]?.probability || 0) - (a.top3?.[0]?.probability || 0));
+  } else {
+    races = races.sort((a, b) => (b.confidence?.rank || 0) - (a.confidence?.rank || 0) || (b.top3?.[0]?.probability || 0) - (a.top3?.[0]?.probability || 0));
+  }
+  races = races.slice(0, 6);
+  const wallet = 10000;
+  const unit = Math.max(100, Math.floor((wallet * s.cap) / s.points / 100) * 100);
+  if (!races.length) {
+    return `<div class="consult-plan">
+      <p class="consult-meta">${escapeHtml(s.desc)}(1レース ${s.points}点・目安予算の${Math.round(s.cap * 100)}%)</p>
+      <div class="empty">本日は「${s.label}」の狙い目レースがありません。${styleKey === "kenjitsu" ? "本命戦(堅いレース)が無い日です。" : ""}</div>
+    </div>`;
+  }
+  const cards = races
+    .map((race) => {
+      const top = race.top3?.[0] || {};
+      const combos = consultCombos(race, s.points);
+      const hit = race.hit_estimate?.trifecta;
+      const ev = race.value && race.value.ev >= 1 ? `<span class="ev-chip">💎EV ${race.value.ev.toFixed(2)}</span>` : "";
+      return `<button type="button" class="consult-race" data-open-race="${escapeAttr(race.race_key)}">
+        <div class="consult-race-head">
+          <b>${escapeHtml(race.venue || "")}${escapeHtml(race.race_no || "")}R</b>
+          <span>${escapeHtml(race.start_time || "")}</span>
+          ${badge(race.confidence?.label || "混戦", "confidence-badge")}${ev}
+        </div>
+        <div class="consult-pick">本命 ${car(top.car_no)} ${escapeHtml(top.name || "")} <em>AI勝率${percent(top.probability)}</em></div>
+        <div class="consult-buy">${formationHtml(combos) || "-"}</div>
+        <div class="consult-foot">
+          <span>${s.points}点 × ${unit.toLocaleString()}円 = <b>${(unit * combos.length).toLocaleString()}円</b></span>
+          ${hit != null ? `<span class="hit-est">的中目安 ${percent(hit)}</span>` : ""}
+        </div>
+      </button>`;
     })
     .join("");
-  return `<div class="compare-board">
-    <div class="compare-title">乗り方の比較 <small>同じ10レースを4スタイルで自動運用</small> <span class="help-tip" tabindex="0" data-tip="オリジナルは毎日自動で回る本命運用。堅実・バランス・冒険も同じ10レースを並行で自動運用し、実際の結果で決済しています。どの乗り方が向いているかの比較用です。">?</span></div>
-    <div class="compare-grid">${cards}</div>
+  return `<div class="consult-plan">
+    <p class="consult-meta">${escapeHtml(s.desc)} — 1レース <b>${s.points}点</b>、1点の目安 <b>${unit.toLocaleString()}円</b>(1万円想定の${Math.round(s.cap * 100)}%)。狙い目 <b>${races.length}レース</b>。</p>
+    <div class="consult-races">${cards}</div>
   </div>`;
 }
 
@@ -1869,6 +1935,7 @@ function renderToday() {
     .join("");
   renderVenueBoard(payload.forecasts || []);
   renderValueBoard(payload.forecasts || []);
+  renderStyleConsult();
   renderRecommended(payload.recommended_races || []);
 
   const rows = filterForecasts(payload.forecasts || []);

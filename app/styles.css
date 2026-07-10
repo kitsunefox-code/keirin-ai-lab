@@ -3659,3 +3659,43 @@ input, select { background: var(--color-surface-raised); border-color: var(--col
 .compare-balance { font-size: var(--text-md); font-weight: 900; font-variant-numeric: tabular-nums; color: var(--color-text); }
 .compare-profit { font-size: var(--text-sm); font-weight: 800; font-variant-numeric: tabular-nums; }
 .compare-wl { font-size: var(--text-xs); color: var(--color-muted); margin-top: 2px; }
+
+/* スタイル別コンサル */
+.style-consult { margin-bottom: var(--space-4); }
+.consult-lead { color: var(--color-muted); font-size: var(--text-sm); line-height: 1.6; margin: 6px 0 10px; }
+.consult-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+.consult-btn {
+  padding: 8px 18px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  font-weight: 800;
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+.consult-btn.active { border-color: var(--color-accent); background: rgba(94, 230, 168, 0.14); color: var(--color-accent); }
+.consult-hint, .consult-meta { color: var(--color-muted); font-size: var(--text-sm); }
+.consult-meta { margin: 12px 0; line-height: 1.6; }
+.consult-meta b { color: var(--color-text); }
+.consult-races { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 6px; }
+@media (max-width: 720px) { .consult-races { grid-template-columns: 1fr; } }
+.consult-race {
+  text-align: left;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  cursor: pointer;
+  display: grid;
+  gap: 6px;
+}
+.consult-race:hover { border-color: var(--color-accent); }
+.consult-race-head { display: flex; align-items: center; gap: 6px; font-size: var(--text-sm); }
+.consult-race-head b { font-size: var(--text-md); }
+.consult-race-head span { color: var(--color-muted); font-size: var(--text-xs); }
+.consult-pick { font-size: var(--text-sm); }
+.consult-pick em { color: var(--color-muted); font-style: normal; margin-left: 4px; font-size: var(--text-xs); }
+.consult-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: var(--text-xs); color: var(--color-muted); }
+.consult-foot b { color: var(--color-text); }

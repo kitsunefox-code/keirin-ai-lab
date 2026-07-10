@@ -213,16 +213,13 @@ def _settle_session(conn, session: dict) -> dict:
 
 
 def main() -> None:
-    from keirin_ai.bankroll import active_compare_sessions
-
     with connect() as conn:
         session = active_session(conn)
-        sessions = ([session] if session else []) + active_compare_sessions(conn)
-        if not sessions:
+        if not session:
             print(json.dumps({"ok": True, "action": "no-active-session"}, ensure_ascii=False))
             return
-        results = [_settle_session(conn, s) for s in sessions]
-    print(json.dumps({"ok": True, "sessions": results}, ensure_ascii=False))
+        result = _settle_session(conn, session)
+    print(json.dumps({"ok": True, **result}, ensure_ascii=False))
 
 
 if __name__ == "__main__":

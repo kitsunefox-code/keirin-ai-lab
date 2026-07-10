@@ -700,7 +700,6 @@ def build_bankroll_payload(conn: sqlite3.Connection, data_dir: Path | str) -> di
     payload["yesterday"] = {"date": yesterday, "sessions": sessions_on_date(conn, yesterday)}
     payload["daily_history"] = daily_history(conn, days=14)
     payload["finance"] = bankroll_finance(conn)
-    payload["compare"] = compare_summaries(conn)
     if session is None:
         last = latest_session(conn)
         if last and last["status"] == "stopped":

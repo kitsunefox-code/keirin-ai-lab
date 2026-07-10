@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at_jst": "2026-07-11T08:40:37+09:00",
+  "generated_at_jst": "2026-07-11T08:55:16+09:00",
   "rules": [
     "全額転がしは行いません(1レース投資は残高の上限%まで)",
     "負けた後の倍賭け(マーチンゲール)は行いません",
@@ -264,38 +264,38 @@
     "confidence": "本命",
     "budget": 1200,
     "total_stake": 1200,
-    "ev": 8.448,
-    "expected_return": 10140,
+    "ev": 8.301,
+    "expected_return": 9960,
     "tickets": [
       {
         "role": "本線",
         "label": "7-3-5",
         "stake": 700,
-        "odds": 19.1,
+        "odds": 18.5,
         "odds_source": "live",
         "popularity": 1,
         "hit_probability": 0.2733,
-        "projected_return": 13370
+        "projected_return": 12950
       },
       {
         "role": "抑え",
         "label": "7-5-3",
         "stake": 300,
-        "odds": 23.0,
+        "odds": 22.7,
         "odds_source": "live",
         "popularity": 3,
         "hit_probability": 0.2726,
-        "projected_return": 6900
+        "projected_return": 6810
       },
       {
         "role": "妙味",
         "label": "7-2-3",
         "stake": 200,
-        "odds": 87.3,
+        "odds": 86.6,
         "odds_source": "live",
-        "popularity": 31,
+        "popularity": 29,
         "hit_probability": 0.2636,
-        "projected_return": 17460
+        "projected_return": 17320
       }
     ],
     "live_odds_count": 3,
@@ -350,8 +350,8 @@
       "start_time": "11:54",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 8.45 / 3点分散 / ライブ3点",
-      "ev": 8.448,
+      "reason": "EV 8.30 / 3点分散 / ライブ3点",
+      "ev": 8.301,
       "is_next": true
     },
     {
@@ -394,8 +394,8 @@
       "start_time": "15:55",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 8.88 / 3点分散 / ライブ3点",
-      "ev": 8.877,
+      "reason": "EV 9.02 / 3点分散 / ライブ3点",
+      "ev": 9.022,
       "is_next": false
     },
     {
@@ -405,8 +405,8 @@
       "start_time": "17:54",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 1.91 / 3点分散 / ライブ3点",
-      "ev": 1.906,
+      "reason": "EV 1.95 / 3点分散 / ライブ3点",
+      "ev": 1.954,
       "is_next": false
     },
     {
@@ -514,8 +514,8 @@
           "id": 10,
           "style": "kenjitsu",
           "style_label": "堅実",
-          "status": "active",
-          "stop_reason": null,
+          "status": "stopped",
+          "stop_reason": "比較運用を廃止(コンサル方式へ変更)",
           "config": {
             "start_amount": 10000,
             "target_amount": 1000000,
@@ -538,8 +538,8 @@
           "id": 11,
           "style": "balance",
           "style_label": "バランス",
-          "status": "active",
-          "stop_reason": null,
+          "status": "stopped",
+          "stop_reason": "比較運用を廃止(コンサル方式へ変更)",
           "config": {
             "start_amount": 10000,
             "target_amount": 1000000,
@@ -562,8 +562,8 @@
           "id": 12,
           "style": "bouken",
           "style_label": "冒険",
-          "status": "active",
-          "stop_reason": null,
+          "status": "stopped",
+          "stop_reason": "比較運用を廃止(コンサル方式へ変更)",
           "config": {
             "start_amount": 10000,
             "target_amount": 1000000,
@@ -740,44 +740,6 @@
       }
     ]
   },
-  "compare": [
-    {
-      "session_id": 10,
-      "style": "kenjitsu",
-      "label": "堅実",
-      "description": "信頼度の高いレースだけ、本線厚めの最大3点。損失は浅く止める。",
-      "start_amount": 10000,
-      "balance": 10000,
-      "profit": 0,
-      "wins": 0,
-      "losses": 0,
-      "settled": 0
-    },
-    {
-      "session_id": 11,
-      "style": "balance",
-      "label": "バランス",
-      "description": "本線・抑え・妙味を最大5点に分散。標準の停止条件で回す。",
-      "start_amount": 10000,
-      "balance": 10000,
-      "profit": 0,
-      "wins": 0,
-      "losses": 0,
-      "settled": 0
-    },
-    {
-      "session_id": 12,
-      "style": "bouken",
-      "label": "冒険",
-      "description": "妙味・穴を厚めに最大6点。振れ幅と引き換えに高配当を取りにいく。",
-      "start_amount": 10000,
-      "balance": 10000,
-      "profit": 0,
-      "wins": 0,
-      "losses": 0,
-      "settled": 0
-    }
-  ],
   "plan": {
     "locked_at": "2026-07-11T07:20:50+09:00",
     "race_limit": 10,
