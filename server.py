@@ -54,6 +54,8 @@ class KeirinHandler(BaseHTTPRequestHandler):
             return self._serve_file(APP_DIR / "results.html")
         if path in {"/motion", "/motion.html"}:
             return self._serve_file(APP_DIR / "motion.html")
+        if path in {"/record", "/record.html"}:
+            return self._serve_file(APP_DIR / "record.html")
         if path in {"/app.js", "/styles.css"}:
             return self._serve_file(APP_DIR / path.lstrip("/"))
         if path == "/api/sample":

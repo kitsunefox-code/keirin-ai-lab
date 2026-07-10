@@ -74,6 +74,9 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   const page = document.body.dataset.page || "home";
   if (page === "home") {
+    // 読み込み中のスケルトン(体感速度の底上げ)
+    const list = el("forecastList");
+    if (list) list.innerHTML = Array.from({ length: 4 }, () => '<div class="skeleton-row"></div>').join("");
     loadLearnStatus();
     loadToday();
     loadBankroll();
@@ -89,7 +92,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 60000);
   } else if (page === "motion") {
     loadToday(); // モーションメーカーの素材
+  } else if (page === "record") {
+    loadResults(); // 実績ページ(record/conditions/calibrationを使う)
   }
+  renderOnboarding(page);
 });
 
 async function loadToday() {
@@ -156,7 +162,73 @@ function renderRecordBar(record) {
       <em>本命 ${percent(item.honmei_rate)} / 2車単${item.exacta_priced ? `${item.exacta_priced}R集計` : "集計待ち"} / ${item.settled}R</em>
     </div>`;
   };
-  bar.innerHTML = `<div class="record-title">AI成績</div>${cell(record.week)}${cell(record.last_week)}${cell(record.total)}`;
+  bar.innerHTML = `<div class="record-title">AI成績 <span class="help-tip" tabindex="0" data-tip="回収率=実払戻÷投資額。2車単の軸1着固定2点を各100円で平坦買いした場合の実測値。競輪は控除率25%なので100%超は容易ではありません。">?</span></div>${cell(record.week)}${cell(record.last_week)}${cell(record.total)}`;
+}
+
+// 実績ページ: 通算KPI + 期間別テーブル
+function renderRecordPage(payload) {
+  const hero = el("recordHero");
+  if (!hero) return; // 実績ページ以外
+  const record = payload.record || {};
+  const total = record.total || {};
+  const roiText = (roi) => (roi == null ? "—" : `${(roi * 100).toFixed(1)}%`);
+  const pct = (v) => (v == null ? "—" : `${(v * 100).toFixed(1)}%`);
+  el("recordMeta").textContent = `${record.as_of || ""} 時点 / ${total.settled ?? 0}レースを検証`;
+  const kpis = [
+    { label: "検証レース数", value: `${total.settled ?? 0}`, sub: "全て事前予想", cls: "" },
+    { label: "本命的中率", value: pct(total.honmei_rate), sub: `較正済みAI勝率 <span class="help-tip" tabindex="0" data-tip="AIの表示勝率は過去の実測に合わせて較正済み。40%と出たら実際に約40%当たります。">?</span>`, cls: "" },
+    { label: "2車単回収率", value: roiText(total.exacta_roi), sub: `${total.exacta_priced ?? 0}R集計(実払戻)`, cls: (total.exacta_roi || 0) >= 1 ? "kpi-up" : "kpi-down" },
+    { label: "3連単的中率", value: pct(total.trifecta_rate), sub: "候補6点以内", cls: "" },
+  ];
+  hero.innerHTML = kpis
+    .map((k) => `<div class="kpi-card"><span>${k.label}</span><strong class="${k.cls}">${k.value}</strong><em>${k.sub}</em></div>`)
+    .join("");
+  const table = el("recordTable");
+  if (!table) return;
+  const rows = ["week", "last_week", "total"].map((key) => record[key]).filter(Boolean);
+  table.innerHTML = `<div class="table-wrap"><table class="data-table compact-table">
+    <thead><tr><th>期間</th><th>確定R</th><th>本命的中</th><th>3着内</th><th>回収率</th></tr></thead>
+    <tbody>${rows
+      .map(
+        (r) => `<tr>
+        <td><b>${escapeHtml(r.label)}</b></td>
+        <td>${r.settled}</td>
+        <td>${pct(r.honmei_rate)}</td>
+        <td>${pct(r.in_top3_rate)}</td>
+        <td class="${(r.exacta_roi || 0) >= 1 ? "kpi-up" : "kpi-down"}"><b>${roiText(r.exacta_roi)}</b></td>
+      </tr>`
+      )
+      .join("")}</tbody>
+  </table></div>`;
+}
+
+// 初回訪問だけの30秒オンボーディング(3ステップ)。閉じたら二度と出さない。
+function renderOnboarding(page) {
+  if (page !== "home") return;
+  try {
+    if (localStorage.getItem("kl_onboard_v1")) return;
+  } catch (_e) {
+    return;
+  }
+  const header = document.querySelector(".page-header");
+  if (!header) return;
+  const banner = document.createElement("section");
+  banner.className = "onboarding";
+  banner.innerHTML = `
+    <div class="onboarding-head"><b>はじめての方へ — このラボの読み方(30秒)</b></div>
+    <ol class="onboarding-steps">
+      <li><b>AI勝率は本物</b> — 表示する勝率は過去の実測に較正済み。「40%」は本当に約40%当たります(<a href="record.html">実績で検証可</a>)。</li>
+      <li><b>💎妙味 = 買う価値</b> — 実オッズ×AI確率の期待値(EV)。EVが1を超えた目は「市場がAIの見立てより安く売っている」状態です。</li>
+      <li><b>成績は全公開</b> — 的中も外れも隠しません。予想は発走前にGitへ記録され、後から書き換えられません。</li>
+    </ol>
+    <button type="button" class="button" id="onboardClose">わかった(次から表示しない)</button>`;
+  header.insertAdjacentElement("afterend", banner);
+  banner.querySelector("#onboardClose").addEventListener("click", () => {
+    try {
+      localStorage.setItem("kl_onboard_v1", "1");
+    } catch (_e) {}
+    banner.remove();
+  });
 }
 
 // AIの得意条件テーブル(回収率100%超=緑、85%以上=中間、n>=30を「信頼できる」扱い)
@@ -221,6 +293,7 @@ function renderResults(payload) {
   renderRecordBar(payload.record);
   renderConditions(payload.conditions);
   renderCalibration(payload.calibration);
+  renderRecordPage(payload);
   if (!el("resultsBody")) return; // 結果ページ以外ではAI成績バーだけ更新
   el("resultsDates").innerHTML = (payload.dates || [])
     .map(
@@ -1822,7 +1895,7 @@ function renderValueBoard(forecasts) {
   section.innerHTML = `
     <header class="value-board-head">
       <div>
-        <h3>💎 今日の妙味</h3>
+        <h3>💎 今日の妙味 <span class="help-tip" tabindex="0" data-tip="EV=実オッズ×AIの的中確率。1.00を超えていれば「市場がAIの見立てより安く売っている」目。締切が近いほどオッズは信頼できます。">?</span></h3>
         <p>実オッズ × AI確率の期待値が高い2車単。オッズは取得時点のもので変動します。</p>
       </div>
     </header>
@@ -2027,6 +2100,7 @@ function renderForecastCard(race) {
       ${race.hour_label && race.hour_type !== "hourTypeNormal" ? badge(race.hour_label, "hour-badge") : ""}
       ${race.weather?.is_rain ? badge("雨", "rain-badge") : ""}
       ${payoutBadge(race)}
+      ${race.value && race.value.ev >= 1 ? `<span class="ev-chip">💎EV ${race.value.ev.toFixed(2)}</span>` : ""}
       ${badge(confidence.label || "混戦", "confidence-badge")}
     </summary>
     <div class="ribbon-body">
@@ -2064,35 +2138,37 @@ function renderForecastCard(race) {
           ${(race.exacta && race.exacta.length) ? `<div class="bet-block">
             <div class="bet-label">2車単候補 <small>軸1着固定・的中率重視</small></div>
             ${formationHtml(race.exacta) || ""}
-            <details class="ticket-detail"><summary>全${race.exacta.length}点を見る</summary><div class="ticket-row exacta-row">${race.exacta.map((t) => `<span class="ticket-chip exacta-chip${t.suji ? " is-suji" : ""}">${escapeHtml(t.label)}${t.suji ? '<em class="suji-tag">スジ</em>' : ""}</span>`).join("")}</div></details>
+            <details class="ticket-detail"><summary>全${race.exacta.length}点を見る</summary><div class="ticket-row exacta-row">${race.exacta.map((t) => `<span class="ticket-chip exacta-chip${t.suji ? " is-suji" : ""}">${escapeHtml(t.label)}${t.suji ? '<em class="suji-tag">スジ</em>' : ""}${t.ev ? `<em class="ev-mini">${t.live_odds}倍 EV${t.ev.toFixed(2)}</em>` : ""}</span>`).join("")}</div></details>
           </div>` : ""}
         </div>
 
         ${renderLineDiagram(race.lines || [], race.top3 || [])}
-        ${renderBankCard(race)}
 
-        <div class="race-motion" data-motion-race="${escapeAttr(race.race_key || "")}">
-          <button type="button" class="button motion-btn" data-race="${escapeAttr(race.race_key || "")}">▶ 展開を再生</button>
-          <div class="motion-stage" hidden>
-            <div class="motion-caption">周回中</div>
-            <svg class="motion-svg" viewBox="0 0 640 300" role="img" aria-label="展開予想アニメーション"></svg>
+        <details class="details reason-details">
+          <summary>📖 展開と根拠を見る <small>S取り・ライン・バンク・展開再生</small></summary>
+          <div class="forecast-grid">
+            <section class="analysis-block">
+              <h4>展開</h4>
+              <p class="headline">${escapeHtml(race.scenario?.headline || "")}</p>
+              ${(race.scenario?.sequence || []).length ? `<ol class="scenario-steps">${race.scenario.sequence.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ol>` : ""}
+              <p>${escapeHtml(race.scenario?.flow || "")}</p>
+              <p>${escapeHtml(race.scenario?.watch || "")}</p>
+              <p class="risk-text">${escapeHtml(race.scenario?.upset || "")}</p>
+            </section>
+            <section class="analysis-block">
+              <h4>ライン/関係性</h4>
+              <ul class="line-list">${lines}</ul>
+            </section>
           </div>
-        </div>
-
-        <div class="forecast-grid">
-          <section class="analysis-block">
-            <h4>展開</h4>
-            <p class="headline">${escapeHtml(race.scenario?.headline || "")}</p>
-            ${(race.scenario?.sequence || []).length ? `<ol class="scenario-steps">${race.scenario.sequence.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ol>` : ""}
-            <p>${escapeHtml(race.scenario?.flow || "")}</p>
-            <p>${escapeHtml(race.scenario?.watch || "")}</p>
-            <p class="risk-text">${escapeHtml(race.scenario?.upset || "")}</p>
-          </section>
-          <section class="analysis-block">
-            <h4>ライン/関係性</h4>
-            <ul class="line-list">${lines}</ul>
-          </section>
-        </div>
+          ${renderBankCard(race)}
+          <div class="race-motion" data-motion-race="${escapeAttr(race.race_key || "")}">
+            <button type="button" class="button motion-btn" data-race="${escapeAttr(race.race_key || "")}">▶ 展開を再生</button>
+            <div class="motion-stage" hidden>
+              <div class="motion-caption">周回中</div>
+              <svg class="motion-svg" viewBox="0 0 640 300" role="img" aria-label="展開予想アニメーション"></svg>
+            </div>
+          </div>
+        </details>
 
         <details class="details">
           <summary>コメント根拠と全選手</summary>
