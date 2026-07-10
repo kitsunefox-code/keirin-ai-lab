@@ -407,16 +407,27 @@ function buildCustomMotionPlan(race, opts) {
   const nameOf = (car) => `${car}${names.get(car) || ""}`;
   const lineOf = (car) => lineup.find((line) => line.includes(car)) || [car];
 
-  const keyframes = [{ lap: 0.0, order: initial }];
-  const captions = [{ lap: 0.0, text: "青板、先頭員の後ろで隊列を組んで周回" }];
-  let cur = initial;
+  // S(スタート先頭)で青板の隊列先頭を決める
+  const startLead = opts.sCar && cars.includes(opts.sCar) ? opts.sCar : initial[0];
+  const startOrder = N([...lineOf(startLead), ...initial]);
+
+  const keyframes = [{ lap: 0.0, order: startOrder }];
+  const sName = opts.sCar ? `S:${nameOf(startLead)} が誘導の後ろで先頭` : "青板、先頭員の後ろで隊列を組んで周回";
+  const captions = [{ lap: 0.0, text: sName }];
+  let cur = startOrder;
   const push = (lap, order, text) => {
     cur = N(order);
     keyframes.push({ lap, order: cur });
     if (text) captions.push({ lap, text });
   };
 
-  const leadLine = (opts.leadLine && opts.leadLine.length ? opts.leadLine : base.escapeLine).filter((car) => cars.includes(car));
+  // 主導権(先行)ラインは B(バック線を先頭で通過する車)から決める。無指定ならAI推定。
+  const bLine = opts.bCar && cars.includes(opts.bCar) ? lineOf(opts.bCar) : null;
+  const leadLine = (
+    bLine && bLine.length ? bLine
+      : opts.leadLine && opts.leadLine.length ? opts.leadLine
+      : base.escapeLine
+  ).filter((car) => cars.includes(car));
   const spurtLap = opts.spurt === "early" ? 0.32 : opts.spurt === "late" ? 0.8 : 0.5;
 
   // --- 主導権争い ---
@@ -441,7 +452,16 @@ function buildCustomMotionPlan(race, opts) {
   if (opts.spurt === "early") captions.push({ lap: 0.5, text: "🔔 打鐘!早めの主導権争いでピッチが上がる" });
   if (opts.pace === "slow") captions.push({ lap: 0.7, text: "スローペース…上がり勝負、差し・追込有利の流れ" });
   else if (opts.pace === "high") captions.push({ lap: 0.7, text: "ハイペースの消耗戦!先行有利、後方は離れる" });
-  if (opts.spurt !== "late") captions.push({ lap: 1.0, text: "残り1周、ホームストレッチライン通過" });
+  // B(バック線先頭)= 先行の主役をナレーション
+  if (opts.bCar && cars.includes(opts.bCar)) {
+    captions.push({ lap: 0.9, text: `B:${nameOf(opts.bCar)} が先頭でバック線を通過(先行)` });
+  }
+  // H(ホーム線先頭): 残り1周で先頭に立つ車を反映
+  if (opts.hCar && cars.includes(opts.hCar)) {
+    push(1.0, [...lineOf(opts.hCar), ...cur], `H:${nameOf(opts.hCar)} が先頭でホーム線を通過`);
+  } else if (opts.spurt !== "late") {
+    captions.push({ lap: 1.0, text: "残り1周、ホームストレッチライン通過" });
+  }
 
   // --- 番手競り ---
   if (opts.seriCar && cars.includes(opts.seriCar)) {
@@ -509,24 +529,8 @@ function buildCustomMotionPlan(race, opts) {
     finalOrder = N([...picked, ...dropTail(cur).filter((car) => !picked.includes(car))]);
     who = "あなたの結末";
   } else {
-    let aiFinal = base.final;
-    if (opts.makuriCar && opts.makuriResult !== "fail") {
-      aiFinal = [opts.makuriCar, ...aiFinal.filter((car) => car !== opts.makuriCar)];
-    }
-    if (opts.closerCar && cars.includes(opts.closerCar)) {
-      // 大外一気は2着前後まで突っ込む想定
-      const rest = aiFinal.filter((car) => car !== opts.closerCar);
-      aiFinal = [rest[0], opts.closerCar, ...rest.slice(1)];
-    }
-    if (opts.pace === "slow") {
-      // 差し・追込タイプ(先頭以外)を1つ繰り上げ
-      const idx = aiFinal.findIndex((car) => (base.styles.get(car) || "") !== "逃");
-      if (idx > 0) { const [x] = aiFinal.splice(idx, 1); aiFinal.splice(idx - 1, 0, x); }
-    }
-    if (opts.makuriCar && opts.makuriResult === "fail") {
-      aiFinal = [...aiFinal.filter((car) => car !== opts.makuriCar), opts.makuriCar];
-    }
-    finalOrder = N(dropTail(aiFinal));
+    // 展開(先行ライン・番手・まくり・ペース等)から競輪らしい着順を組み立てる
+    finalOrder = N(dropTail(realisticFinishOrder(base, opts, leadLine)));
   }
 
   // 決まり手ナレーションを展開から推定
@@ -551,6 +555,66 @@ function buildCustomMotionPlan(race, opts) {
   keyframes.sort((a, b) => a.lap - b.lap);
   captions.sort((a, b) => a.lap - b.lap);
   return { cars, keyframes, captions };
+}
+
+// 展開から競輪らしい着順を推定する。実力(較正済み勝率)より「ライン内の役割」を重視し、
+// 先行ラインの番手が最も差しやすい/スジで決まりやすいという実戦の傾向を反映する。
+function realisticFinishOrder(base, opts, leadLine) {
+  const { cars, probs, styles, lineup } = base;
+  const lineOf = (car) => lineup.find((line) => line.includes(car)) || [car];
+  const makuriHit = opts.makuriCar && cars.includes(opts.makuriCar) && opts.makuriResult !== "fail";
+  const makuriLine = makuriHit ? lineOf(opts.makuriCar) : [];
+
+  const score = new Map();
+  for (const car of cars) {
+    const line = lineOf(car);
+    const pos = line.indexOf(car); // 0=先頭(自力), 1=番手, 2=3番手...
+    const st = styles.get(car) || "";
+    let s = (probs.get(car) || 0.08) * 0.6; // 実力は控えめに効かせる
+
+    if (leadLine.includes(car)) {
+      const lp = leadLine.indexOf(car);
+      if (lp === 0) s += 0.30;        // 先行: 粘る(つっぱりならさらに)
+      else if (lp === 1) s += 0.46;   // 番手: 一番おいしい差し(最有力)
+      else if (lp === 2) s += 0.24;   // 3番手: スジで連下
+      else s += 0.08;
+    } else if (pos === 0) {
+      s += 0.10;                      // 別線の自力型は食い込む余地あり
+    }
+
+    if (makuriHit) {
+      const mp = makuriLine.indexOf(car);
+      if (car === opts.makuriCar) s += 0.42;   // まくり本人が前へ
+      else if (mp === 1) s += 0.30;            // まくり番手が続く
+      else if (mp >= 2) s += 0.12;
+    }
+
+    if (opts.pace === "slow" && (st === "追" || st === "差")) s += 0.12;  // 上がり勝負
+    if (opts.pace === "high" && st === "逃") s += 0.10;                   // 消耗戦で先行有利
+    if (opts.tsuppari && leadLine[0] === car) s += 0.14;                  // つっぱりで先行が粘る
+    if (opts.seriCar === car) s += opts.seriResult === "lose" ? -0.35 : 0.12; // 番手競り
+    score.set(car, s);
+  }
+
+  // 後退イベントは大きく減点(最後方確定は下で処理)
+  if (opts.chigirareCar) score.set(opts.chigirareCar, (score.get(opts.chigirareCar) || 0) - 1.0);
+  if (opts.accidentCar) score.set(opts.accidentCar, (score.get(opts.accidentCar) || 0) - 1.2);
+
+  let ordered = [...cars].sort((a, b) => (score.get(b) || 0) - (score.get(a) || 0));
+
+  // 大外一気は差し込んで2着前後まで(勝ち切りは稀)
+  if (opts.closerCar && cars.includes(opts.closerCar)) {
+    ordered = ordered.filter((car) => car !== opts.closerCar);
+    ordered.splice(Math.min(1, ordered.length), 0, opts.closerCar);
+  }
+  // ちぎれ/アクシデントは確実に最後方へ
+  for (const car of [opts.chigirareCar, opts.accidentCar]) {
+    if (car && ordered.includes(car)) {
+      ordered = ordered.filter((c) => c !== car);
+      ordered.push(car);
+    }
+  }
+  return normalizeOrder(ordered, cars);
 }
 
 function renderMotionMaker() {
@@ -610,7 +674,23 @@ function renderMmOptions(race) {
     .join("");
   const noneCarOptions = `<option value="">なし</option>` + carOptions(null);
   const aiTop3 = base.final.slice(0, 3);
+  const sengo = base.escapeLine[0] || base.cars[0]; // S・B・Hの既定=先行選手
   return `
+    <div class="mm-group">
+      <div class="mm-group-title">隊列の先頭(S・H・B)</div>
+      <p class="mm-note">S=スタート先頭 / H=ホーム線先頭 / B=バック線先頭(=先行の主役)。誰が取るか選べます。</p>
+      <div class="mm-row">
+        <label class="field compact"><span>S(スタート)</span>
+          <select id="mmS">${carOptions(sengo)}</select>
+        </label>
+        <label class="field compact"><span>H(ホーム先頭)</span>
+          <select id="mmH">${carOptions(sengo)}</select>
+        </label>
+        <label class="field compact"><span>B(バック先頭・先行)</span>
+          <select id="mmB">${carOptions(sengo)}</select>
+        </label>
+      </div>
+    </div>
     <div class="mm-group">
       <div class="mm-group-title">主導権争い</div>
       <div class="mm-row">
@@ -708,6 +788,9 @@ function playCustomMotion(useAiPlan) {
     const picked = [Number(el("mm1st")?.value), Number(el("mm2nd")?.value), Number(el("mm3rd")?.value)];
     const opts = {
       leadLine: leadIdx !== "" && lines[Number(leadIdx)] ? lines[Number(leadIdx)] : null,
+      sCar: Number(el("mmS")?.value) || null,
+      hCar: Number(el("mmH")?.value) || null,
+      bCar: Number(el("mmB")?.value) || null,
       spurt: el("mmSpurt")?.value || "bell",
       tsuppari: !!el("mmTsuppari")?.checked,
       seriCar: Number(el("mmSeri")?.value) || null,
