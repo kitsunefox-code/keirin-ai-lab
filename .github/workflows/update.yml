@@ -1,0 +1,94 @@
+name: auto-update
+
+# PCの電源が入っていなくてもクラウドで自動更新する。
+#   morning: 08:10 JST 前日締め+今日の予想生成+オリジナル運用開始
+#   night  : 23:40 JST 結果・談話の回収+払戻+決済
+#   live   : 10:00-23:45 JST 15分ごとの速報反映(結果+払戻+決済)
+# cronはUTC表記(JST-9時間)。スケジュール実行は数分遅れることがある。
+on:
+  schedule:
+    - cron: "10 23 * * *"     # 08:10 JST = morning
+    - cron: "40 14 * * *"     # 23:40 JST = night
+    - cron: "*/15 1-14 * * *" # 10:00-23:45 JST = live
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "morning / night / live / push"
+        default: "live"
+
+concurrency:
+  group: keirin-update
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Resolve mode
+        id: mode
+        run: |
+          MODE="${{ github.event.inputs.mode }}"
+          if [ -z "$MODE" ]; then
+            case "${{ github.event.schedule }}" in
+              "10 23 * * *") MODE=morning ;;
+              "40 14 * * *") MODE=night ;;
+              *) MODE=live ;;
+            esac
+          fi
+          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
+          echo "resolved mode: $MODE"
+
+      - name: Run update
+        run: |
+          set -e
+          MODE="${{ steps.mode.outputs.mode }}"
+          if [ "$MODE" = "morning" ]; then
+            python scripts/collect_raceresults.py --limit 150 --delay 0.5
+            python scripts/backfill_payouts.py --limit 200 --delay 0.4
+            python scripts/settle_original.py
+            TODAY=$(TZ=Asia/Tokyo date +%F)
+            STAMP=$(TZ=Asia/Tokyo date +%Y%m%d)
+            python scripts/forecast_winticket_after.py --date "$TODAY" --after 00:00 --max-races 60 --delay 0.4 --out "data/forecast_${STAMP}_after_0000.json"
+            python scripts/start_original.py
+          elif [ "$MODE" = "night" ]; then
+            python scripts/collect_raceresults.py --limit 120 --delay 0.6
+            python scripts/backfill_keirinjp_results.py --limit 60 --delay 0.5
+            python scripts/backfill_payouts.py --limit 200 --delay 0.4
+            python scripts/settle_original.py
+          elif [ "$MODE" = "live" ]; then
+            python scripts/collect_raceresults.py --limit 50 --delay 0.4
+            python scripts/backfill_payouts.py --limit 80 --delay 0.3
+            python scripts/settle_original.py
+          fi
+          python scripts/build_static_api.py
+
+      - name: Commit and push
+        run: |
+          git config user.name "keirin-auto-update"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "no changes"
+            exit 0
+          fi
+          git commit -m "Cloud update (${{ steps.mode.outputs.mode }}) $(TZ=Asia/Tokyo date '+%Y-%m-%d %H:%M')"
+          for i in 1 2 3; do
+            if git push origin main; then
+              exit 0
+            fi
+            git pull --rebase origin main || { git rebase --abort || true; git pull -X ours --no-edit origin main; }
+          done
+          git push origin main

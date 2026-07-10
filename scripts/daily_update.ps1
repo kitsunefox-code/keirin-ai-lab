@@ -65,6 +65,8 @@ git add -A 2>&1 | Out-Null
 $pending = git status --porcelain
 if ($pending) {
     git commit -m "Auto update ($Mode) $(Get-Date -Format 'yyyy-MM-dd HH:mm')" 2>&1 | Out-Null
+    # クラウド(GitHub Actions)側の更新を取り込んでからpush(衝突回避)
+    git pull --rebase origin main 2>&1 | Out-Null
     git push origin main 2>&1 | Out-Null
     if ($LASTEXITCODE -eq 0) {
         Write-Log "pushed"

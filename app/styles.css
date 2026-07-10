@@ -3398,3 +3398,41 @@ input, select { background: var(--color-surface-raised); border-color: var(--col
 .ticket-detail > summary::-webkit-details-marker { display: none; }
 .ticket-detail > summary::before { content: "▸ "; }
 .ticket-detail[open] > summary::before { content: "▾ "; }
+
+/* 展開のスタートからのストーリー(S取り→周回→打鐘→最終) */
+.scenario-steps {
+  margin: 6px 0 8px;
+  padding: 0 0 0 2px;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  counter-reset: scenario;
+}
+.scenario-steps li {
+  counter-increment: scenario;
+  position: relative;
+  padding: 5px 8px 5px 26px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+.scenario-steps li::before {
+  content: counter(scenario);
+  position: absolute;
+  left: 8px;
+  top: 7px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(94, 230, 168, 0.16);
+  color: var(--color-accent);
+  font-size: 10px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

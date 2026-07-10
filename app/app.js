@@ -260,7 +260,8 @@ const CAR_COLORS = {
  * ゴール=ホームストレッチライン(下側直線)、打鐘=残り1周半のバックストレッチライン通過。
  * センターライン: 直線 y=250/50 (x 170..470)、両端は半径100の半円。
  */
-const MOTION = { duration: 10000, laps: 2 };
+// スタートから4周のフルレース。打鐘=残り1周半(2.5周消化)、ゴール=4.0周。
+const MOTION = { duration: 20000, laps: 4, bellLap: 2.5 };
 const BANK = {
   x1: 170,
   x2: 470,
@@ -358,47 +359,86 @@ function computeMotionBase(race) {
     lineup.find((line) => line.length >= 2) ||
     (lineup.length ? [lineup[0]].flat() : [initial[0]].filter(Boolean));
 
-  return { cars, lineup, initial, final, escapeLine, probs, styles, names };
+  // 過去データ(S/B実績・決まり手)から展開の役どころを決める
+  const statOf = new Map(entries.map((entry) => [Number(entry.car_no), entry.stats || {}]));
+  const st = (car, key) => Number((statOf.get(Number(car)) || {})[key] || 0);
+  const lineHeads = lineup.filter((line) => line.length).map((line) => line[0]);
+  // S取り: 先頭選手のS実績が最多のライン(同数は車番が若い方)
+  const sHead = lineHeads.length
+    ? lineHeads.reduce((best, car) => (st(car, "start_count") > st(best, "start_count") || (st(car, "start_count") === st(best, "start_count") && car < best) ? car : best))
+    : initial[0];
+  const sLine = lineup.find((line) => line.includes(sHead)) || [sHead];
+  // 主導権(B): B実績+逃げ決まり手が最も強いライン
+  const bHead = lineHeads.length
+    ? lineHeads.reduce((best, car) => (st(car, "back_count") + st(car, "escape") * 2 > st(best, "back_count") + st(best, "escape") * 2 ? car : best))
+    : escapeLine[0];
+  const bLine = lineup.find((line) => line.includes(bHead)) || escapeLine;
+  // 一度出るが下がる役: 主導権以外の自力型でまくり実績が逃げ実績以上
+  let feint = null;
+  for (const car of lineHeads) {
+    if (car === bHead) continue;
+    if (st(car, "makuri") >= Math.max(1, st(car, "escape"))) {
+      if (feint == null || st(car, "makuri") > st(feint, "makuri")) feint = car;
+    }
+  }
+
+  return { cars, lineup, initial, final, escapeLine, probs, styles, names, sLine, sHead, bLine, bHead, feint, st };
 }
 
 function buildMotionPlan(race) {
   const base = computeMotionBase(race);
-  const { cars, lineup, initial, escapeLine } = base;
-  const afterBell = normalizeOrder([...escapeLine, ...initial], cars);
+  const { cars, lineup, initial, escapeLine, names, sLine, sHead, bLine, bHead, feint, st } = base;
+  const N = (arr) => normalizeOrder(arr, cars);
+  const nameOf = (car) => `${car}${(names.get(car) || "").slice(0, 4)}`;
 
-  // 展開ベースのリアル着順(接戦の揺らぎ入り)。再生するたびに際どいレースが生まれる。
+  // 展開ベースのリアル着順(決定的=AI予想と一致)
   const finish = realisticFinishOrder(base, {}, escapeLine.filter((car) => cars.includes(car)));
-  const final = normalizeOrder(finish.order, cars);
+  const final = N(finish.order);
   const topCar = final[0];
-  const attackLine = lineup.find((line) => line.includes(topCar) && line !== escapeLine);
-  let backStretch;
+
+  // --- スタートからのフルレース(4周) ---
+  const startOrder = N([...sLine, ...initial]);       // S取りラインが前受け
+  const keyframes = [{ lap: 0.0, order: startOrder }];
+  const captions = [
+    { lap: 0.0, text: `スタート!S取りは${nameOf(sHead)}のライン(S実績${st(sHead, "start_count")}回)。前受けで隊列を組む` },
+    { lap: 0.8, text: "青板、先頭員の後ろで落ち着いて周回" },
+  ];
+  let cur = startOrder;
+  const push = (lap, order, text) => {
+    cur = N(order);
+    keyframes.push({ lap, order: cur });
+    if (text) captions.push({ lap, text });
+  };
+
+  // 一度出るが下がる(過去データ: まくり型の自力)
+  if (feint != null && feint !== bHead) {
+    const feintLine = lineup.find((line) => line.includes(feint)) || [feint];
+    push(1.3, [...feintLine, ...cur], `${nameOf(feint)}が一度前へ出る!`);
+    push(1.9, [...cur.filter((car) => !feintLine.includes(car)).slice(0, 2), ...feintLine, ...cur], `${nameOf(feint)}は深追いせず下げる。まくり(実績${st(feint, "makuri")}回)へ脚をためる`);
+  }
+  // 主導権ラインが打鐘前に上昇→打鐘で駆ける
+  if (bHead !== cur[0]) {
+    push(2.2, [...bLine, ...cur], `${nameOf(bHead)}ラインが上昇、主導権を取りに動く`);
+  }
+  push(MOTION.bellLap, [...bLine, ...cur], `🔔 打鐘!${nameOf(bHead)}が主導権(B実績${st(bHead, "back_count")}回)、残り1周半`);
+  captions.push({ lap: 3.0, text: "残り1周、ホームストレッチライン通過" });
+
+  // 最終バック: 勝ちライン(AI着順の1着のライン)が仕掛ける
+  const attackLine = lineup.find((line) => line.includes(topCar) && line !== bLine);
   if (attackLine) {
-    const others = afterBell.filter((car) => !attackLine.includes(car));
-    backStretch = normalizeOrder([...others.slice(0, 1), ...attackLine, ...others.slice(1)], cars);
+    const others = cur.filter((car) => !attackLine.includes(car));
+    push(3.5, [others[0], ...attackLine, ...others.slice(1)], "最終バック、まくり勢が外から仕掛ける!");
   } else {
-    backStretch = afterBell;
+    captions.push({ lap: 3.5, text: "最終バック、先行ラインがそのまま踏み合う" });
   }
 
-  // キーフレームとキャプションは「先頭の走破周回数」基準。
-  // 打鐘=残り1周半(2周走のうち0.5周消化)、最終バック=残り半周(1.5周消化)。
-  return {
-    cars,
-    keyframes: [
-      { lap: 0.0, order: initial },
-      { lap: 0.5, order: afterBell },
-      { lap: 1.5, order: backStretch },
-      { lap: 1.9, order: final },
-      { lap: 2.0, order: final },
-    ],
-    captions: [
-      { lap: 0.0, text: "青板、先頭員の後ろで隊列を組んで周回" },
-      { lap: 0.5, text: "🔔 打鐘!残り1周半、先行ラインが踏み込む" },
-      { lap: 1.0, text: "残り1周、ホームストレッチライン通過" },
-      { lap: 1.5, text: "最終バック、まくり勢が外から仕掛ける" },
-      { lap: 1.87, text: finish.close ? "ゴール前、横一線!写真判定級の大接戦!" : "直線勝負!内圏線と外帯線の間で追い比べ" },
-      { lap: 1.99, text: `ゴール!${finish.close ? "写真判定、ハナ差で" : "1着"} ${topCar || "-"} ${escapeHtml(base.names.get(topCar) || "")}` },
-    ],
-  };
+  captions.push({ lap: 3.87, text: finish.close ? "ゴール前、横一線!写真判定級の大接戦!" : "直線勝負!内圏線と外帯線の間で追い比べ" });
+  captions.push({ lap: 3.99, text: `ゴール!${finish.close ? "写真判定、ハナ差で" : "1着"} ${topCar || "-"} ${escapeHtml(names.get(topCar) || "")}` });
+  push(3.9, final);
+  keyframes.push({ lap: 4.0, order: final });
+  keyframes.sort((a, b) => a.lap - b.lap);
+  captions.sort((a, b) => a.lap - b.lap);
+  return { cars, keyframes, captions };
 }
 
 /* ---- モーションメーカー: 自分で展開を組む ---- */
@@ -415,8 +455,8 @@ function buildCustomMotionPlan(race, opts) {
   const startOrder = N([...lineOf(startLead), ...initial]);
 
   const keyframes = [{ lap: 0.0, order: startOrder }];
-  const sName = opts.sCar ? `S:${nameOf(startLead)} が誘導の後ろで先頭` : "青板、先頭員の後ろで隊列を組んで周回";
-  const captions = [{ lap: 0.0, text: sName }];
+  const sName = opts.sCar ? `S:${nameOf(startLead)} が誘導の後ろで先頭` : "スタート、先頭員の後ろで隊列を組んで周回";
+  const captions = [{ lap: 0.0, text: sName }, { lap: 1.0, text: "青板、隊列は落ち着いて周回" }];
   let cur = startOrder;
   const push = (lap, order, text) => {
     cur = N(order);
@@ -431,7 +471,8 @@ function buildCustomMotionPlan(race, opts) {
       : opts.leadLine && opts.leadLine.length ? opts.leadLine
       : base.escapeLine
   ).filter((car) => cars.includes(car));
-  const spurtLap = opts.spurt === "early" ? 0.32 : opts.spurt === "late" ? 0.8 : 0.5;
+  // 4周ドメイン: 打鐘=2.5周。カマシ=打鐘前、遅め=残り1周手前。
+  const spurtLap = opts.spurt === "early" ? 2.2 : opts.spurt === "late" ? 2.85 : MOTION.bellLap;
 
   // --- 主導権争い ---
   if (opts.tsuppari) {
@@ -452,44 +493,44 @@ function buildCustomMotionPlan(race, opts) {
         : `🔔 打鐘!${nameOf(leadLine[0])}ラインが主導権を取る`;
     push(spurtLap, [...leadLine, ...cur], text);
   }
-  if (opts.spurt === "early") captions.push({ lap: 0.5, text: "🔔 打鐘!早めの主導権争いでピッチが上がる" });
-  if (opts.pace === "slow") captions.push({ lap: 0.7, text: "スローペース…上がり勝負、差し・追込有利の流れ" });
-  else if (opts.pace === "high") captions.push({ lap: 0.7, text: "ハイペースの消耗戦!先行有利、後方は離れる" });
+  if (opts.spurt === "early") captions.push({ lap: 2.5, text: "🔔 打鐘!早めの主導権争いでピッチが上がる" });
+  if (opts.pace === "slow") captions.push({ lap: 2.7, text: "スローペース…上がり勝負、差し・追込有利の流れ" });
+  else if (opts.pace === "high") captions.push({ lap: 2.7, text: "ハイペースの消耗戦!先行有利、後方は離れる" });
   // B(バック線先頭)= 先行の主役をナレーション
   if (opts.bCar && cars.includes(opts.bCar)) {
-    captions.push({ lap: 0.9, text: `B:${nameOf(opts.bCar)} が先頭でバック線を通過(先行)` });
+    captions.push({ lap: 3.45, text: `B:${nameOf(opts.bCar)} が先頭でバック線を通過(先行)` });
   }
   // H(ホーム線先頭): 残り1周で先頭に立つ車を反映
   if (opts.hCar && cars.includes(opts.hCar)) {
-    push(1.0, [...lineOf(opts.hCar), ...cur], `H:${nameOf(opts.hCar)} が先頭でホーム線を通過`);
+    push(3.0, [...lineOf(opts.hCar), ...cur], `H:${nameOf(opts.hCar)} が先頭でホーム線を通過`);
   } else if (opts.spurt !== "late") {
-    captions.push({ lap: 1.0, text: "残り1周、ホームストレッチライン通過" });
+    captions.push({ lap: 3.0, text: "残り1周、ホームストレッチライン通過" });
   }
 
   // --- 番手競り ---
   if (opts.seriCar && cars.includes(opts.seriCar)) {
     const head = cur[0];
     push(
-      Math.min(1.2, spurtLap + 0.2),
+      Math.min(3.1, spurtLap + 0.25),
       [head, opts.seriCar, ...cur.filter((car) => car !== opts.seriCar && car !== head)],
       `${nameOf(opts.seriCar)}が番手を狙って外から競りかける!`
     );
     if (opts.seriResult === "lose") {
       const without = cur.filter((car) => car !== opts.seriCar);
-      push(1.3, [...without.slice(0, 4), opts.seriCar, ...without.slice(4)], `競り負け…${nameOf(opts.seriCar)}は位置を下げる`);
+      push(3.2, [...without.slice(0, 4), opts.seriCar, ...without.slice(4)], `競り負け…${nameOf(opts.seriCar)}は位置を下げる`);
     } else {
-      captions.push({ lap: 1.3, text: `競り勝ち!${nameOf(opts.seriCar)}が番手を奪い切る` });
+      captions.push({ lap: 3.2, text: `競り勝ち!${nameOf(opts.seriCar)}が番手を奪い切る` });
     }
   }
 
   // --- アクシデント ---
   if (opts.accidentCar && cars.includes(opts.accidentCar)) {
-    push(1.1, [...cur.filter((car) => car !== opts.accidentCar), opts.accidentCar], `⚠️ ${nameOf(opts.accidentCar)}にアクシデント!大きく後退`);
+    push(3.05, [...cur.filter((car) => car !== opts.accidentCar), opts.accidentCar], `⚠️ ${nameOf(opts.accidentCar)}にアクシデント!大きく後退`);
   }
 
   // --- ちぎれ ---
   if (opts.chigirareCar && cars.includes(opts.chigirareCar)) {
-    push(1.4, [...cur.filter((car) => car !== opts.chigirareCar), opts.chigirareCar], `${nameOf(opts.chigirareCar)}が車間を詰められず…ちぎれた!`);
+    push(3.3, [...cur.filter((car) => car !== opts.chigirareCar), opts.chigirareCar], `${nameOf(opts.chigirareCar)}が車間を詰められず…ちぎれた!`);
   }
 
   // --- まくり ---
@@ -497,22 +538,22 @@ function buildCustomMotionPlan(race, opts) {
     const makuriLine = lineOf(opts.makuriCar);
     const move = [opts.makuriCar, ...makuriLine.filter((car) => car !== opts.makuriCar && cars.includes(car))];
     if (opts.makuriResult === "fail") {
-      push(1.5, [...cur.slice(0, 2), ...move, ...cur.slice(2)], `${nameOf(opts.makuriCar)}が外からまくりに出るが…`);
+      push(3.5, [...cur.slice(0, 2), ...move, ...cur.slice(2)], `${nameOf(opts.makuriCar)}が外からまくりに出るが…`);
       const withoutMove = cur.filter((car) => !move.includes(car));
-      push(1.72, [...withoutMove.slice(0, 4), ...move, ...withoutMove.slice(4)], "まくり不発!前のペースに飲み込まれる");
+      push(3.72, [...withoutMove.slice(0, 4), ...move, ...withoutMove.slice(4)], "まくり不発!前のペースに飲み込まれる");
     } else {
-      push(1.5, [...move, ...cur], `${nameOf(opts.makuriCar)}が豪快にまくる!一気に前へ!`);
+      push(3.5, [...move, ...cur], `${nameOf(opts.makuriCar)}が豪快にまくる!一気に前へ!`);
     }
   } else if (!opts.chigirareCar && !opts.accidentCar) {
-    captions.push({ lap: 1.5, text: "最終バック、勝負どころ!" });
+    captions.push({ lap: 3.5, text: "最終バック、勝負どころ!" });
   }
 
   // --- 大外一気(最後方から追込) ---
   if (opts.closerCar && cars.includes(opts.closerCar) && opts.closerCar !== opts.makuriCar) {
     const others = cur.filter((car) => car !== opts.closerCar);
     // 一旦最後方 → 直線で外を強襲して上位へ
-    push(1.55, [...others, opts.closerCar], `${nameOf(opts.closerCar)}は最後方…ここから大外へ持ち出す`);
-    push(1.8, [others[0], opts.closerCar, ...others.slice(1)], `${nameOf(opts.closerCar)}が大外一気に伸びてくる!`);
+    push(3.55, [...others, opts.closerCar], `${nameOf(opts.closerCar)}は最後方…ここから大外へ持ち出す`);
+    push(3.8, [others[0], opts.closerCar, ...others.slice(1)], `${nameOf(opts.closerCar)}が大外一気に伸びてくる!`);
   }
 
   // --- 結末 ---
@@ -550,15 +591,15 @@ function buildCustomMotionPlan(race, opts) {
   else if (opts.seriCar === winner && opts.seriResult !== "lose") kimarite = "競り勝ちからの差し切り!";
   else kimarite = "直線強襲!";
 
-  captions.push({ lap: 1.87, text: isClose ? "ゴール前、横一線!写真判定級の大接戦!" : "直線勝負!" });
-  if (isClose) captions.push({ lap: 1.95, text: "際どい…!ハナ差の追い比べ…!" });
+  captions.push({ lap: 3.87, text: isClose ? "ゴール前、横一線!写真判定級の大接戦!" : "直線勝負!" });
+  if (isClose) captions.push({ lap: 3.95, text: "際どい…!ハナ差の追い比べ…!" });
   captions.push({
-    lap: 1.99,
+    lap: 3.99,
     text: `${isClose ? "写真判定、ハナ差!" : ""}${kimarite} ${who} ${finalOrder.slice(0, 3).map((car) => escapeHtml(nameOf(car))).join(" → ")}`,
   });
 
-  push(1.9, finalOrder);
-  keyframes.push({ lap: 2.0, order: finalOrder });
+  push(3.9, finalOrder);
+  keyframes.push({ lap: 4.0, order: finalOrder });
   keyframes.sort((a, b) => a.lap - b.lap);
   captions.sort((a, b) => a.lap - b.lap);
   return { cars, keyframes, captions };
@@ -880,7 +921,7 @@ function startRaceMotion(raceKey, race, stage, planOverride) {
     const posB = Math.max(0, b.order.indexOf(car));
     const smoothPos = posA + (posB - posA) * eased;
     // 接戦のゴール: 上位グループは車輪差まで詰まり、後方だけちぎれて離れる
-    const finishApproach = Math.max(0, (coveredLaps - 1.5) / 0.5); // 0→1 (残り半周〜ゴール)
+    const finishApproach = Math.max(0, (coveredLaps - (MOTION.laps - 0.5)) / 0.5); // 0→1 (残り半周〜ゴール)
     const t = finishApproach * finishApproach;
     const tight = smoothPos < 3.5
       ? smoothPos * gapStep * 0.34 // 上位4車: 約1/3の車間=タイヤ差の攻防
@@ -896,8 +937,11 @@ function startRaceMotion(raceKey, race, stage, planOverride) {
 
   const tick = () => {
     const progress = Math.min(1, (performance.now() - started) / MOTION.duration);
-    // 打鐘後にピッチが上がる: 序盤ゆっくり→終盤加速(eased は 0..1)
-    const eased = progress < 0.4 ? progress * 0.7 : 0.28 + (progress - 0.4) * 1.2;
+    // 周回(打鐘まで2.5周)は時間の65%かけてゆっくり、打鐘からの1.5周は35%で一気に加速
+    const bellRatio = MOTION.bellLap / MOTION.laps; // 0.625
+    const eased = progress < 0.65
+      ? (progress / 0.65) * bellRatio
+      : bellRatio + ((progress - 0.65) / 0.35) * (1 - bellRatio);
     const covered = Math.min(MOTION.laps, eased * MOTION.laps);
     plan.cars.forEach((car) => {
       const node = riders.get(car);
@@ -911,7 +955,7 @@ function startRaceMotion(raceKey, race, stage, planOverride) {
     // 打鐘: 残り1周半のバック線通過で鐘が揺れる+ジャン音
     const bell = svg.querySelector(".bank-bell");
     if (bell) {
-      if (covered >= 0.5 && covered < 0.85) {
+      if (covered >= MOTION.bellLap && covered < MOTION.bellLap + 0.35) {
         if (!bell.classList.contains("ringing")) {
           bell.classList.add("ringing");
           playBellSound();
@@ -1768,8 +1812,8 @@ function groupForecastsByVenue(rows) {
   return [...groups.entries()]
     .map(([venue, races]) => ({
       venue,
-      // 会場内はレース番号の若い順(1R→12R)で並べる
-      races: races.sort((a, b) => (Number(a.race_no) || 99) - (Number(b.race_no) || 99)),
+      // 会場内は開始時刻の早い順
+      races: races.sort((a, b) => String(a.start_time || "99:99").localeCompare(String(b.start_time || "99:99"))),
     }))
     // 会場は最初のレースの開始時刻が早い順
     .sort((a, b) => String(a.races[0]?.start_time || "99:99").localeCompare(String(b.races[0]?.start_time || "99:99")));
@@ -1928,6 +1972,7 @@ function renderForecastCard(race) {
           <section class="analysis-block">
             <h4>展開</h4>
             <p class="headline">${escapeHtml(race.scenario?.headline || "")}</p>
+            ${(race.scenario?.sequence || []).length ? `<ol class="scenario-steps">${race.scenario.sequence.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ol>` : ""}
             <p>${escapeHtml(race.scenario?.flow || "")}</p>
             <p>${escapeHtml(race.scenario?.watch || "")}</p>
             <p class="risk-text">${escapeHtml(race.scenario?.upset || "")}</p>
@@ -2101,8 +2146,21 @@ function formationHtml(combos) {
 function renderLineDiagram(lines, top3) {
   if (!lines.length) return "";
   const topCars = new Set(top3.map((row) => Number(row.car_no)));
+  // 同じ車番が複数ラインに重複して入るデータがあるため、先に出たラインを正として重複除去
+  const seenCars = new Set();
+  const dedupedLines = lines
+    .map((line) => ({
+      ...line,
+      members: (line.members || []).filter((member) => {
+        const no = Number(member.car_no);
+        if (!Number.isFinite(no) || seenCars.has(no)) return false;
+        seenCars.add(no);
+        return true;
+      }),
+    }))
+    .filter((line) => line.members.length);
   // WINTICKET本家と同じ「一列」表示: 全ラインを1行に横並び(左が先頭)
-  const chains = lines
+  const chains = dedupedLines
     .map((line, index) => {
       const color = (index % 5) + 1;
       const members = (line.members || [])

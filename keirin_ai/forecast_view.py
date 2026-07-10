@@ -532,7 +532,67 @@ def _scenario(top3: list[dict], ranking: list[dict], entries_by_car: dict[int, d
     elif pattern:
         flow = f"{pattern}。 {flow}"
 
-    return {"headline": headline, "flow": flow, "watch": watch, "upset": upset, "pattern": pattern}
+    sequence = _dev_sequence(top3, entries_by_car, lines)
+    return {"headline": headline, "flow": flow, "watch": watch, "upset": upset, "pattern": pattern, "sequence": sequence}
+
+
+def _dev_sequence(top3: list[dict], entries_by_car: dict[int, dict], lines: list[dict]) -> list[str]:
+    """スタートからゴールまでの展開ストーリーを過去データ(S/B実績・決まり手)から組み立てる。"""
+
+    def stat(car_no, key: str) -> float:
+        entry = entries_by_car.get(int(car_no or 0)) or {}
+        stats = entry.get("stats") or {}
+        try:
+            return float(stats.get(key) or 0)
+        except (TypeError, ValueError):
+            return 0.0
+
+    def label(member: dict) -> str:
+        return f"{member.get('car_no')}{(member.get('name') or '')[:4]}"
+
+    heads = [(line, (line.get("members") or [{}])[0]) for line in lines if line.get("members")]
+    heads = [(line, head) for line, head in heads if head.get("car_no")]
+    if not heads:
+        return []
+
+    # S取り: 先頭選手のS実績(start_count)最多のライン。同数なら車番の若い方(内枠有利)。
+    s_line, s_head = max(heads, key=lambda p: (stat(p[1].get("car_no"), "start_count"), -int(p[1].get("car_no") or 9)))
+    s_count = int(stat(s_head.get("car_no"), "start_count"))
+    # 主導権(B): 先頭選手のB実績+逃げ決まり手が最も強いライン。
+    b_line, b_head = max(heads, key=lambda p: (stat(p[1].get("car_no"), "back_count") + stat(p[1].get("car_no"), "escape") * 2, -int(p[1].get("car_no") or 9)))
+    b_count = int(stat(b_head.get("car_no"), "back_count"))
+    # 一度出るが下がる役: 主導権ライン以外の自力型で、まくり実績が逃げ実績を上回る選手。
+    feint = None
+    for line, head in heads:
+        if head is b_head:
+            continue
+        if stat(head.get("car_no"), "makuri") >= max(1.0, stat(head.get("car_no"), "escape")):
+            if feint is None or stat(head.get("car_no"), "makuri") > stat(feint.get("car_no"), "makuri"):
+                feint = head
+
+    seq = []
+    seq.append(f"S: {label(s_head)}のライン(S実績{s_count}回)が取って前受け。")
+    if s_line is not b_line:
+        seq.append(f"周回: 打鐘前に{label(b_head)}ラインが上昇。{label(s_head)}は突っ張るか下げるかの駆け引き。")
+    else:
+        seq.append(f"周回: {label(s_head)}が前のまま隊列は落ち着いて流れる。")
+    if feint is not None and feint is not s_head:
+        seq.append(f"動き: {label(feint)}が一度出るが深追いせず下げ、まくり(実績{int(stat(feint.get('car_no'), 'makuri'))}回)に脚をためる。")
+    seq.append(f"打鐘: {label(b_head)}が主導権(B実績{b_count}回)。ライン{b_line.get('label') or ''}で駆ける。")
+
+    top = (top3 or [{}])[0]
+    top_car = top.get("car_no")
+    sashi = stat(top_car, "sashi")
+    makuri = stat(top_car, "makuri")
+    escape = stat(top_car, "escape")
+    if escape >= max(sashi, makuri):
+        finish = f"最終: 本命{top_car}はそのまま押し切り(逃げ{int(escape)}回)を狙う。"
+    elif makuri > sashi:
+        finish = f"最終: 本命{top_car}は最終バックからまくり(実績{int(makuri)}回)で仕留める。"
+    else:
+        finish = f"最終: 本命{top_car}は番手から直線差し(実績{int(sashi)}回)で勝負。"
+    seq.append(finish)
+    return seq
 
 
 def _comment_signals(top3: list[dict], entries: list[dict], lines: list[dict]) -> list[str]:
