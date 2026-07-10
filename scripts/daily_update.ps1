@@ -2,9 +2,10 @@
 #   -Mode morning : 今日の予想を生成 → 静的ビルド → push (公開版が今日の予想になる)
 #   -Mode night   : 結果・レース後談話を回収+再学習 → 静的ビルド → push (答え合わせが最新になる)
 #   -Mode push    : 静的ビルド → push のみ (動作確認用)
+#   -Mode live    : 日中の速報反映 (直近結果+払戻+決済 → 静的ビルド → push)
 # タスクスケジューラから毎日実行される。ログは data\auto_update.log。
 param(
-    [ValidateSet("morning", "night", "push")]
+    [ValidateSet("morning", "night", "push", "live")]
     [string]$Mode = "push"
 )
 
@@ -46,6 +47,15 @@ elseif ($Mode -eq "night") {
     Write-Log "payouts backfilled (exit $LASTEXITCODE)"
     python scripts\settle_original.py | Out-Null
     Write-Log "original settled (exit $LASTEXITCODE)"
+}
+elseif ($Mode -eq "live") {
+    # 日中の速報反映: 直近の結果を取り込み、払戻・決済を更新してから公開(軽量・再学習なし)
+    python scripts\collect_raceresults.py --limit 50 --delay 0.4 | Out-Null
+    Write-Log "live results (exit $LASTEXITCODE)"
+    python scripts\backfill_payouts.py --limit 80 --delay 0.3 | Out-Null
+    Write-Log "live payouts (exit $LASTEXITCODE)"
+    python scripts\settle_original.py | Out-Null
+    Write-Log "live settled (exit $LASTEXITCODE)"
 }
 
 python scripts\build_static_api.py | Out-Null
