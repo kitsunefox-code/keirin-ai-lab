@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import hashlib
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -27,6 +29,23 @@ def write_json(name: str, payload: dict) -> None:
         json.dumps(payload, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
+
+
+def stamp_asset_versions() -> str:
+    """styles.css / app.js の内容ハッシュを各HTMLのリンクに付与し、
+    ブラウザの古いCSSキャッシュで表示が崩れるのを防ぐ(?v=ハッシュ)。"""
+    css = (APP_DIR / "styles.css").read_bytes()
+    js = (APP_DIR / "app.js").read_bytes()
+    ver = hashlib.sha1(css + js).hexdigest()[:8]
+    for name in ("index.html", "results.html", "motion.html"):
+        path = APP_DIR / name
+        if not path.exists():
+            continue
+        html = path.read_text(encoding="utf-8")
+        html = re.sub(r'href="styles\.css(?:\?v=[0-9a-f]+)?"', f'href="styles.css?v={ver}"', html)
+        html = re.sub(r'src="app\.js(?:\?v=[0-9a-f]+)?"', f'src="app.js?v={ver}"', html)
+        path.write_text(html, encoding="utf-8")
+    return ver
 
 
 def write_preview(payloads: dict) -> None:
@@ -64,8 +83,13 @@ def write_preview(payloads: dict) -> None:
     </script>
     <script>{js}</script>
 """
-    html = html.replace('<link rel="stylesheet" href="styles.css" />', f"<style>\n{css}\n</style>")
-    html = html.replace('<script src="app.js"></script>', bootstrap)
+    # ?v= 付きでも外せるよう正規表現で(2回目以降のビルド対策)。
+    # 置換文字列のバックスラッシュ特殊解釈を避けるため関数で差し込む。
+    style_block = f"<style>\n{css}\n</style>"
+    html = re.sub(r'<link rel="stylesheet" href="styles\.css(?:\?v=[0-9a-f]+)?" />',
+                  lambda _m: style_block, html)
+    html = re.sub(r'<script src="app\.js(?:\?v=[0-9a-f]+)?"></script>',
+                  lambda _m: bootstrap, html)
     (APP_DIR / "preview.html").write_text(html, encoding="utf-8")
 
 
@@ -111,7 +135,9 @@ def main() -> None:
     write_json("capital-plan.json", payloads["/api/capital_plan"])
     write_json("bankroll.json", payloads["/api/bankroll"])
     write_json("results.json", payloads["/api/results"])
-    write_preview(payloads)
+    write_preview(payloads)  # CSSインライン版(先に素のindex.htmlから生成)
+    ver = stamp_asset_versions()  # 直リンクHTMLにキャッシュバスター付与
+    print(f"asset version: {ver}")
 
 
 if __name__ == "__main__":

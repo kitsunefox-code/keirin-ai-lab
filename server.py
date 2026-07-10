@@ -405,6 +405,8 @@ class KeirinHandler(BaseHTTPRequestHandler):
         body = path.read_bytes()
         self.send_response(200)
         self.send_header("Content-Type", content_type)
+        # HTML/CSS/JS は毎回取り直させる(古いCSSがキャッシュされて表示が崩れるのを防ぐ)
+        self.send_header("Cache-Control", "no-store, max-age=0")
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
         self.wfile.write(body)
