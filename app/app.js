@@ -134,17 +134,19 @@ async function loadResults(date) {
 function renderRecordBar(record) {
   const bar = el("aiRecordBar");
   if (!bar || !record) return;
+  const roiText = (roi) => (roi == null ? "—" : `${(roi * 100).toFixed(1)}%`);
+  const roiClass = (roi) => (roi == null ? "" : roi >= 1 ? "kpi-up" : "kpi-down");
   const cell = (item) => {
     if (!item || !item.settled) {
       return `<div class="record-cell"><span>${escapeHtml(item?.label || "")}</span><strong>-</strong><em>確定待ち</em></div>`;
     }
     return `<div class="record-cell">
       <span>${escapeHtml(item.label)}</span>
-      <strong>本命 ${percent(item.honmei_rate)}</strong>
-      <em>3連単 ${item.trifecta_hits}本(${percent(item.trifecta_rate)}) / 車券圏 ${percent(item.in_top3_rate)} / ${item.settled}R</em>
+      <strong>回収率 <b class="${roiClass(item.exacta_roi)}">${roiText(item.exacta_roi)}</b></strong>
+      <em>本命 ${percent(item.honmei_rate)} / 2車単${item.exacta_priced ? `${item.exacta_priced}R集計` : "集計待ち"} / ${item.settled}R</em>
     </div>`;
   };
-  bar.innerHTML = `<div class="record-title">AI成績</div>${cell(record.today)}${cell(record.week)}${cell(record.year)}`;
+  bar.innerHTML = `<div class="record-title">AI成績</div>${cell(record.week)}${cell(record.last_week)}${cell(record.total)}`;
 }
 
 function renderResults(payload) {

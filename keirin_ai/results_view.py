@@ -48,7 +48,7 @@ def build_record_summary(conn: sqlite3.Connection) -> dict:
     """
     rows = conn.execute(
         """
-        select r.race_date, r.result_json, p.ranking_json, p.tickets_json
+        select r.race_date, r.result_json, r.payouts_json, p.ranking_json, p.tickets_json
         from races r
         join (select race_key, min(id) as first_id from predictions group by race_key) fp
           on fp.race_key = r.race_key
@@ -58,11 +58,13 @@ def build_record_summary(conn: sqlite3.Connection) -> dict:
     ).fetchall()
 
     today = datetime.now(JST).date()
-    week_start = today - timedelta(days=6)
+    # 週は月曜始まり。今週=直近の月曜〜、先週=その前の月〜日
+    this_monday = today - timedelta(days=today.weekday())
+    last_monday = this_monday - timedelta(days=7)
     buckets = {
-        "today": {"label": "本日", "races": []},
-        "week": {"label": "今週(直近7日)", "races": []},
-        "year": {"label": f"{today.year}年通算", "races": []},
+        "week": {"label": "今週", "races": []},
+        "last_week": {"label": "先週", "races": []},
+        "total": {"label": "通算", "races": []},
     }
     for row in rows:
         iso = _normalize_date(row["race_date"])
@@ -72,18 +74,24 @@ def build_record_summary(conn: sqlite3.Connection) -> dict:
         hit = _hit_flags(row)
         if hit is None:
             continue
-        if race_date == today:
-            buckets["today"]["races"].append(hit)
-        if week_start <= race_date <= today:
+        buckets["total"]["races"].append(hit)
+        if race_date >= this_monday:
             buckets["week"]["races"].append(hit)
-        if race_date.year == today.year:
-            buckets["year"]["races"].append(hit)
+        elif last_monday <= race_date < this_monday:
+            buckets["last_week"]["races"].append(hit)
 
     def stat(items: list[dict]) -> dict:
         n = len(items)
         honmei = sum(1 for hit in items if hit["honmei"])
         top3 = sum(1 for hit in items if hit["in_top3"])
         trifecta = sum(1 for hit in items if hit["trifecta"])
+        # ROI: 2車単軸1着固定の上位2点を各100円ずつ平坦買いした場合の回収率
+        priced = [hit for hit in items if hit.get("exacta_stake")]
+        ex_stake = sum(hit["exacta_stake"] for hit in priced)
+        ex_payout = sum(hit["exacta_payout"] for hit in priced)
+        tri_priced = [hit for hit in items if hit.get("trifecta_stake")]
+        tri_stake = sum(hit["trifecta_stake"] for hit in tri_priced)
+        tri_payout = sum(hit["trifecta_payout"] for hit in tri_priced)
         return {
             "settled": n,
             "honmei_hits": honmei,
@@ -91,13 +99,16 @@ def build_record_summary(conn: sqlite3.Connection) -> dict:
             "in_top3_rate": round(top3 / n, 4) if n else None,
             "trifecta_hits": trifecta,
             "trifecta_rate": round(trifecta / n, 4) if n else None,
+            "exacta_roi": round(ex_payout / ex_stake, 4) if ex_stake else None,
+            "exacta_priced": len(priced),
+            "trifecta_roi": round(tri_payout / tri_stake, 4) if tri_stake else None,
         }
 
     return {
         "as_of": today.isoformat(),
-        "today": {"label": buckets["today"]["label"], **stat(buckets["today"]["races"])},
         "week": {"label": buckets["week"]["label"], **stat(buckets["week"]["races"])},
-        "year": {"label": buckets["year"]["label"], **stat(buckets["year"]["races"])},
+        "last_week": {"label": buckets["last_week"]["label"], **stat(buckets["last_week"]["races"])},
+        "total": {"label": buckets["total"]["label"], **stat(buckets["total"]["races"])},
     }
 
 
@@ -111,11 +122,26 @@ def _hit_flags(row: sqlite3.Row) -> dict | None:
     top_car = int(ranking[0].get("car_no") or 0)
     tickets = [_ticket_label(t) for t in _json_or(row["tickets_json"], [])[:6]]
     actual3 = "-".join(str(car) for car in order[:3])
-    return {
+    actual2 = "-".join(str(car) for car in order[:2])
+    flags = {
         "honmei": top_car == int(order[0]),
         "in_top3": top_car in [int(car) for car in order[:3]],
         "trifecta": actual3 in tickets,
     }
+    # ROI用: 払戻(確定オッズ)がある場合だけ、平坦買いの投資額と払戻を積む
+    payouts = _json_or(row["payouts_json"], None) if "payouts_json" in row.keys() else None
+    if isinstance(payouts, dict):
+        # 2車単: 軸(予想1位)1着固定で相手上位2点(各100円=計200円)
+        cars = [int(r.get("car_no") or 0) for r in ranking]
+        exacta_picks = [f"{cars[0]}-{cars[1]}", f"{cars[0]}-{cars[2]}"] if len(cars) >= 3 else []
+        if payouts.get("exacta") is not None and exacta_picks:
+            flags["exacta_stake"] = 100 * len(exacta_picks)
+            flags["exacta_payout"] = int(round(payouts["exacta"] * 100)) if actual2 in exacta_picks else 0
+        # 3連単: AI買い目6点(各100円=計600円)
+        if payouts.get("trifecta") is not None and tickets:
+            flags["trifecta_stake"] = 100 * len(tickets)
+            flags["trifecta_payout"] = int(round(payouts["trifecta"] * 100)) if actual3 in tickets else 0
+    return flags
 
 
 def _available_dates(conn: sqlite3.Connection) -> list[str]:

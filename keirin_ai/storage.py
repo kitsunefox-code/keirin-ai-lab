@@ -138,9 +138,21 @@ def _migrate_columns(conn: sqlite3.Connection) -> None:
         ("venue_id", "text"),
         ("hour_type", "text"),
         ("weather_json", "text"),
+        ("payouts_json", "text"),
     ):
         if column not in race_columns:
             conn.execute(f"alter table races add column {column} {ddl}")
+
+
+def save_race_payouts(conn: sqlite3.Connection, race_key: str, payouts: dict) -> None:
+    """勝ち組み合わせの確定オッズ(=100円あたり払戻)を保存する。{"trifecta": 162.5, "exacta": 8.2}"""
+    if not payouts:
+        return
+    conn.execute(
+        "update races set payouts_json=? where race_key=?",
+        (json.dumps(payouts, ensure_ascii=False), race_key),
+    )
+    conn.commit()
 
 
 def save_player_form(conn: sqlite3.Connection, rows: list[dict]) -> int:

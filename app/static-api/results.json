@@ -19,14 +19,14 @@
   ],
   "summary": {
     "races": 60,
-    "settled": 3,
-    "pending": 57,
+    "settled": 4,
+    "pending": 56,
     "honmei_hits": 2,
-    "honmei_rate": 0.6667,
+    "honmei_rate": 0.5,
     "in_top3_hits": 3,
-    "in_top3_rate": 1.0,
+    "in_top3_rate": 0.75,
     "trifecta_hits": 2,
-    "trifecta_rate": 0.6667
+    "trifecta_rate": 0.5
   },
   "venues": [
     {
@@ -147,12 +147,16 @@
             "3-1-2",
             "3-2-1"
           ],
-          "result_order": [],
-          "status": "pending",
+          "result_order": [
+            5,
+            1,
+            4
+          ],
+          "status": "miss",
           "hits": {
-            "honmei": null,
-            "in_top3": null,
-            "trifecta": null,
+            "honmei": false,
+            "in_top3": false,
+            "trifecta": false,
             "trifecta_label": null
           }
         },
@@ -1754,32 +1758,41 @@
   ],
   "record": {
     "as_of": "2026-07-10",
-    "today": {
-      "label": "本日",
-      "settled": 3,
-      "honmei_hits": 2,
-      "honmei_rate": 0.6667,
-      "in_top3_rate": 1.0,
-      "trifecta_hits": 2,
-      "trifecta_rate": 0.6667
-    },
     "week": {
-      "label": "今週(直近7日)",
-      "settled": 316,
-      "honmei_hits": 133,
-      "honmei_rate": 0.4209,
-      "in_top3_rate": 0.7247,
-      "trifecta_hits": 60,
-      "trifecta_rate": 0.1899
+      "label": "今週",
+      "settled": 242,
+      "honmei_hits": 105,
+      "honmei_rate": 0.4339,
+      "in_top3_rate": 0.719,
+      "trifecta_hits": 47,
+      "trifecta_rate": 0.1942,
+      "exacta_roi": 0.6268,
+      "exacta_priced": 239,
+      "trifecta_roi": 0.4531
     },
-    "year": {
-      "label": "2026年通算",
-      "settled": 621,
+    "last_week": {
+      "label": "先週",
+      "settled": 75,
+      "honmei_hits": 28,
+      "honmei_rate": 0.3733,
+      "in_top3_rate": 0.7333,
+      "trifecta_hits": 13,
+      "trifecta_rate": 0.1733,
+      "exacta_roi": 0.4893,
+      "exacta_priced": 75,
+      "trifecta_roi": 0.478
+    },
+    "total": {
+      "label": "通算",
+      "settled": 622,
       "honmei_hits": 241,
-      "honmei_rate": 0.3881,
-      "in_top3_rate": 0.7101,
+      "honmei_rate": 0.3875,
+      "in_top3_rate": 0.709,
       "trifecta_hits": 110,
-      "trifecta_rate": 0.1771
+      "trifecta_rate": 0.1768,
+      "exacta_roi": 0.5939,
+      "exacta_priced": 314,
+      "trifecta_roi": 0.4591
     }
   }
 }
