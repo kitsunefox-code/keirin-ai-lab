@@ -3254,3 +3254,41 @@ input, select { background: var(--color-surface-raised); border-color: var(--col
   .market-grid { grid-template-columns: 1fr; }
   .kpi-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* 券種ブロック(3連単/2車単) */
+.bet-block { margin-top: var(--space-3); }
+.bet-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--color-subtle);
+  margin-bottom: 4px;
+  letter-spacing: 0.03em;
+}
+.bet-label small { font-weight: 700; color: var(--color-muted); }
+.exacta-chip { font-weight: 800; }
+.exacta-chip.is-suji {
+  border-color: rgba(94, 230, 168, 0.5);
+  background: rgba(94, 230, 168, 0.14);
+  color: var(--color-accent);
+}
+.suji-tag {
+  margin-left: 5px;
+  font-style: normal;
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: var(--color-accent);
+  color: #08110c;
+  font-weight: 800;
+}
+
+.bet-type-badge {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: rgba(94, 230, 168, 0.16);
+  color: var(--color-accent);
+  font-size: 11px;
+  font-weight: 800;
+  vertical-align: middle;
+}

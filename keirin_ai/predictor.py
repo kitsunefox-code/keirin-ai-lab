@@ -49,9 +49,11 @@ def predict_race(race: dict, use_learning: bool = True) -> dict:
         row["win_probability"] = round(prob, 4)
 
     scored.sort(key=lambda row: row["model_score"], reverse=True)
-    tickets = _ticket_candidates(scored)
+    tickets = _ticket_candidates(scored, race)
+    exacta = _exacta_candidates(scored, race)
     return {
         "rankings": scored,
+        "exacta": exacta,
         "tickets": tickets,
         "race_notes": _race_notes(race, scored, learned_model),
         "model": _model_meta(learned_model),
@@ -272,8 +274,53 @@ def _softmax(values: list[float]) -> list[float]:
     return [value / total for value in exps]
 
 
-def _ticket_candidates(scored: list[dict]) -> list[dict]:
+def _suji_map(race: dict) -> dict[tuple[int, int], float]:
+    """ライン内の隣接ペア(スジ)にボーナス係数を割り当てる。
+
+    リサーチ知見: スジ決着は全体の約48.5%。特に第二ライン(先頭の得点が2番手の
+    ライン)の「先頭→番手」はベタ買いでも回収率98.84%と過小評価されている。
+    先頭の競走得点順でラインを並べ、第一ライン<第二ライン<以降にボーナスを傾斜。
+    """
+    by_car = {int(e.get("car_no") or 0): e for e in race.get("entrants", [])}
+    # lineup は稀に重複行が混ざるので、_attach_line_ranks と同じく先頭出現優先で重複除去
+    lines = []
+    seen: set[int] = set()
+    for raw in race.get("lineup") or []:
+        line = [int(car) for car in raw if int(car) in by_car and int(car) not in seen]
+        if line:
+            seen.update(line)
+            if len(line) >= 2:
+                lines.append(line)
+    if not lines:
+        return {}
+
+    def head_score(line: list[int]) -> float:
+        return float((by_car.get(line[0]) or {}).get("racing_score") or 0)
+
+    ranked = sorted(range(len(lines)), key=lambda i: head_score(lines[i]), reverse=True)
+    line_rank = {idx: rank for rank, idx in enumerate(ranked)}  # 0=第一ライン(人気)
+    suji: dict[tuple[int, int], float] = {}
+    for idx, line in enumerate(lines):
+        # 第一ラインは過剰人気なので控えめ、第二ライン以降を厚く(市場の歪み)
+        rank = line_rank[idx]
+        base = 1.12 if rank == 0 else (1.30 if rank == 1 else 1.20)
+        for pos in range(len(line) - 1):
+            head, mark = line[pos], line[pos + 1]
+            # 先頭→番手を最重視、番手→3番手はやや弱め
+            suji[(head, mark)] = base if pos == 0 else base * 0.85
+    return suji
+
+
+def _favorite_dampen(race: dict) -> float:
+    """7車立ては人気サイドの期待値が低い(回収率72% vs 9車立て77%)ため本命目を軽く割り引く。"""
+    n = len(race.get("entrants") or [])
+    return 0.94 if n <= 7 else 1.0
+
+
+def _ticket_candidates(scored: list[dict], race: dict) -> list[dict]:
     top = scored[:4]
+    suji = _suji_map(race)
+    dampen = _favorite_dampen(race)
     tickets = []
     for combo in itertools.permutations(top, 3):
         c1, c2, c3 = combo
@@ -284,15 +331,51 @@ def _ticket_candidates(scored: list[dict]) -> list[dict]:
         )
         if c1["model_score"] < c2["model_score"] - 0.35:
             strength *= 0.9
+        # スジ(ライン決着)ボーナス: 1着→2着がライン隣接なら市場の歪みを取りにいく
+        suji_factor = suji.get((c1["car_no"], c2["car_no"]), 1.0)
+        strength *= suji_factor
+        # 本命1着はやや割引(7車立て)
+        if c1 is top[0]:
+            strength *= dampen
         tickets.append(
             {
                 "cars": [c1["car_no"], c2["car_no"], c3["car_no"]],
                 "score": round(strength, 4),
                 "label": f"{c1['car_no']}-{c2['car_no']}-{c3['car_no']}",
+                "suji": suji_factor > 1.0,
+                "bet_type": "trifecta",
             }
         )
     tickets.sort(key=lambda item: item["score"], reverse=True)
     return tickets[:8]
+
+
+def _exacta_candidates(scored: list[dict], race: dict) -> list[dict]:
+    """2車単(軸1着固定・少点数)。控除率一律25%下で的中率を確保する主力券種。
+
+    リサーチ知見: 商用AI(netkeirin Aiライン極等)の共通解は「2車単・軸1車1着固定・
+    少点数」。3連単1/504に対し2車単1/72で桁違いに当たる。1着は本命固定、2着に
+    スジ番手と上位を厚めに、最大4点。
+    """
+    if len(scored) < 3:
+        return []
+    axis = scored[0]
+    suji = _suji_map(race)
+    partners = []
+    for row in scored[1:5]:
+        p = float(row["win_probability"])
+        factor = suji.get((axis["car_no"], row["car_no"]), 1.0)
+        partners.append(
+            {
+                "cars": [axis["car_no"], row["car_no"]],
+                "score": round(p * factor, 4),
+                "label": f"{axis['car_no']}-{row['car_no']}",
+                "suji": factor > 1.0,
+                "bet_type": "exacta",
+            }
+        )
+    partners.sort(key=lambda item: item["score"], reverse=True)
+    return partners[:4]
 
 
 def _reasons(entrant: dict, emotion: dict, baseline: float, learned_model: dict | None, learned_logit: float, race: dict | None = None) -> list[str]:

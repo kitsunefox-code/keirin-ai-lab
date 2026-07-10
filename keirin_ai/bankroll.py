@@ -81,6 +81,7 @@ STYLES: dict[str, dict] = {
         "assumed_main_odds": 5.5,
         "race_limit": 10,
         "default_start": 10000,
+        "bet_type": "exacta",
     },
 }
 
@@ -721,7 +722,8 @@ def _judge_race(race: dict, budget: int, config: dict, live_trifecta: dict | Non
     if not force_plan and confidence_rank < style["min_confidence_rank"]:
         summary["reason"] = f"{style['label']}運用のため混戦は見送り"
         return {"summary": summary, "proposal": None}
-    candidates = _race_tickets(race, live_trifecta)
+    bet_type = style.get("bet_type") or "trifecta"
+    candidates = _race_tickets(race, live_trifecta, bet_type=bet_type)
     if len(candidates) < 2:
         summary["reason"] = "買い目候補が不足(1点勝負は行わない)"
         return {"summary": summary, "proposal": None}
@@ -767,17 +769,50 @@ def _judge_race(race: dict, budget: int, config: dict, live_trifecta: dict | Non
         "live_odds_count": live_count,
         "top_pick": (race.get("top3") or [{}])[0],
         "scenario_headline": (race.get("scenario") or {}).get("headline") or "",
-        "copy_text": _copy_text(race, allocation),
+        "bet_type": bet_type,
+        "copy_text": _copy_text(race, allocation, bet_type),
     }
     return {"summary": summary, "proposal": proposal}
 
 
-def _race_tickets(race: dict, live_trifecta: dict | None = None) -> list[dict]:
+def _exacta_odds(race: dict, score: float) -> tuple[float, float]:
+    """2車単の推定オッズと的中確率。軸(本命)1着×相手2着の条件付き確率から。"""
+    axis_prob = float(((race.get("top3") or [{}])[0]).get("probability") or 0.4)
+    axis_prob = max(0.05, min(0.95, axis_prob))
+    partner = max(0.01, min(0.95, float(score or 0.05)))
+    p_hit = axis_prob * min(0.9, partner / max(0.05, 1 - axis_prob))
+    p_hit = max(0.005, min(0.8, p_hit))
+    odds = max(1.3, min(80.0, (1.0 / p_hit) * 0.75))  # 控除率25%
+    return round(odds, 1), round(p_hit, 4)
+
+
+def _race_tickets(race: dict, live_trifecta: dict | None = None, bet_type: str = "trifecta") -> list[dict]:
     confidence = race.get("confidence") or {}
     rank = int(confidence.get("rank") or 1)
     has_signals = bool(race.get("comment_signals"))
     live_trifecta = live_trifecta or {}
     tickets = []
+    if bet_type == "exacta":
+        # 2車単(軸1着固定・少点数): 的中率を確保する主力券種
+        for index, ex in enumerate((race.get("exacta") or [])[:4]):
+            label = ex.get("label") if isinstance(ex, dict) else str(ex)
+            if not label:
+                continue
+            score = _float(ex.get("score") if isinstance(ex, dict) else None, default=0.1)
+            odds, p_hit = _exacta_odds(race, score)
+            tickets.append(
+                {
+                    "label": label,
+                    "odds": odds,
+                    "odds_source": "estimated",
+                    "popularity": None,
+                    "hit_probability": p_hit,
+                    "ticket_rank": index + 1,
+                    "bet_type": "exacta",
+                    "suji": bool(ex.get("suji")) if isinstance(ex, dict) else False,
+                }
+            )
+        return tickets
     for index, ticket in enumerate((race.get("tickets") or [])[:6]):
         label = ticket.get("label") if isinstance(ticket, dict) else str(ticket)
         if not label:
@@ -882,8 +917,9 @@ def _allocate(budget: int, candidates: list[dict], weights: list | None = None) 
     return allocation
 
 
-def _copy_text(race: dict, allocation: list[dict]) -> str:
-    header = f"{race.get('venue') or ''}{race.get('race_no') or ''}R 3連単"
+def _copy_text(race: dict, allocation: list[dict], bet_type: str = "trifecta") -> str:
+    kind = "2車単" if bet_type == "exacta" else "3連単"
+    header = f"{race.get('venue') or ''}{race.get('race_no') or ''}R {kind}"
     lines = [header]
     for ticket in allocation:
         lines.append(f"{ticket['role']} {ticket['label']} {ticket['stake']}円")

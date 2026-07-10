@@ -1377,7 +1377,7 @@ function renderBankrollProposal(proposal) {
     <header class="plan-card-head">
       <div>
         <span class="status-dot">次の提案</span>
-        <h4>${escapeHtml(proposal.venue)} ${escapeHtml(proposal.race_no)}R <span class="time-chip">${escapeHtml(proposal.start_time)}</span></h4>
+        <h4>${escapeHtml(proposal.venue)} ${escapeHtml(proposal.race_no)}R <span class="time-chip">${escapeHtml(proposal.start_time)}</span> <span class="bet-type-badge">${proposal.bet_type === "exacta" ? "2車単" : "3連単"}</span></h4>
         <p>${escapeHtml(proposal.scenario_headline || "")}</p>
       </div>
       <div class="plan-return">
@@ -1766,7 +1766,14 @@ function renderForecastCard(race) {
             ${rankPill(2, second)}
             ${rankPill(3, third)}
           </div>
-          <div class="ticket-row">${tickets}</div>
+          <div class="bet-block">
+            <div class="bet-label">3連単候補</div>
+            <div class="ticket-row">${tickets}</div>
+          </div>
+          ${(race.exacta && race.exacta.length) ? `<div class="bet-block">
+            <div class="bet-label">2車単候補 <small>軸1着固定・的中率重視</small></div>
+            <div class="ticket-row exacta-row">${race.exacta.map((t) => `<span class="ticket-chip exacta-chip${t.suji ? " is-suji" : ""}">${escapeHtml(t.label)}${t.suji ? '<em class="suji-tag">スジ</em>' : ""}</span>`).join("")}</div>
+          </div>` : ""}
         </div>
 
         ${renderLineDiagram(race.lines || [], race.top3 || [])}
@@ -1892,7 +1899,8 @@ function rankPill(rank, row) {
 }
 
 function ticketChip(ticket) {
-  return `<span class="ticket-chip">${escapeHtml(ticket.label)}${ticket.score != null ? `<em>${score(ticket.score)}</em>` : ""}</span>`;
+  const suji = ticket.suji ? '<em class="suji-tag">スジ</em>' : "";
+  return `<span class="ticket-chip${ticket.suji ? " is-suji" : ""}">${escapeHtml(ticket.label)}${suji}</span>`;
 }
 
 function renderLineDiagram(lines, top3) {

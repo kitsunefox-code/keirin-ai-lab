@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at_jst": "2026-07-10T09:02:44+09:00",
+  "generated_at_jst": "2026-07-10T09:26:00+09:00",
   "rules": [
     "全額転がしは行いません(1レース投資は残高の上限%まで)",
     "負けた後の倍賭け(マーチンゲール)は行いません",
@@ -129,7 +129,8 @@
       "min_confidence_rank": 2,
       "assumed_main_odds": 5.5,
       "race_limit": 10,
-      "default_start": 10000
+      "default_start": 10000,
+      "bet_type": "exacta"
     }
   ],
   "auto_buy_available": false,
@@ -254,55 +255,55 @@
     }
   },
   "proposal": {
-    "race_key": "winticket:2026070862:3:3",
+    "race_key": "winticket:2026070862:3:5",
     "venue": "広島",
-    "race_no": 3,
-    "start_time": "09:10",
+    "race_no": 5,
+    "start_time": "09:50",
     "race_date": "2026年7月10日",
-    "url": "https://www.winticket.jp/keirin/hiroshima/racecard/2026070862/3/3",
+    "url": "https://www.winticket.jp/keirin/hiroshima/racecard/2026070862/3/5",
     "confidence": "強",
     "budget": 1200,
-    "total_stake": 1200,
-    "ev": 6.937,
-    "expected_return": 8320,
+    "total_stake": 600,
+    "ev": 0.741,
+    "expected_return": 440,
     "tickets": [
       {
         "role": "本線",
-        "label": "5-1-4",
-        "stake": 700,
-        "odds": 11.1,
-        "odds_source": "live",
-        "popularity": 3,
-        "hit_probability": 0.5013,
-        "projected_return": 7770
+        "label": "7-1",
+        "stake": 400,
+        "odds": 3.9,
+        "odds_source": "estimated",
+        "popularity": null,
+        "hit_probability": 0.19,
+        "projected_return": 1560
       },
       {
         "role": "抑え",
-        "label": "5-1-2",
-        "stake": 300,
-        "odds": 8.2,
-        "odds_source": "live",
-        "popularity": 2,
-        "hit_probability": 0.5012,
-        "projected_return": 2460
+        "label": "7-2",
+        "stake": 100,
+        "odds": 3.9,
+        "odds_source": "estimated",
+        "popularity": null,
+        "hit_probability": 0.19,
+        "projected_return": 390
       },
       {
         "role": "妙味",
-        "label": "5-4-1",
-        "stake": 200,
-        "odds": 31.9,
-        "odds_source": "live",
-        "popularity": 9,
-        "hit_probability": 0.501,
-        "projected_return": 6380
+        "label": "7-3",
+        "stake": 100,
+        "odds": 3.9,
+        "odds_source": "estimated",
+        "popularity": null,
+        "hit_probability": 0.19,
+        "projected_return": 390
       }
     ],
-    "live_odds_count": 3,
+    "live_odds_count": 0,
     "top_pick": {
-      "car_no": 5,
-      "name": "中川飛隆",
-      "probability": 0.9939,
-      "score": 8.601,
+      "car_no": 7,
+      "name": "関口朗斗",
+      "probability": 0.9872,
+      "score": 9.165,
       "mark": "本命",
       "style": "逃",
       "comment": "自力。",
@@ -327,12 +328,13 @@
         "バック数あり",
         "EX攻撃力100%",
         "直近3着内多い",
-        "先頭勝率35%",
-        "対近藤直幹 4勝0敗"
+        "先頭勝率50%",
+        "対南大輔 1勝0敗"
       ]
     },
-    "scenario_headline": "5中川飛隆が本線。前で動いてライン5-1-6を残す展開を重視。",
-    "copy_text": "広島3R 3連単\n本線 5-1-4 700円\n抑え 5-1-2 300円\n妙味 5-4-1 200円",
+    "scenario_headline": "7関口朗斗が本線。前で動いてライン7-2-5-4-1を残す展開を重視。",
+    "bet_type": "exacta",
+    "copy_text": "広島5R 2車単\n本線 7-1 400円\n抑え 7-2 100円\n妙味 7-3 100円",
     "odds_status": {
       "attempted": 6,
       "fetched": 6,
@@ -342,26 +344,15 @@
   },
   "judged_races": [
     {
-      "race_key": "winticket:2026070862:3:3",
-      "venue": "広島",
-      "race_no": 3,
-      "start_time": "09:10",
-      "confidence": "強",
-      "decision": "bet",
-      "reason": "EV 6.94 / 3点分散 / ライブ3点",
-      "ev": 6.937,
-      "is_next": true
-    },
-    {
       "race_key": "winticket:2026070862:3:5",
       "venue": "広島",
       "race_no": 5,
       "start_time": "09:50",
       "confidence": "強",
       "decision": "bet",
-      "reason": "EV 13.35 / 3点分散 / ライブ3点",
-      "ev": 13.349,
-      "is_next": false
+      "reason": "予定レース・半分に縮小して実行(EV 0.74 低め・見送りも可)",
+      "ev": 0.741,
+      "is_next": true
     },
     {
       "race_key": "winticket:2026071022:1:3",
@@ -370,8 +361,8 @@
       "start_time": "11:54",
       "confidence": "強",
       "decision": "bet",
-      "reason": "EV 19.95 / 3点分散 / ライブ3点",
-      "ev": 19.953,
+      "reason": "予定レース・半分に縮小して実行(EV 0.74 低め・見送りも可)",
+      "ev": 0.741,
       "is_next": false
     },
     {
@@ -381,8 +372,8 @@
       "start_time": "12:22",
       "confidence": "強",
       "decision": "bet",
-      "reason": "EV 22.01 / 3点分散 / ライブ3点",
-      "ev": 22.009,
+      "reason": "予定レース・半分に縮小して実行(EV 0.74 低め・見送りも可)",
+      "ev": 0.741,
       "is_next": false
     },
     {
@@ -392,8 +383,8 @@
       "start_time": "12:50",
       "confidence": "強",
       "decision": "bet",
-      "reason": "EV 14.03 / 3点分散 / ライブ3点",
-      "ev": 14.031,
+      "reason": "予定レース・半分に縮小して実行(EV 0.75 低め・見送りも可)",
+      "ev": 0.746,
       "is_next": false
     },
     {
@@ -403,8 +394,8 @@
       "start_time": "16:10",
       "confidence": "強",
       "decision": "bet",
-      "reason": "EV 15.53 / 3点分散 / ライブ3点",
-      "ev": 15.525,
+      "reason": "予定レース・半分に縮小して実行(EV 0.75 低め・見送りも可)",
+      "ev": 0.753,
       "is_next": false
     },
     {
@@ -414,8 +405,8 @@
       "start_time": "18:14",
       "confidence": "強",
       "decision": "bet",
-      "reason": "EV 3.57 / 3点分散",
-      "ev": 3.573,
+      "reason": "予定レース・半分に縮小して実行(EV 0.76 低め・見送りも可)",
+      "ev": 0.76,
       "is_next": false
     },
     {
@@ -425,8 +416,8 @@
       "start_time": "21:30",
       "confidence": "強",
       "decision": "bet",
-      "reason": "EV 3.37 / 3点分散",
-      "ev": 3.373,
+      "reason": "予定レース・半分に縮小して実行(EV 0.74 低め・見送りも可)",
+      "ev": 0.743,
       "is_next": false
     },
     {
@@ -436,8 +427,8 @@
       "start_time": "22:40",
       "confidence": "強",
       "decision": "bet",
-      "reason": "EV 3.39 / 3点分散",
-      "ev": 3.387,
+      "reason": "予定レース・半分に縮小して実行(EV 0.74 低め・見送りも可)",
+      "ev": 0.741,
       "is_next": false
     },
     {
@@ -447,8 +438,8 @@
       "start_time": "23:10",
       "confidence": "強",
       "decision": "bet",
-      "reason": "EV 3.40 / 3点分散",
-      "ev": 3.403,
+      "reason": "予定レース・半分に縮小して実行(EV 0.74 低め・見送りも可)",
+      "ev": 0.741,
       "is_next": false
     }
   ],
@@ -620,8 +611,7 @@
         "start_time": "09:10",
         "original": null,
         "changed_at": null,
-        "status": "planned",
-        "is_next": true
+        "status": "missed"
       },
       {
         "race_key": "winticket:2026070862:3:5",
@@ -630,7 +620,8 @@
         "start_time": "09:50",
         "original": null,
         "changed_at": null,
-        "status": "planned"
+        "status": "planned",
+        "is_next": true
       },
       {
         "race_key": "winticket:2026071022:1:3",

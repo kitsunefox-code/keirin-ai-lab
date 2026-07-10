@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from keirin_ai.predictor import _exacta_candidates
+
 import json
 import re
 from datetime import datetime, timedelta, timezone
@@ -172,6 +174,10 @@ def _enrich_forecast(conn, forecast: dict) -> dict:
         "title": _race_title(venue, race_no, race.get("event") or forecast.get("title")),
         "top3": top3,
         "tickets": [_ticket(ticket) for ticket in tickets[:8]],
+        "exacta": _exacta_candidates(
+            [{"car_no": r.get("car_no"), "win_probability": r.get("win_probability") or r.get("probability") or 0} for r in ranking],
+            {"lineup": lineup, "entrants": [{"car_no": e.get("car_no"), "racing_score": e.get("racing_score")} for e in entries]},
+        ),
         "confidence": confidence,
         "scenario": scenario,
         "comment_signals": signals,
@@ -383,6 +389,7 @@ def _ticket(ticket: dict | str) -> dict:
         "label": ticket.get("label") or "-".join(str(car) for car in ticket.get("cars", [])),
         "score": ticket.get("score"),
         "cars": ticket.get("cars") or [],
+        "suji": bool(ticket.get("suji")),
     }
 
 
