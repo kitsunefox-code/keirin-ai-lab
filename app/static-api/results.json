@@ -19,14 +19,14 @@
   ],
   "summary": {
     "races": 60,
-    "settled": 4,
-    "pending": 56,
-    "honmei_hits": 2,
-    "honmei_rate": 0.5,
-    "in_top3_hits": 3,
-    "in_top3_rate": 0.75,
-    "trifecta_hits": 2,
-    "trifecta_rate": 0.5
+    "settled": 13,
+    "pending": 47,
+    "honmei_hits": 6,
+    "honmei_rate": 0.4615,
+    "in_top3_hits": 10,
+    "in_top3_rate": 0.7692,
+    "trifecta_hits": 5,
+    "trifecta_rate": 0.3846
   },
   "venues": [
     {
@@ -179,13 +179,17 @@
             "7-3-1",
             "7-3-2"
           ],
-          "result_order": [],
-          "status": "pending",
+          "result_order": [
+            7,
+            2,
+            1
+          ],
+          "status": "hit_trifecta",
           "hits": {
-            "honmei": null,
-            "in_top3": null,
-            "trifecta": null,
-            "trifecta_label": null
+            "honmei": true,
+            "in_top3": true,
+            "trifecta": true,
+            "trifecta_label": "7-2-1"
           }
         },
         {
@@ -207,12 +211,16 @@
             "2-7-1",
             "2-7-4"
           ],
-          "result_order": [],
-          "status": "pending",
+          "result_order": [
+            1,
+            4,
+            2
+          ],
+          "status": "in_top3",
           "hits": {
-            "honmei": null,
-            "in_top3": null,
-            "trifecta": null,
+            "honmei": false,
+            "in_top3": true,
+            "trifecta": false,
             "trifecta_label": null
           }
         },
@@ -235,12 +243,16 @@
             "1-3-7",
             "1-7-3"
           ],
-          "result_order": [],
-          "status": "pending",
+          "result_order": [
+            3,
+            5,
+            1
+          ],
+          "status": "in_top3",
           "hits": {
-            "honmei": null,
-            "in_top3": null,
-            "trifecta": null,
+            "honmei": false,
+            "in_top3": true,
+            "trifecta": false,
             "trifecta_label": null
           }
         }
@@ -268,13 +280,17 @@
             "6-2-4",
             "6-2-1"
           ],
-          "result_order": [],
-          "status": "pending",
+          "result_order": [
+            6,
+            1,
+            4
+          ],
+          "status": "hit_trifecta",
           "hits": {
-            "honmei": null,
-            "in_top3": null,
-            "trifecta": null,
-            "trifecta_label": null
+            "honmei": true,
+            "in_top3": true,
+            "trifecta": true,
+            "trifecta_label": "6-1-4"
           }
         },
         {
@@ -296,12 +312,16 @@
             "2-4-7",
             "2-7-4"
           ],
-          "result_order": [],
-          "status": "pending",
+          "result_order": [
+            5,
+            2,
+            7
+          ],
+          "status": "in_top3",
           "hits": {
-            "honmei": null,
-            "in_top3": null,
-            "trifecta": null,
+            "honmei": false,
+            "in_top3": true,
+            "trifecta": false,
             "trifecta_label": null
           }
         },
@@ -324,12 +344,16 @@
             "3-7-2",
             "3-7-5"
           ],
-          "result_order": [],
-          "status": "pending",
+          "result_order": [
+            3,
+            5,
+            1
+          ],
+          "status": "hit_honmei",
           "hits": {
-            "honmei": null,
-            "in_top3": null,
-            "trifecta": null,
+            "honmei": true,
+            "in_top3": true,
+            "trifecta": false,
             "trifecta_label": null
           }
         },
@@ -352,12 +376,16 @@
             "1-3-5",
             "1-3-4"
           ],
-          "result_order": [],
-          "status": "pending",
+          "result_order": [
+            5,
+            2,
+            4
+          ],
+          "status": "miss",
           "hits": {
-            "honmei": null,
-            "in_top3": null,
-            "trifecta": null,
+            "honmei": false,
+            "in_top3": false,
+            "trifecta": false,
             "trifecta_label": null
           }
         },
@@ -380,13 +408,17 @@
             "5-7-3",
             "5-3-7"
           ],
-          "result_order": [],
-          "status": "pending",
+          "result_order": [
+            5,
+            3,
+            1
+          ],
+          "status": "hit_trifecta",
           "hits": {
-            "honmei": null,
-            "in_top3": null,
-            "trifecta": null,
-            "trifecta_label": null
+            "honmei": true,
+            "in_top3": true,
+            "trifecta": true,
+            "trifecta_label": "5-3-1"
           }
         },
         {
@@ -408,12 +440,16 @@
             "4-7-9",
             "7-4-9"
           ],
-          "result_order": [],
-          "status": "pending",
+          "result_order": [
+            7,
+            9,
+            1
+          ],
+          "status": "miss",
           "hits": {
-            "honmei": null,
-            "in_top3": null,
-            "trifecta": null,
+            "honmei": false,
+            "in_top3": false,
+            "trifecta": false,
             "trifecta_label": null
           }
         },
@@ -1760,15 +1796,15 @@
     "as_of": "2026-07-10",
     "week": {
       "label": "今週",
-      "settled": 242,
-      "honmei_hits": 105,
-      "honmei_rate": 0.4339,
-      "in_top3_rate": 0.719,
-      "trifecta_hits": 47,
-      "trifecta_rate": 0.1942,
-      "exacta_roi": 0.6268,
-      "exacta_priced": 239,
-      "trifecta_roi": 0.4531
+      "settled": 251,
+      "honmei_hits": 109,
+      "honmei_rate": 0.4343,
+      "in_top3_rate": 0.7211,
+      "trifecta_hits": 50,
+      "trifecta_rate": 0.1992,
+      "exacta_roi": 0.6135,
+      "exacta_priced": 249,
+      "trifecta_roi": 0.4496
     },
     "last_week": {
       "label": "先週",
@@ -1784,15 +1820,15 @@
     },
     "total": {
       "label": "通算",
-      "settled": 622,
-      "honmei_hits": 241,
-      "honmei_rate": 0.3875,
-      "in_top3_rate": 0.709,
-      "trifecta_hits": 110,
-      "trifecta_rate": 0.1768,
-      "exacta_roi": 0.5939,
-      "exacta_priced": 314,
-      "trifecta_roi": 0.4591
+      "settled": 631,
+      "honmei_hits": 245,
+      "honmei_rate": 0.3883,
+      "in_top3_rate": 0.71,
+      "trifecta_hits": 113,
+      "trifecta_rate": 0.1791,
+      "exacta_roi": 0.605,
+      "exacta_priced": 414,
+      "trifecta_roi": 0.5267
     }
   }
 }

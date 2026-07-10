@@ -24,6 +24,11 @@ if ($Mode -eq "morning") {
     # 夜間タスクが走れなかった日でも、まず前夜分の結果と談話を回収してから予想する
     python scripts\collect_raceresults.py --limit 150 --delay 0.5 | Out-Null
     Write-Log "results catch-up (exit $LASTEXITCODE)"
+    python scripts\backfill_payouts.py --limit 200 --delay 0.4 | Out-Null
+    Write-Log "payouts catch-up (exit $LASTEXITCODE)"
+    # 前日のオリジナル運用を(停止する前に)実結果で決済して締める
+    python scripts\settle_original.py | Out-Null
+    Write-Log "yesterday settled (exit $LASTEXITCODE)"
     $today = Get-Date -Format "yyyy-MM-dd"
     $stamp = Get-Date -Format "yyyyMMdd"
     python scripts\forecast_winticket_after.py --date $today --after 00:00 --max-races 60 --delay 0.4 --out "data\forecast_${stamp}_after_0000.json" | Out-Null
@@ -37,8 +42,10 @@ elseif ($Mode -eq "night") {
     Write-Log "results collected (exit $LASTEXITCODE)"
     python scripts\backfill_keirinjp_results.py --limit 60 --delay 0.5 | Out-Null
     Write-Log "keirinjp fallback done (exit $LASTEXITCODE)"
-    python scriptsackfill_payouts.py --limit 200 --delay 0.4 | Out-Null
+    python scripts\backfill_payouts.py --limit 200 --delay 0.4 | Out-Null
     Write-Log "payouts backfilled (exit $LASTEXITCODE)"
+    python scripts\settle_original.py | Out-Null
+    Write-Log "original settled (exit $LASTEXITCODE)"
 }
 
 python scripts\build_static_api.py | Out-Null
