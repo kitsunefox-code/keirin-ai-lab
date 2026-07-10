@@ -26,7 +26,8 @@ def build_results_payload(conn: sqlite3.Connection, date: str | None = None, dat
     for race in races:
         venues.setdefault(race["venue"] or "未設定", []).append(race)
     venue_list = [
-        {"venue": venue, "races": sorted(items, key=lambda r: (r["start_time"] or "99:99", r["race_no"] or 0))}
+        # 会場内はレース番号の若い順(1R→12R)
+        {"venue": venue, "races": sorted(items, key=lambda r: (r["race_no"] or 99))}
         for venue, items in venues.items()
     ]
     venue_list.sort(key=lambda v: v["races"][0]["start_time"] or "99:99")

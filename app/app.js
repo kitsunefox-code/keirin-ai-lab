@@ -1768,8 +1768,10 @@ function groupForecastsByVenue(rows) {
   return [...groups.entries()]
     .map(([venue, races]) => ({
       venue,
-      races: races.sort((a, b) => String(a.start_time || "99:99").localeCompare(String(b.start_time || "99:99"))),
+      // 会場内はレース番号の若い順(1R→12R)で並べる
+      races: races.sort((a, b) => (Number(a.race_no) || 99) - (Number(b.race_no) || 99)),
     }))
+    // 会場は最初のレースの開始時刻が早い順
     .sort((a, b) => String(a.races[0]?.start_time || "99:99").localeCompare(String(b.races[0]?.start_time || "99:99")));
 }
 
