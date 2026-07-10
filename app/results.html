@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>結果・的中率 | Keirin AI Lab</title>
+    <title>結果と収支 | Keirin AI Lab</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body data-page="results">
@@ -21,7 +21,7 @@
 
         <nav class="side-nav" aria-label="ページ切替">
           <a href="index.html">本日の予想</a>
-          <a href="results.html" class="active">結果・的中率</a>
+          <a href="results.html" class="active">結果と収支</a>
           <a href="motion.html">モーションメーカー</a>
         </nav>
 
@@ -32,10 +32,17 @@
         <section class="panel active" id="panel-results">
           <header class="page-header">
             <div>
-              <h2>結果・的中率</h2>
+              <h2>結果と収支</h2>
             </div>
             <span class="page-meta" id="resultsMeta"></span>
           </header>
+
+          <div class="kpi-row" id="financeKpis" aria-label="運用サマリー"></div>
+
+          <section class="surface-panel chart-panel" id="fundChartPanel" hidden>
+            <div class="capital-head"><div><h3>資金推移</h3></div><span class="page-meta">全スタイル累計損益</span></div>
+            <svg id="fundChart" viewBox="0 0 640 180" class="fund-chart" role="img" aria-label="資金推移グラフ"></svg>
+          </section>
 
           <div class="ai-record" id="aiRecordBar" aria-label="AI予想成績"></div>
 

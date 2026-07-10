@@ -1024,6 +1024,7 @@ async function copyProposalTickets() {
 
 function renderBankroll(payload) {
   renderOriginalDaily(payload.daily_history || []);
+  renderFinance(payload.finance);
   const head = el("bankrollHeadActions");
   const body = el("bankrollBody");
   if (!head || !body) return; // 運用パネルがないページ(結果ページ等)
@@ -1155,6 +1156,54 @@ function confirmPlanReplace(index) {
   }).then((payload) => {
     if (payload) setStatus(`予定レースを${race.venue}${race.race_no}Rに変更しました`);
   });
+}
+
+function renderFinance(finance) {
+  const kpis = el("financeKpis");
+  if (!kpis || !finance) return;
+  const profitClass = (v) => (v >= 0 ? "kpi-up" : "kpi-down");
+  const roiPct = finance.roi != null ? `${(finance.roi * 100).toFixed(1)}%` : "-";
+  const hitPct = finance.hit_rate != null ? `${(finance.hit_rate * 100).toFixed(1)}%` : "-";
+  kpis.innerHTML = [
+    { label: "現在資金", value: finance.current_balance != null ? yen(finance.current_balance) : "-", sub: "運用セッション残高", cls: "" },
+    { label: "累計収支", value: `${finance.total_profit >= 0 ? "+" : ""}${yen(finance.total_profit)}`, sub: `投資 ${yen(finance.total_stake)} / 払戻 ${yen(finance.total_payout)}`, cls: profitClass(finance.total_profit) },
+    { label: "回収率", value: roiPct, sub: "払戻 ÷ 投資", cls: finance.roi >= 1 ? "kpi-up" : "kpi-down" },
+    { label: "的中率", value: hitPct, sub: `${finance.wins}勝${finance.losses}敗`, cls: "" },
+  ].map((k) => `<div class="kpi-card">
+      <span>${escapeHtml(k.label)}</span>
+      <strong class="${k.cls}">${escapeHtml(k.value)}</strong>
+      <em>${escapeHtml(k.sub)}</em>
+    </div>`).join("");
+  renderFundChart(finance.series || []);
+}
+
+function renderFundChart(series) {
+  const svg = el("fundChart");
+  if (!svg) return;
+  const panel = el("fundChartPanel");
+  if (series.length < 2) {
+    if (panel) panel.hidden = true;
+    return;
+  }
+  if (panel) panel.hidden = false;
+  const W = 640, H = 180, PAD = 28;
+  const values = series.map((p) => p.cumulative_profit);
+  const min = Math.min(0, ...values);
+  const max = Math.max(0, ...values);
+  const span = Math.max(1, max - min);
+  const x = (i) => PAD + (i * (W - PAD * 2)) / (series.length - 1);
+  const y = (v) => H - PAD - ((v - min) * (H - PAD * 2)) / span;
+  const points = series.map((p, i) => `${x(i).toFixed(1)},${y(p.cumulative_profit).toFixed(1)}`).join(" ");
+  const zeroY = y(0);
+  const last = series[series.length - 1];
+  const lineColor = last.cumulative_profit >= 0 ? "var(--color-profit)" : "var(--color-loss)";
+  svg.innerHTML = `
+    <line x1="${PAD}" y1="${zeroY.toFixed(1)}" x2="${W - PAD}" y2="${zeroY.toFixed(1)}" class="chart-zero" />
+    <polyline points="${points}" fill="none" stroke="${lineColor}" stroke-width="2.5" stroke-linejoin="round" />
+    ${series.map((p, i) => `<circle cx="${x(i).toFixed(1)}" cy="${y(p.cumulative_profit).toFixed(1)}" r="3.5" fill="${lineColor}"><title>${escapeHtml(p.date)}: ${p.cumulative_profit >= 0 ? "+" : ""}${p.cumulative_profit}円</title></circle>`).join("")}
+    <text x="${PAD}" y="14" class="chart-label">累計損益</text>
+    <text x="${W - PAD}" y="${(y(last.cumulative_profit) - 8).toFixed(1)}" text-anchor="end" class="chart-value">${last.cumulative_profit >= 0 ? "+" : ""}${last.cumulative_profit}円</text>
+  `;
 }
 
 function renderOriginalDaily(history) {
@@ -1448,6 +1497,13 @@ function renderToday() {
   const schedule = payload.schedule_summary || {};
   renderMotionMaker();
   if (!el("todayMeta")) return; // 本日の予想パネルがないページ(モーションメーカー等)
+  const greeting = el("greeting");
+  if (greeting) {
+    const hour = new Date().getHours();
+    const hello = hour < 11 ? "おはようございます" : hour < 18 ? "こんにちは" : "こんばんは";
+    const total = (summary.count ?? 0) + (summary.elapsed_count ?? 0);
+    greeting.textContent = `${hello}。本日は${total}レースを分析済みです`;
+  }
   el("todayMeta").textContent = `${summary.target_date || ""} ${summary.after || ""}以降 / ${payload.forecast_file ? "再学習済み" : "未作成"}`;
   el("todayMetrics").innerHTML = [
     ["予想レース", summary.count ?? 0, "本日対象", "teal"],
@@ -1468,6 +1524,34 @@ function renderToday() {
     : `<div class="empty">条件に合うレースがありません。</div>`;
 }
 
+function safeRaceId(raceKey) {
+  return "race-" + String(raceKey || "").replace(/[^a-zA-Z0-9]/g, "-");
+}
+
+function minutesToStart(startTime) {
+  const m = /^(\d{1,2}):(\d{2})$/.exec(String(startTime || ""));
+  if (!m) return null;
+  const now = new Date();
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), Number(m[1]), Number(m[2]));
+  return Math.round((start - now) / 60000);
+}
+
+function confidenceDots(race) {
+  const rank = Number(race.confidence?.rank || 1);
+  const prob = Number(race.top3?.[0]?.probability || 0);
+  let filled = rank >= 3 ? 4 : rank === 2 ? 3 : 2;
+  if (prob >= 0.55) filled = Math.min(5, filled + 1);
+  return "●".repeat(filled) + "○".repeat(5 - filled);
+}
+
+function suggestedStake() {
+  const brState = state.bankroll?.state;
+  const config = state.bankroll?.session?.config;
+  if (!brState || !config || state.bankroll?.session?.status !== "active") return null;
+  const budget = Math.floor((brState.balance * config.per_race_cap_pct) / 100 / 100) * 100;
+  return budget > 0 ? budget : null;
+}
+
 function renderRecommended(races) {
   const section = el("recommendedSection");
   if (!section) return;
@@ -1477,14 +1561,44 @@ function renderRecommended(races) {
     return;
   }
   section.hidden = false;
+  const stake = suggestedStake();
+  const cards = races.slice(0, 3).map((race) => {
+    const top = race.top3?.[0] || {};
+    const mins = minutesToStart(race.start_time);
+    const minsText = mins == null ? "" : mins <= 0 ? "発走済み" : `発走まで ${mins}分`;
+    return `<article class="market-card">
+      <header>
+        <strong>${escapeHtml(race.venue || "")} ${escapeHtml(race.race_no || "")}R</strong>
+        <span class="market-countdown">${escapeHtml(minsText)}</span>
+      </header>
+      <div class="market-main">
+        <span class="market-label">AI本命</span>
+        <div class="market-pick">${car(top.car_no)} <b>${escapeHtml(top.name || "-")}</b></div>
+        <div class="market-prob"><em>${percent(top.probability)}</em><small>勝率予測</small></div>
+      </div>
+      <div class="market-meta">
+        <span>信頼度 <b class="market-dots">${confidenceDots(race)}</b></span>
+        ${stake ? `<span>推奨投資 <b>${yen(stake)}</b></span>` : ""}
+      </div>
+      <button type="button" class="button market-open" data-open-race="${escapeAttr(race.race_key)}">予想を見る</button>
+    </article>`;
+  }).join("");
   section.innerHTML = `
     <div class="recommended-head">
-      <span class="status-dot recommended-dot">AIオススメ</span>
-      <h3>本日の狙い目</h3>
-      <p>信頼度と本命確率、買い目スコアから絞ったレースです。</p>
+      <span class="recommended-dot">AIオススメ</span>
+      <h3>注目レース</h3>
     </div>
-    <div class="venue-ribbon-list">${races.map(renderForecastCard).join("")}</div>
+    <div class="market-grid">${cards}</div>
   `;
+  section.querySelectorAll("[data-open-race]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const target = document.getElementById(safeRaceId(btn.dataset.openRace));
+      if (target) {
+        target.open = true;
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+  });
 }
 
 function renderVenueForecastSections(rows) {
@@ -1615,7 +1729,7 @@ function renderForecastCard(race) {
   const lines = (race.lines || []).map(lineItem).join("");
   const signals = (race.comment_signals || []).map((signal) => `<li>${escapeHtml(signal)}</li>`).join("");
 
-  return `<details class="race-ribbon ${confidenceClass(confidence.label)}">
+  return `<details class="race-ribbon ${confidenceClass(confidence.label)}" id="${safeRaceId(race.race_key)}">
     <summary class="ribbon-summary">
       <span class="ribbon-time">${escapeHtml(race.start_time || "--:--")}</span>
       <strong>${escapeHtml(race.race_no || "")}R</strong>

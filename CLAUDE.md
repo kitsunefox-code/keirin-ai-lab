@@ -24,16 +24,12 @@ This app should feel like a professional keirin data analysis console. Keep it s
 
 ### Visual Tokens
 
-- Colors must come from CSS variables in `app/styles.css`. The palette follows WINTICKET keirin: bg `#F1F1F5`, ink `#2B2B2E`, border `#E4E5EA`, primary green `#008765`, orange `#F4792A`, red `#BF0015`, gold `#FFC010`.
-- The sidebar is dark (`#18181A`) like WINTICKET's chrome; the workspace stays light.
-- Border radius: cards 12px, inputs 8px, small chips 4px, buttons and badges are pills (999px).
-- Do not add English eyebrow/kicker labels; UI copy is Japanese-first.
-- Do not use pastel gradient backgrounds or decorative blobs on metric cards; white cards with colored numbers only.
-- Use subtle shadows only: `--shadow-card` and `--shadow-panel`.
-- Main spacing should use the `--space-*` scale.
-- Text sizes should use the `--text-*` scale.
-- Letter spacing should remain `0`.
-- Avoid large hero-style typography inside app panels.
+- Design language: Linear-style dark navy (质感) + Polymarket-style market cards (情報カード) + Stripe-style finance dashboard (結果と収支).
+- Palette lives in `app/styles.css` `:root`: bg `#080B10`, card `#10151D`, border `#202733`, text `#F4F7FA`, muted `#8D97A6`, accent `#5EE6A8`, profit `#42D392`, loss `#FF6678`, caution `#F4C95D`.
+- Keirin car colors are used ONLY as small bibs/badges (`.car-1`..`.car-9`), never as page-level theming.
+- Border radius: cards 12px, buttons/inputs 8px, small chips 4px. No pill buttons.
+- Subtle borders (1px `--color-border`), generous card padding, restrained gradients. Numbers use tabular-nums; KPI values are the largest text on screen.
+- Profit/loss always colored via `--color-profit` / `--color-loss`.
 
 ### Layout
 

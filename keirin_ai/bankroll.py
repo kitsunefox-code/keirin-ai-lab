@@ -539,6 +539,45 @@ def daily_history(conn: sqlite3.Connection, days: int = 14) -> list[dict]:
     return history
 
 
+def bankroll_finance(conn: sqlite3.Connection) -> dict:
+    """Stripe風ダッシュボード用の運用サマリー。全セッション通算。"""
+    ensure_tables(conn)
+    row = conn.execute(
+        """
+        select
+            coalesce(sum(total_stake), 0) as stake,
+            coalesce(sum(payout), 0) as payout,
+            coalesce(sum(case when status='won' then 1 else 0 end), 0) as wins,
+            coalesce(sum(case when status='lost' then 1 else 0 end), 0) as losses
+        from bankroll_bets where status in ('won', 'lost')
+        """
+    ).fetchone()
+    stake, payout, wins, losses = row["stake"], row["payout"], row["wins"], row["losses"]
+    session = active_session(conn) or latest_session(conn)
+    balance = None
+    if session:
+        balance = session_state(conn, session)["balance"]
+    history = daily_history(conn, days=30)
+    # 古い順に累計損益を積み上げて資金推移にする
+    series = []
+    cumulative = 0
+    for day in sorted(history, key=lambda d: d["date"]):
+        cumulative += day["total_profit"]
+        series.append({"date": day["date"], "cumulative_profit": cumulative, "day_profit": day["total_profit"]})
+    return {
+        "current_balance": balance,
+        "total_stake": stake,
+        "total_payout": payout,
+        "total_profit": payout - stake,
+        "roi": round(payout / stake, 4) if stake else None,
+        "wins": wins,
+        "losses": losses,
+        "hit_rate": round(wins / (wins + losses), 4) if (wins + losses) else None,
+        "today_profit": (history[0]["total_profit"] if history else 0),
+        "series": series,
+    }
+
+
 def evaluate_stop(config: dict, state: dict) -> str | None:
     # 停止条件は結果確定分(残高)で判定する。pending中は判定を保留しない。
     style = STYLES.get(config.get("style") or "balance") or STYLES["balance"]
@@ -576,6 +615,7 @@ def build_bankroll_payload(conn: sqlite3.Connection, data_dir: Path | str) -> di
     yesterday = (datetime.now(JST).date() - timedelta(days=1)).isoformat()
     payload["yesterday"] = {"date": yesterday, "sessions": sessions_on_date(conn, yesterday)}
     payload["daily_history"] = daily_history(conn, days=14)
+    payload["finance"] = bankroll_finance(conn)
     if session is None:
         last = latest_session(conn)
         if last and last["status"] == "stopped":
