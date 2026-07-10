@@ -19,6 +19,9 @@ const STATIC_API = {
   "/api/results": "static-api/results.json",
 };
 
+// 公開版の静的JSONはブラウザにキャッシュされやすい。ページ読込ごとに必ず取り直す。
+const CACHE_BUST = String(Date.now());
+
 const el = (id) => document.getElementById(id);
 
 function on(id, event, handler) {
@@ -39,7 +42,8 @@ async function apiGet(url) {
     if (!fallback) {
       throw error;
     }
-    return fetch(fallback);
+    const busted = fallback + (fallback.includes("?") ? "&" : "?") + "v=" + CACHE_BUST;
+    return fetch(busted, { cache: "no-store" });
   }
 }
 
