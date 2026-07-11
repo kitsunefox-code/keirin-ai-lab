@@ -64,6 +64,7 @@ def build_record_summary(conn: sqlite3.Connection) -> dict:
     this_monday = today - timedelta(days=today.weekday())
     last_monday = this_monday - timedelta(days=7)
     buckets = {
+        "today": {"label": "今日", "races": []},
         "week": {"label": "今週", "races": []},
         "last_week": {"label": "先週", "races": []},
         "total": {"label": "通算", "races": []},
@@ -77,6 +78,8 @@ def build_record_summary(conn: sqlite3.Connection) -> dict:
         if hit is None:
             continue
         buckets["total"]["races"].append(hit)
+        if race_date == today:
+            buckets["today"]["races"].append(hit)
         if race_date >= this_monday:
             buckets["week"]["races"].append(hit)
         elif last_monday <= race_date < this_monday:
@@ -91,6 +94,7 @@ def build_record_summary(conn: sqlite3.Connection) -> dict:
         priced = [hit for hit in items if hit.get("exacta_stake")]
         ex_stake = sum(hit["exacta_stake"] for hit in priced)
         ex_payout = sum(hit["exacta_payout"] for hit in priced)
+        ex_hits = sum(1 for hit in priced if hit.get("exacta_payout", 0) > 0)
         tri_priced = [hit for hit in items if hit.get("trifecta_stake")]
         tri_stake = sum(hit["trifecta_stake"] for hit in tri_priced)
         tri_payout = sum(hit["trifecta_payout"] for hit in tri_priced)
@@ -103,14 +107,36 @@ def build_record_summary(conn: sqlite3.Connection) -> dict:
             "trifecta_rate": round(trifecta / n, 4) if n else None,
             "exacta_roi": round(ex_payout / ex_stake, 4) if ex_stake else None,
             "exacta_priced": len(priced),
+            "exacta_hits": ex_hits,
+            "exacta_hit_rate": round(ex_hits / len(priced), 4) if priced else None,
             "trifecta_roi": round(tri_payout / tri_stake, 4) if tri_stake else None,
         }
 
+    stats = {key: stat(buckets[key]["races"]) for key in buckets}
+    baseline = stats["total"]["exacta_roi"]
+
+    def form_of(period: dict) -> str | None:
+        """好調/不調は通算(平常)回収率を基準にした相対評価。いつもより良ければ好調。"""
+        roi = period.get("exacta_roi")
+        if roi is None or (period.get("exacta_priced") or 0) < 3 or baseline is None:
+            return None
+        if roi >= baseline + 0.08:
+            return "hot"
+        if roi <= baseline - 0.08:
+            return "cold"
+        return "even"
+
+    for key in ("today", "week", "last_week"):
+        stats[key]["form"] = form_of(stats[key])
+    # 通算は基準そのものなので好不調アイコンは付けない
+    stats["total"]["form"] = None
+
     return {
         "as_of": today.isoformat(),
-        "week": {"label": buckets["week"]["label"], **stat(buckets["week"]["races"])},
-        "last_week": {"label": buckets["last_week"]["label"], **stat(buckets["last_week"]["races"])},
-        "total": {"label": buckets["total"]["label"], **stat(buckets["total"]["races"])},
+        "today": {"label": buckets["today"]["label"], **stats["today"]},
+        "week": {"label": buckets["week"]["label"], **stats["week"]},
+        "last_week": {"label": buckets["last_week"]["label"], **stats["last_week"]},
+        "total": {"label": buckets["total"]["label"], **stats["total"]},
     }
 
 

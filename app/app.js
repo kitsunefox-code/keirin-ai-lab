@@ -147,22 +147,32 @@ async function loadResults(date) {
   }
 }
 
+function formIcon(form) {
+  if (form === "hot") return '<span class="form-icon hot" title="好調(回収率90%以上)">🔥好調</span>';
+  if (form === "cold") return '<span class="form-icon cold" title="不調(回収率70%未満)">🥶不調</span>';
+  if (form === "even") return '<span class="form-icon even" title="標準">➖標準</span>';
+  return "";
+}
+
 function renderRecordBar(record) {
   const bar = el("aiRecordBar");
   if (!bar || !record) return;
-  const roiText = (roi) => (roi == null ? "—" : `${(roi * 100).toFixed(1)}%`);
+  const pctText = (v) => (v == null ? "—" : `${(v * 100).toFixed(1)}%`);
   const roiClass = (roi) => (roi == null ? "" : roi >= 1 ? "kpi-up" : "kpi-down");
   const cell = (item) => {
     if (!item || !item.settled) {
-      return `<div class="record-cell"><span>${escapeHtml(item?.label || "")}</span><strong>-</strong><em>確定待ち</em></div>`;
+      return `<div class="record-cell"><span class="record-cell-label">${escapeHtml(item?.label || "")}</span><div class="record-nums"><b>—</b></div><em>確定待ち</em></div>`;
     }
     return `<div class="record-cell">
-      <span>${escapeHtml(item.label)}</span>
-      <strong>回収率 <b class="${roiClass(item.exacta_roi)}">${roiText(item.exacta_roi)}</b></strong>
-      <em>本命 ${percent(item.honmei_rate)} / 2車単${item.exacta_priced ? `${item.exacta_priced}R集計` : "集計待ち"} / ${item.settled}R</em>
+      <span class="record-cell-label">${escapeHtml(item.label)} ${formIcon(item.form)}</span>
+      <div class="record-nums">
+        <span class="record-num"><i>回収率</i><b class="${roiClass(item.exacta_roi)}">${pctText(item.exacta_roi)}</b></span>
+        <span class="record-num"><i>的中率</i><b>${pctText(item.exacta_hit_rate)}</b></span>
+      </div>
+      <em>本命 ${pctText(item.honmei_rate)} / 2車単 ${item.exacta_priced ? `${item.exacta_priced}R` : "集計待ち"} / 全${item.settled}R</em>
     </div>`;
   };
-  bar.innerHTML = `<div class="record-title">AI成績 <span class="help-tip" tabindex="0" data-tip="回収率=実払戻÷投資額。2車単の軸1着固定2点を各100円で平坦買いした場合の実測値。競輪は控除率25%なので100%超は容易ではありません。">?</span></div>${cell(record.week)}${cell(record.last_week)}${cell(record.total)}`;
+  bar.innerHTML = `<div class="record-title">AI成績 <span class="help-tip" tabindex="0" data-tip="回収率=実払戻÷投資額。的中率=2車単の買い目(軸1着固定2点)が当たった割合。各100円の平坦買いでの実測値。競輪は控除率25%なので回収率100%超は容易ではありません。">?</span></div>${cell(record.today)}${cell(record.week)}${cell(record.last_week)}${cell(record.total)}`;
 }
 
 // 実績ページ: 通算KPI + 期間別テーブル
@@ -185,17 +195,18 @@ function renderRecordPage(payload) {
     .join("");
   const table = el("recordTable");
   if (!table) return;
-  const rows = ["week", "last_week", "total"].map((key) => record[key]).filter(Boolean);
+  const rows = ["today", "week", "last_week", "total"].map((key) => record[key]).filter(Boolean);
   table.innerHTML = `<div class="table-wrap"><table class="data-table compact-table">
-    <thead><tr><th>期間</th><th>確定R</th><th>本命的中</th><th>3着内</th><th>回収率</th></tr></thead>
+    <thead><tr><th>期間</th><th>確定R</th><th>本命的中</th><th>2車単的中</th><th>回収率</th><th>調子</th></tr></thead>
     <tbody>${rows
       .map(
         (r) => `<tr>
         <td><b>${escapeHtml(r.label)}</b></td>
         <td>${r.settled}</td>
         <td>${pct(r.honmei_rate)}</td>
-        <td>${pct(r.in_top3_rate)}</td>
+        <td>${pct(r.exacta_hit_rate)}</td>
         <td class="${(r.exacta_roi || 0) >= 1 ? "kpi-up" : "kpi-down"}"><b>${roiText(r.exacta_roi)}</b></td>
+        <td>${formIcon(r.form) || "—"}</td>
       </tr>`
       )
       .join("")}</tbody>
@@ -1667,23 +1678,57 @@ function consultCombos(race, points) {
   return combos.slice(0, points).map((cars) => ({ cars, label: cars.join("-") }));
 }
 
+function consultMoney() {
+  const read = (k, d) => {
+    try {
+      const v = Number(localStorage.getItem(k));
+      return Number.isFinite(v) && v > 0 ? v : d;
+    } catch (_e) {
+      return d;
+    }
+  };
+  return { budget: read("kl_consult_budget", 3000), target: read("kl_consult_target", 5000) };
+}
+
 function renderStyleConsult() {
   const section = el("styleConsult");
   if (!section) return;
   const forecasts = (state.today?.forecasts || []).filter((r) => !r.elapsed);
+  const done = (state.today?.forecasts || []).length - forecasts.length; // 発走済み数
   section.hidden = false;
   const active = state.consultStyle;
+  const money = consultMoney();
   const buttons = Object.entries(CONSULT_STYLES)
     .map(([key, s]) => `<button type="button" class="consult-btn${key === active ? " active" : ""}" data-consult="${key}">${s.label}</button>`)
     .join("");
   section.innerHTML = `
     <div class="capital-head">
       <div><h3>スタイル別コンサル</h3></div>
-      <span class="page-meta">この乗り方なら今日どう買う？</span>
+      <button type="button" class="button consult-update" id="consultUpdate">↻ 結果を反映して更新</button>
     </div>
-    <p class="consult-lead">オリジナルは自動で運用中です。ここは<b>自分で買いたい人向け</b>に、選んだ乗り方での狙い目と買い目を提案します(運用はしません)。</p>
+    <p class="consult-lead">オリジナルは自動で運用中です。ここは<b>自分で買いたい人向け</b>に、選んだ乗り方での狙い目と買い目を提案します(運用はしません)。${done > 0 ? `<span class="consult-done">発走済み${done}Rは除外</span>` : ""}</p>
+    <div class="consult-money">
+      <label>投資金額 <input type="number" id="consultBudget" value="${money.budget}" min="100" step="100" inputmode="numeric" />円</label>
+      <label>目標金額 <input type="number" id="consultTarget" value="${money.target}" min="100" step="100" inputmode="numeric" />円</label>
+    </div>
     <div class="consult-buttons">${buttons}</div>
-    <div id="consultBody">${active ? consultBody(active, forecasts) : '<p class="consult-hint">↑ 乗り方を選ぶと、その日の狙い目を提案します。</p>'}</div>`;
+    <div id="consultBody">${active ? consultBody(active, forecasts, money) : '<p class="consult-hint">↑ 乗り方を選ぶと、その日の狙い目を提案します。</p>'}</div>`;
+  const saveMoney = (key, id) => {
+    const input = el(id);
+    if (!input) return;
+    input.addEventListener("change", () => {
+      try {
+        localStorage.setItem(key, String(Math.max(100, Number(input.value) || 0)));
+      } catch (_e) {}
+      renderStyleConsult();
+    });
+  };
+  saveMoney("kl_consult_budget", "consultBudget");
+  saveMoney("kl_consult_target", "consultTarget");
+  on("consultUpdate", "click", () => {
+    setStatus("結果を反映中…");
+    loadToday(); // 最新の結果・発走状況を取り直してコンサルを更新
+  });
   section.querySelectorAll("[data-consult]").forEach((btn) => {
     btn.addEventListener("click", () => {
       state.consultStyle = state.consultStyle === btn.dataset.consult ? null : btn.dataset.consult;
@@ -1701,9 +1746,11 @@ function renderStyleConsult() {
   });
 }
 
-function consultBody(styleKey, forecasts) {
+function consultBody(styleKey, forecasts, money) {
   const s = CONSULT_STYLES[styleKey];
   if (!s) return "";
+  const budget = money?.budget || 3000;
+  const target = money?.target || 0;
   let races = forecasts.filter((r) => Number(r.confidence?.rank || 1) >= s.minRank);
   if (s.sort === "ev") {
     races = races.sort((a, b) => (b.value?.ev || 0) - (a.value?.ev || 0) || (b.top3?.[0]?.probability || 0) - (a.top3?.[0]?.probability || 0));
@@ -1711,18 +1758,22 @@ function consultBody(styleKey, forecasts) {
     races = races.sort((a, b) => (b.confidence?.rank || 0) - (a.confidence?.rank || 0) || (b.top3?.[0]?.probability || 0) - (a.top3?.[0]?.probability || 0));
   }
   races = races.slice(0, 6);
-  const wallet = 10000;
-  const unit = Math.max(100, Math.floor((wallet * s.cap) / s.points / 100) * 100);
   if (!races.length) {
     return `<div class="consult-plan">
-      <p class="consult-meta">${escapeHtml(s.desc)}(1レース ${s.points}点・目安予算の${Math.round(s.cap * 100)}%)</p>
-      <div class="empty">本日は「${s.label}」の狙い目レースがありません。${styleKey === "kenjitsu" ? "本命戦(堅いレース)が無い日です。" : ""}</div>
+      <p class="consult-meta">${escapeHtml(s.desc)}(1レース ${s.points}点)</p>
+      <div class="empty">本日は「${s.label}」の狙い目レースがありません。${styleKey === "kenjitsu" ? "本命戦(堅いレース)が無い日です。" : "更新を押すか、時間を置いてご確認ください。"}</div>
     </div>`;
   }
+  // 投資金額を狙い目レースに均等配分。1点=1レース額÷点数(100円単位、最低100円)。
+  const perRace = Math.max(s.points * 100, Math.round(budget / races.length / 100) * 100);
+  const unit = Math.max(100, Math.round(perRace / s.points / 100) * 100);
+  let totalStake = 0;
   const cards = races
     .map((race) => {
       const top = race.top3?.[0] || {};
       const combos = consultCombos(race, s.points);
+      const raceStake = unit * combos.length;
+      totalStake += raceStake;
       const hit = race.hit_estimate?.trifecta;
       const ev = race.value && race.value.ev >= 1 ? `<span class="ev-chip">💎EV ${race.value.ev.toFixed(2)}</span>` : "";
       return `<button type="button" class="consult-race" data-open-race="${escapeAttr(race.race_key)}">
@@ -1734,14 +1785,19 @@ function consultBody(styleKey, forecasts) {
         <div class="consult-pick">本命 ${car(top.car_no)} ${escapeHtml(top.name || "")} <em>AI勝率${percent(top.probability)}</em></div>
         <div class="consult-buy">${formationHtml(combos) || "-"}</div>
         <div class="consult-foot">
-          <span>${s.points}点 × ${unit.toLocaleString()}円 = <b>${(unit * combos.length).toLocaleString()}円</b></span>
+          <span>${combos.length}点 × ${unit.toLocaleString()}円 = <b>${raceStake.toLocaleString()}円</b></span>
           ${hit != null ? `<span class="hit-est">的中目安 ${percent(hit)}</span>` : ""}
         </div>
       </button>`;
     })
     .join("");
+  const needProfit = Math.max(0, target - budget);
+  const needRoi = totalStake > 0 && target > 0 ? target / totalStake : null;
+  const goalNote = target > budget
+    ? `目標 <b>${target.toLocaleString()}円</b>(+${needProfit.toLocaleString()}円)には全体で回収率 <b>${needRoi ? (needRoi * 100).toFixed(0) : "—"}%</b> が必要。`
+    : "";
   return `<div class="consult-plan">
-    <p class="consult-meta">${escapeHtml(s.desc)} — 1レース <b>${s.points}点</b>、1点の目安 <b>${unit.toLocaleString()}円</b>(1万円想定の${Math.round(s.cap * 100)}%)。狙い目 <b>${races.length}レース</b>。</p>
+    <p class="consult-meta">${escapeHtml(s.desc)} — 狙い目 <b>${races.length}レース</b>、1レース <b>${s.points}点</b>、1点 <b>${unit.toLocaleString()}円</b>。想定投資 <b>${totalStake.toLocaleString()}円</b>。${goalNote}</p>
     <div class="consult-races">${cards}</div>
   </div>`;
 }
