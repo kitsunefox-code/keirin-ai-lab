@@ -55,11 +55,15 @@
 
 html {
   background: var(--color-bg);
+  overflow-x: hidden;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+  touch-action: pan-y;
   background: var(--color-bg);
   color: var(--color-text);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
@@ -3497,11 +3501,11 @@ input, select { background: var(--color-surface-raised); border-color: var(--col
 /* 得意条件 + 較正カーブ */
 .insight-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: var(--space-4);
   margin: var(--space-4) 0;
 }
-@media (max-width: 900px) { .insight-grid { grid-template-columns: 1fr; } }
+@media (max-width: 900px) { .insight-grid { grid-template-columns: minmax(0, 1fr); } }
 .cond-cat {
   color: var(--color-muted);
   font-size: 10px;

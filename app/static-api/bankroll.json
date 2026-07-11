@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at_jst": "2026-07-11T12:55:30+09:00",
+  "generated_at_jst": "2026-07-11T16:42:34+09:00",
   "rules": [
     "全額転がしは行いません(1レース投資は残高の上限%まで)",
     "負けた後の倍賭け(マーチンゲール)は行いません",
@@ -255,130 +255,98 @@
     }
   },
   "proposal": {
-    "race_key": "winticket:2026071143:1:10",
-    "venue": "岐阜",
-    "race_no": 10,
-    "start_time": "15:01",
+    "race_key": "winticket:2026071037:2:6",
+    "venue": "伊東",
+    "race_no": 6,
+    "start_time": "17:54",
     "race_date": "2026年7月11日",
-    "url": "https://www.winticket.jp/keirin/gifu/racecard/2026071143/1/10",
+    "url": "https://www.winticket.jp/keirin/ito/racecard/2026071037/2/6",
     "confidence": "本命",
     "budget": 1200,
-    "total_stake": 600,
-    "ev": 0.753,
-    "expected_return": 450,
+    "total_stake": 1200,
+    "ev": 1.962,
+    "expected_return": 2350,
     "tickets": [
       {
         "role": "本線",
-        "label": "4-1",
-        "stake": 400,
-        "odds": 7.3,
-        "odds_source": "estimated",
-        "popularity": null,
-        "hit_probability": 0.1033,
-        "projected_return": 2920
+        "label": "2-6-4",
+        "stake": 700,
+        "odds": 3.0,
+        "odds_source": "live",
+        "popularity": 1,
+        "hit_probability": 0.2714,
+        "projected_return": 2100
       },
       {
         "role": "抑え",
-        "label": "4-3",
-        "stake": 100,
-        "odds": 10.6,
-        "odds_source": "estimated",
-        "popularity": null,
-        "hit_probability": 0.0705,
-        "projected_return": 1060
+        "label": "2-6-1",
+        "stake": 300,
+        "odds": 8.7,
+        "odds_source": "live",
+        "popularity": 3,
+        "hit_probability": 0.2679,
+        "projected_return": 2610
       },
       {
         "role": "妙味",
-        "label": "4-6",
-        "stake": 100,
-        "odds": 11.9,
-        "odds_source": "estimated",
-        "popularity": null,
-        "hit_probability": 0.0632,
-        "projected_return": 1190
+        "label": "2-1-4",
+        "stake": 200,
+        "odds": 21.3,
+        "odds_source": "live",
+        "popularity": 7,
+        "hit_probability": 0.2547,
+        "projected_return": 4260
       }
     ],
-    "live_odds_count": 0,
+    "live_odds_count": 3,
     "top_pick": {
-      "car_no": 4,
-      "name": "久田朔",
-      "probability": 0.3936,
-      "score": 11.478,
+      "car_no": 2,
+      "name": "アンドルーズ",
+      "probability": 0.4544,
+      "score": 3.804,
       "mark": "",
-      "style": "逃",
-      "comment": "自力。",
+      "style": "両",
+      "comment": "先行・捲りで。",
       "emotion": {
-        "tone": "中立",
-        "score": 0.4,
+        "tone": "上向き",
+        "score": 0.5,
         "buckets": {
-          "intent": 0.4
+          "intent": 0.5
         },
         "hits": [
           {
-            "phrase": "自力",
-            "weight": 0.4,
+            "phrase": "先行",
+            "weight": 0.5,
             "bucket": "intent"
           }
         ],
-        "summary": "戦法意図は見えますが、状態評価は控えめです。"
+        "summary": "状態面か意欲面のプラス材料があります。"
       },
       "reasons": [
-        "競走得点上位",
+        "勝率高め",
         "バック数あり",
-        "前検日談話: 上向き",
-        "EX攻撃力100%",
-        "先頭勝率52%",
+        "前検コメ: 上向き",
+        "直近3着内多い",
+        "逃げ有利バンク(333m)",
+        "対清水彩那 1勝0敗",
         "学習: 割引"
       ],
       "form": null,
       "term": null,
       "class_move": null,
-      "player_id": "015826"
+      "player_id": "130134"
     },
-    "scenario_headline": "4久田朔が本線。前で動いてライン4-1-7を残す展開を重視。",
-    "bet_type": "exacta",
-    "copy_text": "岐阜10R 2車単\n本線 4-1 400円\n抑え 4-3 100円\n妙味 4-6 100円",
+    "scenario_headline": "2アンドルーズは単騎でも総合評価上位。混戦の好位取りを評価。",
+    "bet_type": "trifecta",
+    "copy_text": "伊東6R 3連単\n本線 2-6-4 700円\n抑え 2-6-1 300円\n妙味 2-1-4 200円",
     "odds_status": {
-      "attempted": 6,
-      "fetched": 6,
+      "attempted": 5,
+      "fetched": 5,
       "failed": 0,
       "errors": []
     }
   },
   "judged_races": [
-    {
-      "race_key": "winticket:2026071143:1:10",
-      "venue": "岐阜",
-      "race_no": 10,
-      "start_time": "15:01",
-      "confidence": "本命",
-      "decision": "bet",
-      "reason": "予定レース・半分に縮小して実行(EV 0.75 低め・見送りも可)",
-      "ev": 0.752,
-      "is_next": true
-    },
-    {
-      "race_key": "winticket:2026071143:1:11",
-      "venue": "岐阜",
-      "race_no": 11,
-      "start_time": "15:32",
-      "confidence": "本命",
-      "decision": "bet",
-      "reason": "予定レース・半分に縮小して実行(EV 0.75 低め・見送りも可)",
-      "ev": 0.754,
-      "is_next": false
-    },
-    {
-      "race_key": "winticket:2026071037:2:1",
-      "venue": "伊東",
-      "race_no": 1,
-      "start_time": "15:55",
-      "confidence": "本命",
-      "decision": "bet",
-      "reason": "EV 7.88 / 3点分散 / ライブ3点",
-      "ev": 7.883,
-      "is_next": false
-    },
     {
       "race_key": "winticket:2026071037:2:6",
       "venue": "伊東",
@@ -386,9 +354,9 @@
       "start_time": "17:54",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 1.91 / 3点分散 / ライブ3点",
-      "ev": 1.908,
-      "is_next": false
+      "reason": "EV 1.96 / 3点分散 / ライブ3点",
+      "ev": 1.962,
+      "is_next": true
     },
     {
       "race_key": "winticket:2026071175:1:6",
@@ -397,8 +365,8 @@
       "start_time": "18:06",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 2.78 / 3点分散 / ライブ3点",
-      "ev": 2.784,
+      "reason": "EV 2.96 / 3点分散 / ライブ3点",
+      "ev": 2.96,
       "is_next": false
     },
     {
@@ -408,8 +376,8 @@
       "start_time": "18:18",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 5.21 / 3点分散 / ライブ3点",
-      "ev": 5.205,
+      "reason": "EV 5.90 / 3点分散 / ライブ3点",
+      "ev": 5.905,
       "is_next": false
     },
     {
@@ -419,8 +387,8 @@
       "start_time": "19:48",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 7.46 / 3点分散",
-      "ev": 7.459,
+      "reason": "EV 4.71 / 3点分散 / ライブ3点",
+      "ev": 4.71,
       "is_next": false
     },
     {
@@ -430,8 +398,8 @@
       "start_time": "20:30",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 7.45 / 3点分散",
-      "ev": 7.446,
+      "reason": "EV 5.70 / 3点分散 / ライブ3点",
+      "ev": 5.703,
       "is_next": false
     }
   ],
@@ -750,8 +718,7 @@
         "start_time": "15:01",
         "original": null,
         "changed_at": null,
-        "status": "planned",
-        "is_next": true
+        "status": "missed"
       },
       {
         "race_key": "winticket:2026071143:1:11",
@@ -760,7 +727,7 @@
         "start_time": "15:32",
         "original": null,
         "changed_at": null,
-        "status": "planned"
+        "status": "missed"
       },
       {
         "race_key": "winticket:2026071037:2:1",
@@ -769,7 +736,7 @@
         "start_time": "15:55",
         "original": null,
         "changed_at": null,
-        "status": "planned"
+        "status": "missed"
       },
       {
         "race_key": "winticket:2026071037:2:6",
@@ -778,7 +745,8 @@
         "start_time": "17:54",
         "original": null,
         "changed_at": null,
-        "status": "planned"
+        "status": "planned",
+        "is_next": true
       },
       {
         "race_key": "winticket:2026071175:1:6",
