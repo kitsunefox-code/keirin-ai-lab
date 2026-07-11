@@ -3875,3 +3875,31 @@ input, select { background: var(--color-surface-raised); border-color: var(--col
   background: var(--color-loss);
   animation: venue-live-pulse 1.6s ease-in-out infinite;
 }
+
+/* 残り周回カウンタ(実レースの周回板: 青板/赤板/打鐘) */
+.motion-stage { position: relative; }
+.lap-counter {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: grid;
+  justify-items: center;
+  gap: 1px;
+  min-width: 74px;
+  padding: 6px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: rgba(5, 8, 9, 0.85);
+  pointer-events: none;
+  z-index: 3;
+}
+.lap-counter b { color: var(--color-text); font-size: var(--text-sm); font-weight: 900; }
+.lap-counter b.is-bell { color: var(--color-caution); }
+.lap-counter span { color: var(--color-muted); font-size: 10px; font-variant-numeric: tabular-nums; font-weight: 800; }
+
+/* 先頭誘導員 */
+.motion-pacer { transition: opacity 200ms linear; }
+
+/* 選手ページへのリンク(名前クリック) */
+.line-flat-member { text-decoration: none; color: inherit; }
+a.line-flat-member:hover .car { box-shadow: 0 0 0 2px var(--color-accent); }

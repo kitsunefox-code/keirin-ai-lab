@@ -73,6 +73,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const btn = event.target.closest(".motion-btn");
     if (btn) toggleRaceMotion(btn.dataset.race);
   });
+  // 選手ページへのリンクはカード/ボタンのクリック処理より優先(中のリンクだけ反応)
+  document.addEventListener(
+    "click",
+    (event) => {
+      const link = event.target.closest("a.player-link, a.line-flat-member");
+      if (link) event.stopPropagation();
+    },
+    true
+  );
   const page = document.body.dataset.page || "home";
   if (page === "home") {
     // 読み込み中のスケルトン(体感速度の底上げ)
@@ -494,7 +503,7 @@ function renderResultRow(race) {
   return `<div class="result-row is-${race.status}">
     <span class="time-chip">${escapeHtml(race.start_time || "--:--")}</span>
     <strong class="result-race">${escapeHtml(race.race_no || "")}R</strong>
-    <span class="result-pick">${car(pick.car_no)} ${escapeHtml(pick.name || "")} <em>${percent(pick.probability)}</em></span>
+    <span class="result-pick">${car(pick.car_no)} ${playerLink(pick.name, pick.player_id)} <em>${percent(pick.probability)}</em></span>
     <span class="result-tickets">${tickets}</span>
     <span class="result-order">${order || '<em class="pending-text">結果待ち</em>'}</span>
     ${badge}
@@ -675,7 +684,9 @@ function buildMotionPlan(race) {
   const keyframes = [{ lap: 0.0, order: startOrder }];
   const captions = [
     { lap: 0.0, text: `スタート!S取りは${nameOf(sHead)}のライン(S実績${st(sHead, "start_count")}回)。前受けで隊列を組む` },
-    { lap: 0.8, text: "青板、先頭員の後ろで落ち着いて周回" },
+    { lap: 1.0, text: "青板(残り3周)、先頭員の後ろで落ち着いて周回" },
+    { lap: 2.0, text: "赤板(残り2周)、位置取りの駆け引きが始まる" },
+    { lap: 2.27, text: "先頭員が退避!いよいよ勝負どころ" },
   ];
   let cur = startOrder;
   const push = (lap, order, text) => {
@@ -730,7 +741,12 @@ function buildCustomMotionPlan(race, opts) {
 
   const keyframes = [{ lap: 0.0, order: startOrder }];
   const sName = opts.sCar ? `S:${nameOf(startLead)} が誘導の後ろで先頭` : "スタート、先頭員の後ろで隊列を組んで周回";
-  const captions = [{ lap: 0.0, text: sName }, { lap: 1.0, text: "青板、隊列は落ち着いて周回" }];
+  const captions = [
+    { lap: 0.0, text: sName },
+    { lap: 1.0, text: "青板(残り3周)、隊列は落ち着いて周回" },
+    { lap: 2.0, text: "赤板(残り2周)、位置取りの駆け引き" },
+    { lap: 2.27, text: "先頭員が退避!" },
+  ];
   let cur = startOrder;
   const push = (lap, order, text) => {
     cur = N(order);
@@ -1171,11 +1187,20 @@ function startRaceMotion(raceKey, race, stage, planOverride) {
     caption.textContent = "出走データが足りないため再生できません";
     return;
   }
-  svg.innerHTML = motionTrackSvg() + plan.cars.map((car) => motionRiderSvg(car)).join("");
+  svg.innerHTML = motionTrackSvg() + motionPacerSvg() + plan.cars.map((car) => motionRiderSvg(car)).join("");
   const riders = new Map(plan.cars.map((car) => [car, svg.querySelector(`[data-rider="${car}"]`)]));
+  const pacer = svg.querySelector('[data-rider="__pacer__"]');
+  // 残り周回カウンタ(実際のレースと同じく 青板=残り3周 / 赤板=残り2周 / 打鐘=残り1周半)
+  let lapCounter = stage.querySelector(".lap-counter");
+  if (!lapCounter) {
+    lapCounter = document.createElement("div");
+    lapCounter.className = "lap-counter";
+    stage.appendChild(lapCounter);
+  }
 
   const started = performance.now();
   const gapStep = 0.014; // 車間(周回の割合)
+  const PACER_RETREAT = MOTION.bellLap - 0.25; // 先頭誘導員は打鐘の少し前に退避する
 
   const positionAt = (car, coveredLaps) => {
     const frames = plan.keyframes;
@@ -1226,6 +1251,30 @@ function startRaceMotion(raceKey, race, stage, planOverride) {
       const y = point.y + point.ny * outside;
       node.setAttribute("transform", `translate(${x.toFixed(1)}, ${y.toFixed(1)})`);
     });
+    // 先頭誘導員: 隊列の少し前を走り、打鐘前に外へ膨れて退避する(実レースの流れ)
+    if (pacer) {
+      if (covered < PACER_RETREAT + 0.35) {
+        const drift = Math.max(0, covered - PACER_RETREAT); // 退避開始からの経過
+        const pacerLap = Math.min(covered, PACER_RETREAT) + 0.035 - drift * 0.12; // 退避中は減速して下がる
+        const point = bankPointAt(pacerLap);
+        const out = drift * 65; // 外帯線の外へ膨らむ
+        pacer.setAttribute("transform", `translate(${(point.x + point.nx * out).toFixed(1)}, ${(point.y + point.ny * out).toFixed(1)})`);
+        pacer.setAttribute("opacity", String(Math.max(0, 1 - drift * 2.4)));
+      } else {
+        pacer.setAttribute("opacity", "0");
+      }
+    }
+    // 残り周回カウンタ(青板・赤板・打鐘は実レースの周回板と同じ意味)
+    const remaining = Math.max(0, MOTION.laps - covered);
+    let board = "周回中";
+    if (remaining <= 0.02) board = "ゴール";
+    else if (remaining <= 0.3) board = "直線";
+    else if (remaining <= 1.0) board = "最終周回";
+    else if (covered >= MOTION.bellLap) board = "🔔打鐘";
+    else if (remaining <= 2.0) board = "赤板";
+    else if (remaining <= 3.0) board = "青板";
+    const remText = remaining <= 0.02 ? "" : `残り${(Math.ceil(remaining * 2) / 2).toFixed(1).replace(".0", "")}周`;
+    lapCounter.innerHTML = `<b class="${covered >= MOTION.bellLap ? "is-bell" : ""}">${board}</b>${remText ? `<span>${remText}</span>` : ""}`;
     // 打鐘: 残り1周半のバック線通過で鐘が揺れる+ジャン音
     const bell = svg.querySelector(".bank-bell");
     if (bell) {
@@ -1306,6 +1355,14 @@ function motionRiderSvg(car) {
   return `<g data-rider="${car}" class="motion-rider">
     <circle r="8" fill="${fill}" stroke="#18181a" stroke-width="1.1" />
     <text y="3.2" text-anchor="middle" fill="${text}" font-size="9" font-weight="700">${car}</text>
+  </g>`;
+}
+
+// 先頭誘導員(ペーサー)。実際のレースと同じく隊列の前で風除けになり、打鐘前に外へ退避する。
+function motionPacerSvg() {
+  return `<g data-rider="__pacer__" class="motion-pacer">
+    <circle r="8" fill="#e8e8e8" stroke="#555" stroke-width="1.1" stroke-dasharray="2.5 2" />
+    <text y="3.2" text-anchor="middle" fill="#333" font-size="8" font-weight="800">誘</text>
   </g>`;
 }
 
@@ -1906,7 +1963,7 @@ function consultBody(styleKey, forecasts, money) {
           <span>${escapeHtml(race.start_time || "")}</span>
           ${badge(race.confidence?.label || "混戦", "confidence-badge")}${ev}
         </div>
-        <div class="consult-pick">本命 ${car(top.car_no)} ${escapeHtml(top.name || "")} <em>AI勝率${percent(top.probability)}</em></div>
+        <div class="consult-pick">本命 ${car(top.car_no)} ${playerLink(top.name, top.player_id)} <em>AI勝率${percent(top.probability)}</em></div>
         <div class="consult-buy">${formationHtml(combos) || "-"}</div>
         <div class="consult-foot">
           <span>${combos.length}点 × ${unit.toLocaleString()}円 = <b>${raceStake.toLocaleString()}円</b></span>
@@ -2826,10 +2883,11 @@ function renderLineDiagram(lines, top3) {
       const members = (line.members || [])
         .map((member) => {
           const highlight = topCars.has(Number(member.car_no)) ? " is-highlight" : "";
-          return `<span class="line-flat-member${highlight}" title="${escapeAttr(member.name || "")} ${escapeAttr(member.style || "")}">
-            ${car(member.car_no)}
-            <small>${escapeHtml((member.name || "").slice(0, 4))}</small>
-          </span>`;
+          const inner = `${car(member.car_no)}<small>${escapeHtml((member.name || "").slice(0, 4))}</small>`;
+          // 選手ページへのリンク(player_idが無い選手はそのまま表示)
+          return member.player_id
+            ? `<a class="line-flat-member${highlight}" href="player.html?id=${encodeURIComponent(member.player_id)}" title="${escapeAttr(member.name || "")} ${escapeAttr(member.style || "")} — 選手ページへ">${inner}</a>`
+            : `<span class="line-flat-member${highlight}" title="${escapeAttr(member.name || "")} ${escapeAttr(member.style || "")}">${inner}</span>`;
         })
         .join("");
       return `<span class="line-flat-chain line-color-${color}">${members}</span>`;

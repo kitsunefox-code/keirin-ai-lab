@@ -621,6 +621,7 @@ def _line_details(lineup: list[list[int]], entries_by_car: dict[int, dict]) -> l
                         "style": item.get("style") or "",
                         "comment": item.get("comment") or "",
                         "probability": item.get("win_probability"),
+                        "player_id": item.get("player_id") or "",
                     }
                     for item in members
                 ],

@@ -337,6 +337,7 @@ def _race_report(conn: sqlite3.Connection, row: sqlite3.Row, time_map: dict[str,
         "car_no": top.get("car_no"),
         "name": top.get("name") or "",
         "probability": round(float(top.get("win_probability") or top.get("probability") or 0), 4),
+        "player_id": top.get("player_id") or "",
     }
     # 答え合わせはAIが提示した上位6点(運用モードの最大点数)で判定する
     ticket_labels = [_ticket_label(t) for t in tickets[:6]]
