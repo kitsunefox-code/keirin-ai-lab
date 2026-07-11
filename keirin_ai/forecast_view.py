@@ -357,7 +357,7 @@ def _entry_records(conn, race_key: str, ranking: list[dict]) -> list[dict]:
     rows = conn.execute(
         """
         select car_no, name, prefecture, class, age, term, ai_mark, racing_score,
-               style, gear, comment_excerpt, emotion_json, features_json
+               style, gear, comment_excerpt, emotion_json, features_json, player_id
         from entries
         where race_key=?
         order by car_no
@@ -390,6 +390,7 @@ def _entry_records(conn, race_key: str, ranking: list[dict]) -> list[dict]:
                 "win_probability": rank.get("win_probability") or rank.get("probability"),
                 "model_score": rank.get("model_score") or rank.get("score"),
                 "reasons": rank.get("reasons") or [],
+                "player_id": row["player_id"] or "",
             }
         )
 
@@ -397,7 +398,80 @@ def _entry_records(conn, race_key: str, ranking: list[dict]) -> list[dict]:
         if car_no in seen:
             continue
         entries.append(_entry_from_ranking(rank))
+    _attach_player_form(conn, entries)
     return sorted(entries, key=lambda item: item["car_no"])
+
+
+def _attach_player_form(conn, entries: list[dict]) -> None:
+    """蓄積した実戦データ(着順・競走得点の推移)から、選手ごとの調子を付ける。
+
+    player_form(レース後の実着順)と entries履歴(出走表の競走得点の変化)を集計し、
+    直近着順のならび・3着内率・得点の増減から 好調/平常/不調 を判定する。
+    データが3走未満の選手は判定しない(捏造しない)。
+    """
+    ids = [e.get("player_id") for e in entries if e.get("player_id")]
+    if not ids:
+        return
+    marks = ",".join("?" for _ in ids)
+    # 直近の実着順(確定済み全レースの着順から導出。古い順に並べて後ろが最新)
+    finish_map: dict[str, list[int]] = {}
+    for row in conn.execute(
+        f"""
+        select e.player_id, e.car_no, r.result_json
+        from entries e
+        join races r on r.race_key = e.race_key
+        where e.player_id in ({marks}) and r.result_json is not null and r.result_json != ''
+        order by r.fetched_at
+        """,
+        ids,
+    ).fetchall():
+        order = (_json_or(row["result_json"], {}) or {}).get("finish_order") or []
+        try:
+            finish = [int(c) for c in order].index(int(row["car_no"])) + 1
+        except (ValueError, TypeError):
+            continue
+        finish_map.setdefault(row["player_id"], []).append(finish)
+    # 競走得点の推移(出走表の履歴。最初と最新の差=上向き/下向き)
+    score_map: dict[str, list[float]] = {}
+    for row in conn.execute(
+        f"""
+        select e.player_id, e.racing_score from entries e
+        join races r on r.race_key = e.race_key
+        where e.player_id in ({marks}) and e.racing_score is not null
+        order by r.fetched_at
+        """,
+        ids,
+    ).fetchall():
+        try:
+            score_map.setdefault(row["player_id"], []).append(float(row["racing_score"]))
+        except (TypeError, ValueError):
+            continue
+
+    for entry in entries:
+        pid = entry.get("player_id")
+        finishes = (finish_map.get(pid) or [])[-12:]
+        scores = score_map.get(pid) or []
+        score_delta = round(scores[-1] - scores[0], 1) if len(scores) >= 2 else None
+        if len(finishes) < 3:
+            entry["form"] = None
+            continue
+        recent = finishes[-6:]
+        top3 = sum(1 for f in recent if f <= 3)
+        top3_rate = top3 / len(recent)
+        avg = sum(recent) / len(recent)
+        # 判定: 直近の3着内率が主、得点の増減が従
+        point = (1 if top3_rate >= 0.5 else -1 if top3_rate <= 0.2 else 0)
+        if score_delta is not None:
+            point += 1 if score_delta >= 1.5 else -1 if score_delta <= -1.5 else 0
+        label = "好調" if point >= 1 else "不調" if point <= -1 else "平常"
+        entry["form"] = {
+            "label": label,
+            "finishes": finishes,
+            "top3_rate": round(top3_rate, 3),
+            "avg_finish": round(avg, 1),
+            "score_delta": score_delta,
+            "races": len(finishes),
+        }
 
 
 def _entry_from_ranking(row: dict) -> dict:
@@ -456,6 +530,7 @@ def _top_row(row: dict, entries_by_car: dict[int, dict]) -> dict:
         "comment": row.get("comment") or entry.get("comment") or "",
         "emotion": emotion or {},
         "reasons": row.get("reasons") or entry.get("reasons") or [],
+        "form": entry.get("form"),
     }
 
 

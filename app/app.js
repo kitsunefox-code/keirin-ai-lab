@@ -2283,7 +2283,7 @@ function renderForecastCard(race) {
         <div class="prediction-summary">
           <div class="main-pick">
             <span>本命 / AI勝率</span>
-            <strong>${car(top.car_no)} ${escapeHtml(top.name || "-")}</strong>
+            <strong>${car(top.car_no)} ${escapeHtml(top.name || "-")} ${top.form ? playerFormChip(top.form) : ""}</strong>
             <em>${percent(top.probability)}<small class="unit-label">AI推定勝率</small></em>
           </div>
           <div class="top3-row">
@@ -2350,6 +2350,25 @@ function renderForecastCard(race) {
   </details>`;
 }
 
+// 選手の調子チップ(蓄積した実着順+得点推移から。3走未満は「—」で捏造しない)
+function playerFormChip(form) {
+  if (!form) return '<span class="muted">—</span>';
+  const cls = form.label === "好調" ? "hot" : form.label === "不調" ? "cold" : "even";
+  const icon = form.label === "好調" ? "🔥" : form.label === "不調" ? "🥶" : "➖";
+  const delta = form.score_delta != null ? `得点${form.score_delta >= 0 ? "+" : ""}${form.score_delta}` : "";
+  const tip = `直近${form.races}走 / 3着内${Math.round(form.top3_rate * 100)}% / 平均${form.avg_finish}着${delta ? " / " + delta : ""}`;
+  return `<span class="form-icon ${cls}" title="${escapeAttr(tip)}">${icon}${form.label}</span>`;
+}
+
+// 直近着順のミニ推移(左が古く右が最新。1着=金/2-3着=緑/それ以外=灰)
+function finishTrail(form) {
+  if (!form || !(form.finishes || []).length) return "";
+  return `<span class="finish-trail">${form.finishes
+    .slice(-8)
+    .map((f) => `<i class="${f === 1 ? "f1" : f <= 3 ? "f3" : "fx"}">${f}</i>`)
+    .join("")}</span>`;
+}
+
 function renderMiniEntries(entries) {
   return `<table class="data-table compact-table">
     <thead>
@@ -2358,6 +2377,7 @@ function renderMiniEntries(entries) {
         <th>選手</th>
         <th>脚質</th>
         <th>得点</th>
+        <th>調子<span class="help-tip" tabindex="0" data-tip="当ラボが蓄積した実戦の着順(左が古く右が最新)と競走得点の増減から判定。3走未満は判定しません。">?</span></th>
         <th>コメント</th>
         <th>AI根拠</th>
       </tr>
@@ -2369,7 +2389,8 @@ function renderMiniEntries(entries) {
             <td>${car(row.car_no)}</td>
             <td><strong>${escapeHtml(row.name)}</strong><br><span class="muted">${escapeHtml(row.prefecture || "")} ${escapeHtml(row.class || "")}</span></td>
             <td>${escapeHtml(row.style || "")}</td>
-            <td>${num(row.racing_score)}</td>
+            <td>${num(row.racing_score)}${row.form && row.form.score_delta != null ? `<br><span class="score-delta ${row.form.score_delta >= 0 ? "kpi-up" : "kpi-down"}">${row.form.score_delta >= 0 ? "▲" : "▼"}${Math.abs(row.form.score_delta)}</span>` : ""}</td>
+            <td>${playerFormChip(row.form)}${finishTrail(row.form)}</td>
             <td>${escapeHtml(row.comment || "")}</td>
             <td>${(row.reasons || []).map((reason) => `<span class="reason-chip">${escapeHtml(reason)}</span>`).join("")}</td>
           </tr>`

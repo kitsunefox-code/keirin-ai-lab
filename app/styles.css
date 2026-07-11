@@ -3745,3 +3745,52 @@ input, select { background: var(--color-surface-raised); border-color: var(--col
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.55; transform: scale(1.25); }
 }
+
+/* ===== カード切れ・センタリング修正 ===== */
+/* 会場カード: 折り返して全部見せる(右端切れをなくす)+ 文字を中央寄せ */
+.venue-strip {
+  flex-wrap: wrap;
+  justify-content: center;
+  overflow-x: visible;
+}
+.venue-chip {
+  justify-items: center;
+  text-align: center;
+}
+.venue-chip .status-dot { justify-content: center; }
+
+/* コンテンツを画面中央に(横に伸びすぎない) */
+.workspace > .panel {
+  max-width: 1080px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* グリッド子要素の最小幅バグ(min-width:autoで520pxに膨らみ右が切れる)対策 */
+.forecast-grid > *, .detail-grid > *, .prediction-summary > * { min-width: 0; }
+@media (max-width: 1180px) {
+  .forecast-grid, .detail-grid { grid-template-columns: minmax(0, 1fr); }
+}
+/* ライン図はモバイルで折り返し(スクロールで切れて見えないのを防ぐ) */
+@media (max-width: 768px) {
+  .line-flat-row { flex-wrap: wrap; overflow-x: visible; }
+}
+
+/* 選手の調子: 直近着順トレイル + 得点増減 */
+.finish-trail { display: inline-flex; gap: 2px; margin-left: 6px; vertical-align: middle; }
+.finish-trail i {
+  font-style: normal;
+  width: 16px;
+  height: 16px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+.finish-trail .f1 { background: rgba(244, 201, 93, 0.25); color: var(--color-caution); }
+.finish-trail .f3 { background: rgba(94, 230, 168, 0.18); color: var(--color-accent); }
+.finish-trail .fx { background: var(--color-surface-raised); color: var(--color-muted); }
+.score-delta { font-size: 10px; font-weight: 900; }
+.main-pick .form-icon { vertical-align: middle; margin-left: 4px; }
