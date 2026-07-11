@@ -290,7 +290,7 @@ def _available_dates(conn: sqlite3.Connection) -> list[str]:
 def _races_on(conn: sqlite3.Connection, iso_date: str) -> list[sqlite3.Row]:
     rows = conn.execute(
         """
-        select race_key, venue, race_no, race_date, source_url, result_json
+        select race_key, venue, race_no, race_date, source_url, result_json, payouts_json
         from races
         where race_key in (select race_key from predictions)
         order by race_no
@@ -346,12 +346,15 @@ def _race_report(conn: sqlite3.Connection, row: sqlite3.Row, time_map: dict[str,
     start_time = time_map.get(row["race_key"], "")
     result = _json_or(row["result_json"], None)
     order = (result or {}).get("finish_order") or []
+    payouts = _json_or(row["payouts_json"], None) if "payouts_json" in row.keys() else None
 
+    payout_info = None
     if not order:
         status = "pending"
         hits = {"honmei": None, "in_top3": None, "trifecta": None, "trifecta_label": None}
     else:
         actual3 = "-".join(str(car) for car in order[:3])
+        actual2 = "-".join(str(car) for car in order[:2])
         trifecta_label = actual3 if actual3 in ticket_labels else None
         honmei = int(top_pick["car_no"] or 0) == int(order[0])
         in_top3 = int(top_pick["car_no"] or 0) in [int(c) for c in order[:3]]
@@ -370,6 +373,21 @@ def _race_report(conn: sqlite3.Connection, row: sqlite3.Row, time_map: dict[str,
         else:
             status = "miss"
 
+        # 実際にいくら当たったか(確定オッズ×100円)。買っていた前提の参考額(捏造なし・オッズ無ければnull)
+        if isinstance(payouts, dict):
+            cars = [int(r.get("car_no") or 0) for r in ranking]
+            exacta_picks = [f"{cars[0]}-{cars[1]}", f"{cars[0]}-{cars[2]}"] if len(cars) >= 3 else []
+            exacta_hit_label = actual2 if actual2 in exacta_picks else None
+            trifecta_odds = payouts.get("trifecta")
+            exacta_odds = payouts.get("exacta")
+            payout_info = {
+                "trifecta_odds": trifecta_odds,
+                "trifecta_payout": int(round(trifecta_odds * 100)) if trifecta_label and trifecta_odds is not None else None,
+                "exacta_odds": exacta_odds,
+                "exacta_hit_label": exacta_hit_label,
+                "exacta_payout": int(round(exacta_odds * 100)) if exacta_hit_label and exacta_odds is not None else None,
+            }
+
     return {
         "race_key": row["race_key"],
         "venue": row["venue"] or "",
@@ -381,6 +399,7 @@ def _race_report(conn: sqlite3.Connection, row: sqlite3.Row, time_map: dict[str,
         "result_order": order[:3],
         "status": status,
         "hits": hits,
+        "payout": payout_info,
     }
 
 

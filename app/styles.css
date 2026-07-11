@@ -2242,12 +2242,22 @@ h4 {
 
 .hit-badge {
   justify-self: end;
+  display: grid;
+  justify-items: center;
+  gap: 1px;
   padding: 3px 10px;
-  border-radius: 999px;
+  border-radius: 12px;
   font-size: var(--text-xs);
   font-weight: 700;
   text-align: center;
   white-space: nowrap;
+}
+
+.result-payout {
+  font-size: 10px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.85;
 }
 
 .hit-badge.hit-trifecta {

@@ -492,7 +492,7 @@ function renderResults(payload) {
 
 function renderResultRow(race) {
   const pick = race.top_pick || {};
-  const badge = resultBadge(race.status);
+  const badge = resultBadge(race.status, race.payout);
   const tickets = (race.tickets || [])
     .map((label) => {
       const hit = race.hits?.trifecta_label === label;
@@ -510,9 +510,18 @@ function renderResultRow(race) {
   </div>`;
 }
 
-function resultBadge(status) {
-  if (status === "hit_trifecta") return `<span class="hit-badge hit-trifecta">3連単的中</span>`;
-  if (status === "hit_honmei") return `<span class="hit-badge hit-honmei">本命的中</span>`;
+// 的中した車券の実際の払戻(確定オッズ×100円、当ラボの買い目基準の参考額)。
+// オッズ未取得(backfill前)は金額を出さず「集計中」とし、捏造しない。
+function payoutText(payout) {
+  if (!payout) return "";
+  if (payout.trifecta_payout) return `<small class="result-payout">3連単 ¥${payout.trifecta_payout.toLocaleString()}</small>`;
+  if (payout.exacta_payout) return `<small class="result-payout">2車単 ¥${payout.exacta_payout.toLocaleString()}</small>`;
+  return "";
+}
+
+function resultBadge(status, payout) {
+  if (status === "hit_trifecta") return `<span class="hit-badge hit-trifecta">3連単的中${payoutText(payout)}</span>`;
+  if (status === "hit_honmei") return `<span class="hit-badge hit-honmei">本命的中${payoutText(payout)}</span>`;
   if (status === "in_top3") return `<span class="hit-badge hit-top3">車券圏</span>`;
   if (status === "miss") return `<span class="hit-badge hit-miss">ハズレ</span>`;
   return `<span class="hit-badge hit-pending">結果待ち</span>`;
