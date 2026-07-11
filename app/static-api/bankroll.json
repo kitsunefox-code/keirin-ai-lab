@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at_jst": "2026-07-11T15:39:23+09:00",
+  "generated_at_jst": "2026-07-11T16:47:25+09:00",
   "rules": [
     "全額転がしは行いません(1レース投資は残高の上限%まで)",
     "負けた後の倍賭け(マーチンゲール)は行いません",
@@ -346,121 +346,98 @@
     }
   },
   "proposal": {
-    "race_key": "winticket:2026071037:2:1",
+    "race_key": "winticket:2026071037:2:6",
     "venue": "伊東",
-    "race_no": 1,
-    "start_time": "15:55",
+    "race_no": 6,
+    "start_time": "17:54",
     "race_date": "2026年7月11日",
-    "url": "https://www.winticket.jp/keirin/ito/racecard/2026071037/2/1",
+    "url": "https://www.winticket.jp/keirin/ito/racecard/2026071037/2/6",
     "confidence": "本命",
     "budget": 900,
     "total_stake": 900,
-    "ev": 5.491,
-    "expected_return": 4940,
+    "ev": 1.664,
+    "expected_return": 1500,
     "tickets": [
       {
         "role": "本線",
-        "label": "3-7-4",
+        "label": "2-6-4",
         "stake": 600,
-        "odds": 12.8,
+        "odds": 3.0,
         "odds_source": "live",
-        "popularity": 2,
-        "hit_probability": 0.3283,
-        "projected_return": 7680
+        "popularity": 1,
+        "hit_probability": 0.2714,
+        "projected_return": 1800
       },
       {
         "role": "抑え",
-        "label": "3-7-5",
+        "label": "2-6-1",
         "stake": 200,
-        "odds": 19.3,
+        "odds": 8.7,
         "odds_source": "live",
-        "popularity": 4,
-        "hit_probability": 0.3176,
-        "projected_return": 3860
+        "popularity": 3,
+        "hit_probability": 0.2679,
+        "projected_return": 1740
       },
       {
         "role": "妙味",
-        "label": "3-5-7",
+        "label": "2-1-4",
         "stake": 100,
-        "odds": 49.2,
+        "odds": 21.3,
         "odds_source": "live",
-        "popularity": 19,
-        "hit_probability": 0.2428,
-        "projected_return": 4920
+        "popularity": 7,
+        "hit_probability": 0.2547,
+        "projected_return": 2130
       }
     ],
     "live_odds_count": 3,
     "top_pick": {
-      "car_no": 3,
-      "name": "谷澤優貴",
-      "probability": 0.426,
-      "score": 9.218,
-      "mark": "本命",
-      "style": "逃",
-      "comment": "自力で。",
+      "car_no": 2,
+      "name": "アンドルーズ",
+      "probability": 0.4544,
+      "score": 3.804,
+      "mark": "",
+      "style": "両",
+      "comment": "先行・捲りで。",
       "emotion": {
-        "tone": "中立",
-        "score": 0.4,
+        "tone": "上向き",
+        "score": 0.5,
         "buckets": {
-          "intent": 0.4
+          "intent": 0.5
         },
         "hits": [
           {
-            "phrase": "自力",
-            "weight": 0.4,
+            "phrase": "先行",
+            "weight": 0.5,
             "bucket": "intent"
           }
         ],
-        "summary": "戦法意図は見えますが、状態評価は控えめです。"
+        "summary": "状態面か意欲面のプラス材料があります。"
       },
       "reasons": [
-        "印: 本命",
-        "競走得点上位",
         "勝率高め",
         "バック数あり",
-        "前走後談話: 不安含み",
-        "EX攻撃力88%",
-        "先頭勝率52%"
+        "前検コメ: 上向き",
+        "直近3着内多い",
+        "逃げ有利バンク(333m)",
+        "対清水彩那 1勝0敗",
+        "学習: 割引"
       ],
-      "form": {
-        "label": "不調",
-        "finishes": [
-          5
-        ],
-        "top3_rate": null,
-        "avg_finish": null,
-        "score_delta": 0.0,
-        "official_delta": -2.42,
-        "score_now": 86.0,
-        "score_recent": 83.58,
-        "races": 1
-      },
-      "term": 127,
+      "form": null,
+      "term": null,
       "class_move": null,
-      "player_id": "015903"
+      "player_id": "130134"
     },
-    "scenario_headline": "3谷澤優貴が本線。前で動いてライン3-7-2を残す展開を重視。",
+    "scenario_headline": "2アンドルーズは単騎でも総合評価上位。混戦の好位取りを評価。",
     "bet_type": "trifecta",
-    "copy_text": "伊東1R 3連単\n本線 3-7-4 600円\n抑え 3-7-5 200円\n妙味 3-5-7 100円",
+    "copy_text": "伊東6R 3連単\n本線 2-6-4 600円\n抑え 2-6-1 200円\n妙味 2-1-4 100円",
     "odds_status": {
-      "attempted": 6,
-      "fetched": 6,
+      "attempted": 5,
+      "fetched": 5,
       "failed": 0,
       "errors": []
     }
   },
   "judged_races": [
-    {
-      "race_key": "winticket:2026071037:2:1",
-      "venue": "伊東",
-      "race_no": 1,
-      "start_time": "15:55",
-      "confidence": "本命",
-      "decision": "bet",
-      "reason": "EV 5.49 / 3点分散 / ライブ3点",
-      "ev": 5.491,
-      "is_next": true
-    },
     {
       "race_key": "winticket:2026071037:2:6",
       "venue": "伊東",
@@ -468,9 +445,9 @@
       "start_time": "17:54",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 1.62 / 3点分散 / ライブ3点",
-      "ev": 1.623,
-      "is_next": false
+      "reason": "EV 1.66 / 3点分散 / ライブ3点",
+      "ev": 1.664,
+      "is_next": true
     },
     {
       "race_key": "winticket:2026071175:1:6",
@@ -479,8 +456,8 @@
       "start_time": "18:06",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 2.87 / 3点分散 / ライブ3点",
-      "ev": 2.869,
+      "reason": "EV 2.85 / 3点分散 / ライブ3点",
+      "ev": 2.846,
       "is_next": false
     },
     {
@@ -490,8 +467,8 @@
       "start_time": "18:18",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 4.15 / 3点分散 / ライブ3点",
-      "ev": 4.145,
+      "reason": "EV 4.16 / 3点分散 / ライブ3点",
+      "ev": 4.165,
       "is_next": false
     },
     {
@@ -501,8 +478,8 @@
       "start_time": "19:48",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 4.20 / 3点分散 / ライブ3点",
-      "ev": 4.195,
+      "reason": "EV 4.42 / 3点分散 / ライブ3点",
+      "ev": 4.417,
       "is_next": false
     },
     {
@@ -512,8 +489,8 @@
       "start_time": "20:30",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 4.53 / 3点分散 / ライブ3点",
-      "ev": 4.526,
+      "reason": "EV 4.56 / 3点分散 / ライブ3点",
+      "ev": 4.558,
       "is_next": false
     }
   ],
@@ -852,8 +829,7 @@
         "start_time": "15:55",
         "original": null,
         "changed_at": null,
-        "status": "planned",
-        "is_next": true
+        "status": "missed"
       },
       {
         "race_key": "winticket:2026071037:2:6",
@@ -862,7 +838,8 @@
         "start_time": "17:54",
         "original": null,
         "changed_at": null,
-        "status": "planned"
+        "status": "planned",
+        "is_next": true
       },
       {
         "race_key": "winticket:2026071175:1:6",
