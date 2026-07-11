@@ -2176,30 +2176,37 @@ function renderVenueBoard(forecasts) {
   if (!el("venueBoard")) return;
   const venues = new Map();
   for (const race of forecasts) {
-    if (race.elapsed) continue;
     const venue = race.venue || "未設定";
-    const current = venues.get(venue) || {
-      venue,
-      count: 0,
-      firstTime: race.start_time || "--:--",
-      raceNo: race.race_no || "-",
-      strong: 0,
-    };
-    current.count += 1;
-    if ((race.start_time || "99:99") < (current.firstTime || "99:99")) {
-      current.firstTime = race.start_time || "--:--";
-      current.raceNo = race.race_no || "-";
+    const current = venues.get(venue) || { venue, total: 0, elapsed: 0, upcoming: [], strong: 0 };
+    current.total += 1;
+    if (race.elapsed) {
+      current.elapsed += 1;
+    } else {
+      current.upcoming.push(race);
+      if (race.confidence?.rank >= 2) current.strong += 1;
     }
-    if (race.confidence?.rank >= 2) current.strong += 1;
     venues.set(venue, current);
   }
-  el("venueBoard").innerHTML = [...venues.values()]
-    .sort((a, b) => String(a.firstTime).localeCompare(String(b.firstTime)))
+  const items = [...venues.values()]
+    .filter((item) => item.upcoming.length > 0) // 全レース終了した会場は「今」から外す
+    .map((item) => {
+      item.upcoming.sort((a, b) => String(a.start_time || "99:99").localeCompare(String(b.start_time || "99:99")));
+      const next = item.upcoming[0];
+      item.isLive = item.elapsed > 0; // 発走済みレースがある = 現在開催中
+      item.nextTime = next?.start_time || "--:--";
+      item.nextRaceNo = next?.race_no || "-";
+      return item;
+    })
+    .sort((a, b) => {
+      if (a.isLive !== b.isLive) return a.isLive ? -1 : 1; // 開催中を先頭に
+      return String(a.nextTime).localeCompare(String(b.nextTime));
+    });
+  el("venueBoard").innerHTML = items
     .map(
-      (item) => `<article class="venue-chip">
-        <span class="status-dot">受付中</span>
+      (item) => `<article class="venue-chip${item.isLive ? " is-live" : ""}">
+        <span class="status-dot">${item.isLive ? "🔴 開催中" : "本日"}</span>
         <strong>${escapeHtml(item.venue)}</strong>
-        <small>${escapeHtml(item.raceNo)}R 発走 ${escapeHtml(item.firstTime)} / ${item.count}レース</small>
+        <small>次${escapeHtml(item.nextRaceNo)}R 発走 ${escapeHtml(item.nextTime)} / 残り${item.upcoming.length}R</small>
         <em>自信 ${item.strong}</em>
       </article>`
     )
@@ -2231,8 +2238,7 @@ function renderBankCard(race) {
   const chips = [];
   if (bank.track_distance) chips.push(`周長${bank.track_distance}m`);
   if (bank.straight) chips.push(`みなし直線${bank.straight}m`);
-  if (bank.is_indoor) chips.push("屋内(ミッドナイト)");
-  if (race.hour_label && race.hour_type !== "hourTypeNormal") chips.push(race.hour_label);
+  if (bank.is_indoor) chips.push("屋内");
   if (race.weather?.weather) chips.push(`天気: ${race.weather.weather}${race.weather.is_rain ? "☔" : ""}`);
   return `<section class="bank-card ${biasClass}">
     <div class="bank-card-head">
@@ -2265,7 +2271,6 @@ function renderForecastCard(race) {
       <span class="ribbon-main">${car(top.car_no)} ${escapeHtml(top.name || "-")} <em class="prob-tag">AI勝率${percent(top.probability)}</em>${race.hit_estimate ? `<em class="prob-tag hit">2車単的中目安${percent(race.hit_estimate.exacta)}</em>` : ""}</span>
       <span class="ribbon-tickets">${escapeHtml(primaryTickets || "-")}</span>
       ${race.class_group ? badge(race.class_group, race.is_girls ? "girls-badge" : "class-badge") : ""}
-      ${race.hour_label && race.hour_type !== "hourTypeNormal" ? badge(race.hour_label, "hour-badge") : ""}
       ${race.weather?.is_rain ? badge("雨", "rain-badge") : ""}
       ${payoutBadge(race)}
       ${race.value && race.value.ev >= 1 ? `<span class="ev-chip">💎EV ${race.value.ev.toFixed(2)}</span>` : ""}
