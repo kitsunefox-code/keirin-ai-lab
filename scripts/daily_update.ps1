@@ -32,7 +32,7 @@ if ($Mode -eq "morning") {
     Write-Log "yesterday settled (exit $LASTEXITCODE)"
     $today = Get-Date -Format "yyyy-MM-dd"
     $stamp = Get-Date -Format "yyyyMMdd"
-    python scripts\forecast_winticket_after.py --date $today --after 00:00 --max-races 60 --delay 0.4 --out "data\forecast_${stamp}_after_0000.json" | Out-Null
+    python scripts\forecast_winticket_after.py --date $today --after 00:00 --max-races 150 --delay 0.4 --out "data\forecast_${stamp}_after_0000.json" | Out-Null
     Write-Log "forecast generated (exit $LASTEXITCODE)"
     # オリジナル運用(株式運用型)を毎日自動開始
     python scripts\start_original.py | Out-Null
