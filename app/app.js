@@ -207,7 +207,7 @@ function renderPlayerPage(p) {
   const trendHtml = trendRows.length
     ? `<section class="surface-panel">
         <div class="capital-head"><div><h3>競走得点の推移</h3></div><span class="page-meta">当ラボ収集分・直近${trendRows.length}件</span></div>
-        ${sparkline(trendRows.map((r) => Number(r.score) || 0))}
+        ${sparkline(trendRows)}
       </section>`
     : "";
 
@@ -252,22 +252,50 @@ function renderPlayerPage(p) {
   }
 }
 
-// 得点推移の簡易スパークライン(SVG)
-function sparkline(values) {
-  if (values.length < 2) return `<p class="consult-hint">推移データが不足しています。</p>`;
-  const w = 560, h = 120, pad = 12;
+// 日付文字列(ISO "2026-07-11" / 和暦風 "2026年7月11日")を "7/11" に短縮する
+function shortDateAny(raw) {
+  const s = String(raw || "");
+  const m = s.match(/(\d{4})[年\-](\d{1,2})[月\-](\d{1,2})/);
+  if (!m) return s;
+  return `${Number(m[2])}/${Number(m[3])}`;
+}
+
+// 得点推移の折れ線グラフ(縦軸=競走得点[点]、横軸=日付)
+function sparkline(rows) {
+  if (rows.length < 2) return `<p class="consult-hint">推移データが不足しています。</p>`;
+  const values = rows.map((r) => Number(r.score) || 0);
+  const w = 560, h = 150;
+  const padL = 34, padR = 14, padT = 14, padB = 22;
+  const plotW = w - padL - padR, plotH = h - padT - padB;
   const min = Math.min(...values), max = Math.max(...values);
   const range = max - min || 1;
-  const stepX = (w - pad * 2) / (values.length - 1);
-  const points = values.map((v, i) => {
-    const x = pad + i * stepX;
-    const y = h - pad - ((v - min) / range) * (h - pad * 2);
-    return `${x.toFixed(1)},${y.toFixed(1)}`;
-  });
+  const stepX = values.length > 1 ? plotW / (values.length - 1) : 0;
+  const xAt = (i) => padL + i * stepX;
+  const yAt = (v) => padT + plotH - ((v - min) / range) * plotH;
+  const points = values.map((v, i) => `${xAt(i).toFixed(1)},${yAt(v).toFixed(1)}`);
   const last = points[points.length - 1].split(",");
-  return `<svg viewBox="0 0 ${w} ${h}" class="calibration-chart" role="img" aria-label="得点推移">
+
+  // 縦軸: 最高/最低/中間の得点値(単位「点」付き)
+  const mid = (min + max) / 2;
+  const yTicks = [max, mid, min].map(
+    (v) => `<text x="${(padL - 6).toFixed(1)}" y="${(yAt(v) + 3).toFixed(1)}" class="cal-tick" text-anchor="end">${v.toFixed(1)}点</text>`
+  );
+  const yGrid = [max, mid, min].map(
+    (v) => `<line x1="${padL}" y1="${yAt(v).toFixed(1)}" x2="${(w - padR).toFixed(1)}" y2="${yAt(v).toFixed(1)}" class="cal-grid" />`
+  );
+
+  // 横軸: 最初と最後(と可能なら中間)の日付
+  const idxList = values.length > 2 ? [0, Math.floor((values.length - 1) / 2), values.length - 1] : [0, values.length - 1];
+  const xTicks = [...new Set(idxList)].map(
+    (i) => `<text x="${xAt(i).toFixed(1)}" y="${h - 4}" class="cal-tick" text-anchor="${i === 0 ? "start" : i === values.length - 1 ? "end" : "middle"}">${escapeHtml(shortDateAny(rows[i].date))}</text>`
+  );
+
+  return `<svg viewBox="0 0 ${w} ${h}" class="calibration-chart" role="img" aria-label="競走得点の推移(縦軸: 点、横軸: 日付)">
+    ${yGrid.join("")}
     <polyline points="${points.join(" ")}" class="cal-line" />
     <circle cx="${last[0]}" cy="${last[1]}" r="4" class="cal-dot" />
+    ${yTicks.join("")}
+    ${xTicks.join("")}
   </svg>`;
 }
 
