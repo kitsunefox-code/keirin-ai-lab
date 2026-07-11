@@ -1880,6 +1880,8 @@ function consultBody(styleKey, forecasts, money) {
     races = races.sort((a, b) => (b.confidence?.rank || 0) - (a.confidence?.rank || 0) || (b.top3?.[0]?.probability || 0) - (a.top3?.[0]?.probability || 0));
   }
   races = races.slice(0, 6);
+  // 選出後は発走時刻順に並べ替えて表示(狙い目の優先度は選出のみに使う)
+  races = races.slice().sort((a, b) => String(a.start_time || "99:99").localeCompare(String(b.start_time || "99:99")));
   if (!races.length) {
     return `<div class="consult-plan">
       <p class="consult-meta">${escapeHtml(s.desc)}(1レース ${s.points}点)</p>
