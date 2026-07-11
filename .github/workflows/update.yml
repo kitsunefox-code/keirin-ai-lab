@@ -63,6 +63,7 @@ jobs:
             STAMP=$(TZ=Asia/Tokyo date +%Y%m%d)
             python scripts/forecast_winticket_after.py --date "$TODAY" --after 00:00 --max-races 60 --delay 0.4 --out "data/forecast_${STAMP}_after_0000.json"
             python scripts/start_original.py
+            python scripts/backfill_player_profiles.py --limit 250 --delay 0.5
           elif [ "$MODE" = "night" ]; then
             python scripts/collect_raceresults.py --limit 120 --delay 0.6
             python scripts/backfill_keirinjp_results.py --limit 60 --delay 0.5

@@ -2283,7 +2283,7 @@ function renderForecastCard(race) {
         <div class="prediction-summary">
           <div class="main-pick">
             <span>本命 / AI勝率</span>
-            <strong>${car(top.car_no)} ${escapeHtml(top.name || "-")} ${top.form ? playerFormChip(top.form) : ""}</strong>
+            <strong>${car(top.car_no)} ${escapeHtml(top.name || "-")}${rookieBadge(top.term)}${classMoveBadge(top.class_move)} ${top.form ? playerFormChip(top.form) : ""}</strong>
             <em>${percent(top.probability)}<small class="unit-label">AI推定勝率</small></em>
           </div>
           <div class="top3-row">
@@ -2350,14 +2350,21 @@ function renderForecastCard(race) {
   </details>`;
 }
 
-// 選手の調子チップ(蓄積した実着順+得点推移から。3走未満は「—」で捏造しない)
+// 選手の調子チップ(実着順+JKA公式の得点推移から。データ不足は「—」で捏造しない)
 function playerFormChip(form) {
   if (!form) return '<span class="muted">—</span>';
   const cls = form.label === "好調" ? "hot" : form.label === "不調" ? "cold" : "even";
   const icon = form.label === "好調" ? "🔥" : form.label === "不調" ? "🥶" : "➖";
-  const delta = form.score_delta != null ? `得点${form.score_delta >= 0 ? "+" : ""}${form.score_delta}` : "";
-  const tip = `直近${form.races}走 / 3着内${Math.round(form.top3_rate * 100)}% / 平均${form.avg_finish}着${delta ? " / " + delta : ""}`;
-  return `<span class="form-icon ${cls}" title="${escapeAttr(tip)}">${icon}${form.label}</span>`;
+  const parts = [];
+  if (form.races) parts.push(`直近${form.races}走`);
+  if (form.top3_rate != null) parts.push(`3着内${Math.round(form.top3_rate * 100)}%`);
+  if (form.avg_finish != null) parts.push(`平均${form.avg_finish}着`);
+  if (form.official_delta != null) {
+    parts.push(`公式: 近4ヶ月${form.score_recent} vs 今期${form.score_now}(${form.official_delta >= 0 ? "+" : ""}${form.official_delta})`);
+  } else if (form.score_delta != null) {
+    parts.push(`得点${form.score_delta >= 0 ? "+" : ""}${form.score_delta}`);
+  }
+  return `<span class="form-icon ${cls}" title="${escapeAttr(parts.join(" / "))}">${icon}${form.label}</span>`;
 }
 
 // 直近着順のミニ推移(左が古く右が最新。1着=金/2-3着=緑/それ以外=灰)
@@ -2385,15 +2392,18 @@ function renderMiniEntries(entries) {
     <tbody>
       ${entries
         .map(
-          (row) => `<tr>
+          (row) => {
+            const od = row.form ? (row.form.official_delta != null ? row.form.official_delta : row.form.score_delta) : null;
+            return `<tr>
             <td>${car(row.car_no)}</td>
-            <td><strong>${escapeHtml(row.name)}</strong><br><span class="muted">${escapeHtml(row.prefecture || "")} ${escapeHtml(row.class || "")}</span></td>
+            <td><strong>${escapeHtml(row.name)}</strong>${rookieBadge(row.term)}${classMoveBadge(row.class_move)}<br><span class="muted">${escapeHtml(row.prefecture || "")} ${escapeHtml(row.class || "")}</span></td>
             <td>${escapeHtml(row.style || "")}</td>
-            <td>${num(row.racing_score)}${row.form && row.form.score_delta != null ? `<br><span class="score-delta ${row.form.score_delta >= 0 ? "kpi-up" : "kpi-down"}">${row.form.score_delta >= 0 ? "▲" : "▼"}${Math.abs(row.form.score_delta)}</span>` : ""}</td>
+            <td>${num(row.racing_score)}${od != null ? `<br><span class="score-delta ${od >= 0 ? "kpi-up" : "kpi-down"}" title="${row.form.official_delta != null ? "JKA公式: 直近4ヶ月得点と今期適用得点の差" : "当ラボ収集分の得点変化"}">${od >= 0 ? "▲" : "▼"}${Math.abs(od)}</span>` : ""}</td>
             <td>${playerFormChip(row.form)}${finishTrail(row.form)}</td>
             <td>${escapeHtml(row.comment || "")}</td>
             <td>${(row.reasons || []).map((reason) => `<span class="reason-chip">${escapeHtml(reason)}</span>`).join("")}</td>
-          </tr>`
+          </tr>`;
+          }
         )
         .join("")}
     </tbody>
@@ -2444,9 +2454,23 @@ function badge(text, className = "") {
   return `<span class="badge ${className}">${escapeHtml(text)}</span>`;
 }
 
+// 新人(129期・130期)マーク。デビュー間もない選手は下位級で強いことが多い注目枠。
+function rookieBadge(term) {
+  const t = Number(term);
+  if (t !== 129 && t !== 130) return "";
+  return `<span class="rookie-badge" title="${t}期・デビュー間もない新人">🌱${t}期</span>`;
+}
+
+// 次期級班の昇降(JKA公式の次期級班より)
+function classMoveBadge(move) {
+  if (move === "up") return '<span class="move-badge up" title="次期は昇級予定(公式)">昇級⬆</span>';
+  if (move === "down") return '<span class="move-badge down" title="次期は降級予定(公式)">降級⬇</span>';
+  return "";
+}
+
 function rankPill(rank, row) {
   if (!row || row.car_no == null) return "";
-  return `<span class="rank-pill"><b>${rank}</b>${car(row.car_no)}<span>${escapeHtml(row.name)}</span><em>${percent(row.probability)}</em></span>`;
+  return `<span class="rank-pill"><b>${rank}</b>${car(row.car_no)}<span>${escapeHtml(row.name)}${rookieBadge(row.term)}</span><em>${percent(row.probability)}</em></span>`;
 }
 
 function ticketChip(ticket) {

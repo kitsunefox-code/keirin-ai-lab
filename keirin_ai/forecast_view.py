@@ -447,29 +447,65 @@ def _attach_player_form(conn, entries: list[dict]) -> None:
         except (TypeError, ValueError):
             continue
 
+    # JKA公式プロフィール(今期得点・直近4ヶ月成績・次期級班)
+    profile_map: dict[str, dict] = {}
+    try:
+        for row in conn.execute(
+            f"select * from player_profiles where player_id in ({marks})", ids
+        ).fetchall():
+            profile_map[row["player_id"]] = dict(row)
+    except Exception:
+        profile_map = {}
+
+    from keirin_ai.jka import class_move  # 循環importなし(jkaはsources/stdlibのみ依存)
+
     for entry in entries:
         pid = entry.get("player_id")
         finishes = (finish_map.get(pid) or [])[-12:]
         scores = score_map.get(pid) or []
         score_delta = round(scores[-1] - scores[0], 1) if len(scores) >= 2 else None
-        if len(finishes) < 3:
+
+        # 公式データ: 直近4ヶ月得点 − 今期(適用)得点 = 上向き/下向きの公式シグナル
+        prof = profile_map.get(pid) or {}
+        recent_official = _json_or(prof.get("recent_json"), None) or {}
+        score_now = prof.get("score_now")
+        score_recent = recent_official.get("score")
+        official_delta = (
+            round(float(score_recent) - float(score_now), 2)
+            if score_recent is not None and score_now is not None
+            else None
+        )
+        move = class_move(prof.get("class_now") or "", prof.get("class_next") or "")
+        if move:
+            entry["class_move"] = move  # up=昇級予定 / down=降級予定
+
+        if len(finishes) < 3 and official_delta is None:
             entry["form"] = None
             continue
-        recent = finishes[-6:]
-        top3 = sum(1 for f in recent if f <= 3)
-        top3_rate = top3 / len(recent)
-        avg = sum(recent) / len(recent)
-        # 判定: 直近の3着内率が主、得点の増減が従
-        point = (1 if top3_rate >= 0.5 else -1 if top3_rate <= 0.2 else 0)
-        if score_delta is not None:
-            point += 1 if score_delta >= 1.5 else -1 if score_delta <= -1.5 else 0
+
+        point = 0
+        top3_rate = None
+        avg = None
+        if len(finishes) >= 3:
+            recent = finishes[-6:]
+            top3 = sum(1 for f in recent if f <= 3)
+            top3_rate = top3 / len(recent)
+            avg = sum(recent) / len(recent)
+            point += 1 if top3_rate >= 0.5 else -1 if top3_rate <= 0.2 else 0
+        # 得点シグナルは公式(直近4ヶ月 vs 適用点)を優先、無ければ自前の履歴差
+        delta_signal = official_delta if official_delta is not None else score_delta
+        if delta_signal is not None:
+            point += 1 if delta_signal >= 1.5 else -1 if delta_signal <= -1.5 else 0
         label = "好調" if point >= 1 else "不調" if point <= -1 else "平常"
         entry["form"] = {
             "label": label,
             "finishes": finishes,
-            "top3_rate": round(top3_rate, 3),
-            "avg_finish": round(avg, 1),
+            "top3_rate": round(top3_rate, 3) if top3_rate is not None else None,
+            "avg_finish": round(avg, 1) if avg is not None else None,
             "score_delta": score_delta,
+            "official_delta": official_delta,
+            "score_now": score_now,
+            "score_recent": score_recent,
             "races": len(finishes),
         }
 
@@ -531,6 +567,8 @@ def _top_row(row: dict, entries_by_car: dict[int, dict]) -> dict:
         "emotion": emotion or {},
         "reasons": row.get("reasons") or entry.get("reasons") or [],
         "form": entry.get("form"),
+        "term": row.get("term") or entry.get("term"),
+        "class_move": entry.get("class_move"),
     }
 
 

@@ -3794,3 +3794,28 @@ input, select { background: var(--color-surface-raised); border-color: var(--col
 .finish-trail .fx { background: var(--color-surface-raised); color: var(--color-muted); }
 .score-delta { font-size: 10px; font-weight: 900; }
 .main-pick .form-icon { vertical-align: middle; margin-left: 4px; }
+
+/* 新人(129/130期)・昇降級バッジ */
+.rookie-badge {
+  margin-left: 4px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(94, 230, 168, 0.14);
+  color: var(--color-accent);
+  border: 1px solid rgba(94, 230, 168, 0.35);
+  font-size: 10px;
+  font-weight: 900;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.move-badge {
+  margin-left: 4px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 900;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.move-badge.up { background: rgba(66, 211, 146, 0.14); color: var(--color-profit); border: 1px solid rgba(66, 211, 146, 0.35); }
+.move-badge.down { background: rgba(255, 102, 120, 0.12); color: var(--color-loss); border: 1px solid rgba(255, 102, 120, 0.35); }

@@ -37,6 +37,8 @@ if ($Mode -eq "morning") {
     # オリジナル運用(株式運用型)を毎日自動開始
     python scripts\start_original.py | Out-Null
     Write-Log "original session auto-start (exit $LASTEXITCODE)"
+    python scripts\backfill_player_profiles.py --limit 250 --delay 0.5 | Out-Null
+    Write-Log "player profiles (exit $LASTEXITCODE)"
 }
 elseif ($Mode -eq "night") {
     python scripts\collect_raceresults.py --limit 120 --delay 0.6 | Out-Null

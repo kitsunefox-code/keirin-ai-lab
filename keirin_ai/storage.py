@@ -145,6 +145,57 @@ def _migrate_columns(conn: sqlite3.Connection) -> None:
             conn.execute(f"alter table races add column {column} {ddl}")
 
 
+def ensure_player_profile_table(conn: sqlite3.Connection) -> None:
+    """JKA公式プロフィール(今期得点・直近4ヶ月成績・級班履歴)の保存先。"""
+    conn.execute(
+        """
+        create table if not exists player_profiles (
+            player_id text primary key,
+            term integer,
+            class_now text,
+            class_next text,
+            style text,
+            score_now real,
+            recent_json text,
+            total_json text,
+            class_history_json text,
+            fetched_at text
+        )
+        """
+    )
+    conn.commit()
+
+
+def save_player_profile(conn: sqlite3.Connection, player_id: str, profile: dict, fetched_at: str) -> None:
+    ensure_player_profile_table(conn)
+    conn.execute(
+        """
+        insert into player_profiles (
+            player_id, term, class_now, class_next, style, score_now,
+            recent_json, total_json, class_history_json, fetched_at
+        ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        on conflict(player_id) do update set
+            term=excluded.term, class_now=excluded.class_now, class_next=excluded.class_next,
+            style=excluded.style, score_now=excluded.score_now, recent_json=excluded.recent_json,
+            total_json=excluded.total_json, class_history_json=excluded.class_history_json,
+            fetched_at=excluded.fetched_at
+        """,
+        (
+            player_id,
+            profile.get("term"),
+            profile.get("class_now"),
+            profile.get("class_next"),
+            profile.get("style"),
+            profile.get("score_now"),
+            json.dumps(profile.get("recent"), ensure_ascii=False) if profile.get("recent") else None,
+            json.dumps(profile.get("total"), ensure_ascii=False) if profile.get("total") else None,
+            json.dumps(profile.get("class_history"), ensure_ascii=False) if profile.get("class_history") else None,
+            fetched_at,
+        ),
+    )
+    conn.commit()
+
+
 def save_race_odds_snapshot(conn: sqlite3.Connection, race_key: str, snapshot: dict) -> None:
     """発走前オッズのスナップショットを保存する。{"exacta": [{"key":"1-5","odds":8.2},...], "taken_at": ISO}"""
     if not snapshot:
