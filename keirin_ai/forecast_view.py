@@ -165,6 +165,8 @@ def _enrich_forecast(conn, forecast: dict) -> dict:
     )
     value = _attach_value(exacta_picks, ranking, _json_or(race.get("latest_odds_json"), None))
     hit_estimate = _hit_estimate(ranking)
+    source_url = race.get("source_url") or forecast.get("url") or ""
+    day_index = _day_index_from_url(source_url)
     return {
         "race_key": race_key,
         "venue": venue,
@@ -176,7 +178,9 @@ def _enrich_forecast(conn, forecast: dict) -> dict:
         "is_girls": "ガール" in race_class_official,
         "class_group": _class_group(race_class_official, "ガール" in race_class_official),
         "start_time": forecast.get("start_time") or race.get("start_time") or "",
-        "url": race.get("source_url") or forecast.get("url") or "",
+        "url": source_url,
+        "day_index": day_index,
+        "is_day1": day_index == 1,
         "title": _race_title(venue, race_no, race.get("event") or forecast.get("title")),
         "top3": top3,
         "tickets": [_ticket(ticket) for ticket in tickets[:8]],
@@ -267,6 +271,12 @@ def _attach_value(exacta_picks: list[dict], ranking: list[dict], snapshot: dict 
         return None
     best["taken_at"] = snapshot.get("taken_at") or ""
     return best
+
+
+def _day_index_from_url(url: str) -> int | None:
+    """WINTICKETのracecard URL(/keirin/{venue}/racecard/{cup_id}/{day_index}/{race_no})から節day目を取り出す。"""
+    m = re.search(r"/racecard/\d{10}/(\d+)/\d+", str(url or ""))
+    return int(m.group(1)) if m else None
 
 
 def _class_group(race_class_official: str, is_girls: bool) -> str:
@@ -478,6 +488,14 @@ def _attach_player_form(conn, entries: list[dict]) -> None:
         move = class_move(prof.get("class_now") or "", prof.get("class_next") or "")
         if move:
             entry["class_move"] = move  # up=昇級予定 / down=降級予定
+        if prof:
+            entry["profile"] = {
+                "class_now": prof.get("class_now"),
+                "class_next": prof.get("class_next"),
+                "class_history": _json_or(prof.get("class_history_json"), []),
+                "total": _json_or(prof.get("total_json"), None),
+                "fetched_at": prof.get("fetched_at"),
+            }
 
         if len(finishes) < 3 and official_delta is None:
             entry["form"] = None
@@ -569,6 +587,7 @@ def _top_row(row: dict, entries_by_car: dict[int, dict]) -> dict:
         "form": entry.get("form"),
         "term": row.get("term") or entry.get("term"),
         "class_move": entry.get("class_move"),
+        "player_id": entry.get("player_id") or "",
     }
 
 

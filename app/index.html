@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2310151D'/%3E%3Ctext x='32' y='45' font-size='38' font-weight='900' font-family='Arial' fill='%235EE6A8' text-anchor='middle'%3EK%3C/text%3E%3C/svg%3E" />
     <title>Keirin AI Lab</title>
-    <link rel="stylesheet" href="styles.css?v=c2930331" />
+    <link rel="stylesheet" href="styles.css?v=dc654aca" />
   </head>
   <body data-page="home">
     <div class="app-shell">
@@ -59,13 +59,7 @@
             <span class="page-meta" id="todayMeta">読み込み中</span>
           </header>
 
-          <section class="venue-board" aria-label="現在開催中の競輪場">
-            <div class="venue-board-head">
-              <span>現在開催中</span>
-              <strong>競輪場</strong>
-            </div>
-            <div class="venue-strip" id="venueBoard"></div>
-          </section>
+          <nav class="venue-tabs" id="venueTabs" aria-label="会場切替"></nav>
 
           <div class="ai-record" id="aiRecordBar" aria-label="AI予想成績"></div>
 
@@ -73,6 +67,8 @@
           <div class="metric-strip" id="todayMetrics"></div>
 
           <section class="value-board" id="valueBoard" hidden></section>
+
+          <section class="surface-panel ai-picks" id="aiPicksBoard" hidden></section>
 
           <section class="recommended-races" id="recommendedSection" hidden></section>
 
@@ -102,6 +98,6 @@
       </main>
     </div>
 
-    <script src="app.js?v=c2930331"></script>
+    <script src="app.js?v=dc654aca"></script>
   </body>
 </html>

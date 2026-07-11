@@ -14,6 +14,7 @@ from keirin_ai.capital_plan import build_capital_plan_payload
 from keirin_ai.results_view import build_results_payload
 from keirin_ai.forecast_view import build_today_forecast_payload
 from keirin_ai.learner import load_model
+from keirin_ai.player_view import build_players_payload
 from keirin_ai.predictor import predict_race
 from keirin_ai.storage import connect, learning_status
 
@@ -37,7 +38,7 @@ def stamp_asset_versions() -> str:
     css = (APP_DIR / "styles.css").read_bytes()
     js = (APP_DIR / "app.js").read_bytes()
     ver = hashlib.sha1(css + js).hexdigest()[:8]
-    for name in ("index.html", "results.html", "motion.html", "record.html", "consult.html"):
+    for name in ("index.html", "results.html", "motion.html", "record.html", "consult.html", "player.html"):
         path = APP_DIR / name
         if not path.exists():
             continue
@@ -112,6 +113,7 @@ def main() -> None:
     with connect() as conn:
         bankroll = build_bankroll_payload(conn, DATA_DIR)
         results = build_results_payload(conn, None, DATA_DIR)
+        players = build_players_payload(conn, today)
     model = load_model() or {}
     model_summary = {
         "name": model.get("name"),
@@ -128,6 +130,7 @@ def main() -> None:
         "/api/capital_plan": capital,
         "/api/bankroll": bankroll,
         "/api/results": results,
+        "/api/players": players,
     }
     write_json("today.json", payloads["/api/today"])
     write_json("sample.json", payloads["/api/sample"])
@@ -135,6 +138,7 @@ def main() -> None:
     write_json("capital-plan.json", payloads["/api/capital_plan"])
     write_json("bankroll.json", payloads["/api/bankroll"])
     write_json("results.json", payloads["/api/results"])
+    write_json("players.json", payloads["/api/players"])
     write_preview(payloads)  # CSSインライン版(先に素のindex.htmlから生成)
     ver = stamp_asset_versions()  # 直リンクHTMLにキャッシュバスター付与
     print(f"asset version: {ver}")

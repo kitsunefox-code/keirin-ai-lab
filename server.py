@@ -29,6 +29,7 @@ from keirin_ai.results_view import build_results_payload
 from keirin_ai.forecast_view import build_today_forecast_payload
 from keirin_ai.learner import load_model, train_win_model
 from keirin_ai.odds import fetch_live_odds
+from keirin_ai.player_view import build_players_payload
 from keirin_ai.predictor import predict_race
 from keirin_ai.sources import fetch_url, parse_winticket_racecard
 from keirin_ai.storage import attach_line_partner_stats, connect, learning_status, result_from_order, save_race
@@ -58,6 +59,8 @@ class KeirinHandler(BaseHTTPRequestHandler):
             return self._serve_file(APP_DIR / "record.html")
         if path in {"/consult", "/consult.html"}:
             return self._serve_file(APP_DIR / "consult.html")
+        if path in {"/player", "/player.html"}:
+            return self._serve_file(APP_DIR / "player.html")
         if path in {"/app.js", "/styles.css"}:
             return self._serve_file(APP_DIR / path.lstrip("/"))
         if path == "/api/sample":
@@ -89,6 +92,8 @@ class KeirinHandler(BaseHTTPRequestHandler):
         if path == "/api/results":
             params = parse_qs(parsed.query)
             return self._handle_results(params.get("date", [""])[0].strip())
+        if path == "/api/players":
+            return self._handle_players()
 
         self._send(404, "text/plain; charset=utf-8", "Not found")
 
@@ -244,6 +249,15 @@ class KeirinHandler(BaseHTTPRequestHandler):
         try:
             with connect() as conn:
                 payload = build_results_payload(conn, date or None, DATA_DIR)
+            return self._json(payload)
+        except Exception as exc:
+            return self._json({"ok": False, "error": str(exc)}, status=502)
+
+    def _handle_players(self) -> None:
+        try:
+            with connect() as conn:
+                today = build_today_forecast_payload(conn, DATA_DIR)
+                payload = build_players_payload(conn, today)
             return self._json(payload)
         except Exception as exc:
             return self._json({"ok": False, "error": str(exc)}, status=502)

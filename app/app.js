@@ -17,6 +17,7 @@ const STATIC_API = {
   "/api/learn/status": "static-api/learn-status.json",
   "/api/bankroll": "static-api/bankroll.json",
   "/api/results": "static-api/results.json",
+  "/api/players": "static-api/players.json",
 };
 
 // 公開版の静的JSONはブラウザにキャッシュされやすい。ページ読込ごとに必ず取り直す。
@@ -97,6 +98,8 @@ document.addEventListener("DOMContentLoaded", () => {
   } else if (page === "consult") {
     loadToday(); // スタイル別コンサルの素材(本日の予想)
     loadBankroll(); // オリジナル運用(自動)の状況
+  } else if (page === "player") {
+    loadPlayer();
   }
   renderOnboarding(page);
 });
@@ -132,6 +135,131 @@ async function loadLearnStatus() {
   } catch {
     state.learning = null;
   }
+}
+
+function currentPlayerId() {
+  return new URLSearchParams(window.location.search).get("id") || "";
+}
+
+async function loadPlayer() {
+  const body = el("playerBody");
+  const pid = currentPlayerId();
+  if (!pid) {
+    if (body) body.innerHTML = `<div class="empty">選手が指定されていません。レース一覧の選手名から開いてください。</div>`;
+    return;
+  }
+  try {
+    const res = await apiGet("/api/players");
+    const payload = await res.json();
+    if (!payload.ok) {
+      if (body) body.innerHTML = `<div class="empty">${escapeHtml(payload.error || "選手情報を読み込めませんでした。")}</div>`;
+      return;
+    }
+    state.players = payload.players || {};
+    const player = state.players[pid];
+    if (!player) {
+      if (body) body.innerHTML = `<div class="empty">この選手のデータはまだありません(未出走、または直近データ収集前の可能性)。</div>`;
+      el("playerName").textContent = "選手が見つかりません";
+      return;
+    }
+    renderPlayerPage(player);
+  } catch (error) {
+    if (body) body.innerHTML = `<div class="empty">選手情報エラー: ${escapeHtml(error.message)}</div>`;
+  }
+}
+
+function renderPlayerPage(p) {
+  const nameEl = el("playerName");
+  const metaEl = el("playerMeta");
+  const body = el("playerBody");
+  if (!body) return;
+  document.title = `${p.name || "選手"} | Keirin AI Lab`;
+  if (nameEl) nameEl.textContent = `${p.name || "選手"}${rookieBadge(p.term)}`;
+  if (nameEl) nameEl.innerHTML = `${escapeHtml(p.name || "選手")}${rookieBadge(p.term)}${classMoveBadge(p.class_move)}`;
+  if (metaEl) metaEl.textContent = `${p.prefecture || ""} / ${p.term ? `${p.term}期` : ""} / ${p.class || ""}${p.style ? " / " + p.style : ""}`;
+
+  const kpis = [
+    { label: "現在の得点", value: p.score_now != null ? num(p.score_now) : "—", sub: "今期適用", cls: "" },
+    { label: "直近4ヶ月得点", value: p.recent_official?.score != null ? num(p.recent_official.score) : "—", sub: "JKA公式", cls: "" },
+    { label: "調子", value: p.form ? p.form.label : "—", sub: "実戦データ判定", cls: p.form?.label === "好調" ? "kpi-up" : p.form?.label === "不調" ? "kpi-down" : "" },
+    { label: "直近勝率(公式)", value: p.recent_official?.win_rate != null ? `${p.recent_official.win_rate}%` : "—", sub: "直近4ヶ月", cls: "" },
+  ];
+  const kpiHtml = `<div class="kpi-row">${kpis.map((k) => `<div class="kpi-card"><span>${k.label}</span><strong class="${k.cls}">${escapeHtml(String(k.value))}</strong><em>${k.sub}</em></div>`).join("")}</div>`;
+
+  const todayHtml = p.today
+    ? `<section class="surface-panel">
+        <div class="capital-head"><div><h3>本日の出走</h3></div><span class="page-meta">${escapeHtml(p.today.venue || "")}${escapeHtml(p.today.race_no || "")}R ${escapeHtml(p.today.start_time || "")}</span></div>
+        <p class="consult-lead">AI勝率 <b>${percent(p.today.win_probability)}</b>${p.today.comment ? ` / コメント「${escapeHtml(p.today.comment)}」` : ""}</p>
+        <a class="button" href="index.html#${safeRaceId(p.today.race_key)}" data-jump-race="${escapeAttr(p.today.race_key)}">このレースの予想を見る →</a>
+      </section>`
+    : "";
+
+  const trendRows = (p.score_trend || []).slice(-12);
+  const trendHtml = trendRows.length
+    ? `<section class="surface-panel">
+        <div class="capital-head"><div><h3>競走得点の推移</h3></div><span class="page-meta">当ラボ収集分・直近${trendRows.length}件</span></div>
+        ${sparkline(trendRows.map((r) => Number(r.score) || 0))}
+      </section>`
+    : "";
+
+  const finishRows = (p.finishes || []).slice(-15).reverse();
+  const finishHtml = finishRows.length
+    ? `<section class="surface-panel">
+        <div class="capital-head"><div><h3>直近の着順</h3></div><span class="page-meta">新しい順・全${finishRows.length}走</span></div>
+        <div class="table-wrap"><table class="data-table compact-table">
+          <thead><tr><th>日付</th><th>開催</th><th>級班</th><th>着順</th></tr></thead>
+          <tbody>${finishRows
+            .map(
+              (r) => `<tr>
+                <td>${escapeHtml(shortDate(r.race_date) || r.race_date || "")}</td>
+                <td>${escapeHtml(r.venue || "")}${escapeHtml(r.race_no || "")}R</td>
+                <td>${escapeHtml(r.race_class || "")}</td>
+                <td class="${r.finish === 1 ? "kpi-up" : ""}"><b>${r.finish}着</b></td>
+              </tr>`
+            )
+            .join("")}</tbody>
+        </table></div>
+      </section>`
+    : "";
+
+  const histRows = p.class_history || [];
+  const histHtml = histRows.length
+    ? `<section class="surface-panel">
+        <div class="capital-head"><div><h3>級班の履歴(公式)</h3></div><span class="page-meta">昇級・降級の記録</span></div>
+        <div class="table-wrap"><table class="data-table compact-table">
+          <thead><tr><th>級班</th><th>適用日</th></tr></thead>
+          <tbody>${histRows.map((h) => `<tr><td>${escapeHtml(h.class || "")}</td><td>${escapeHtml(h.date || "")}</td></tr>`).join("")}</tbody>
+        </table></div>
+      </section>`
+    : "";
+
+  body.innerHTML = `${kpiHtml}${todayHtml}${trendHtml}${finishHtml}${histHtml}`;
+  const jumpBtn = body.querySelector("[data-jump-race]");
+  if (jumpBtn) {
+    jumpBtn.addEventListener("click", (event) => {
+      event.preventDefault();
+      window.location.href = `index.html?openRace=${encodeURIComponent(jumpBtn.dataset.jumpRace)}`;
+    });
+  }
+}
+
+// 得点推移の簡易スパークライン(SVG)
+function sparkline(values) {
+  if (values.length < 2) return `<p class="consult-hint">推移データが不足しています。</p>`;
+  const w = 560, h = 120, pad = 12;
+  const min = Math.min(...values), max = Math.max(...values);
+  const range = max - min || 1;
+  const stepX = (w - pad * 2) / (values.length - 1);
+  const points = values.map((v, i) => {
+    const x = pad + i * stepX;
+    const y = h - pad - ((v - min) / range) * (h - pad * 2);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  });
+  const last = points[points.length - 1].split(",");
+  return `<svg viewBox="0 0 ${w} ${h}" class="calibration-chart" role="img" aria-label="得点推移">
+    <polyline points="${points.join(" ")}" class="cal-line" />
+    <circle cx="${last[0]}" cy="${last[1]}" r="4" class="cal-dot" />
+  </svg>`;
 }
 
 async function loadResults(date) {
@@ -1736,13 +1864,7 @@ function renderStyleConsult() {
     });
   });
   section.querySelectorAll("[data-open-race]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const target = document.getElementById(safeRaceId(btn.dataset.openRace));
-      if (target) {
-        target.open = true;
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    });
+    btn.addEventListener("click", () => openRaceByKey(btn.dataset.openRace));
   });
 }
 
@@ -1978,14 +2100,38 @@ function renderToday() {
   ]
     .map(metric)
     .join("");
-  renderVenueBoard(payload.forecasts || []);
-  renderValueBoard(payload.forecasts || []);
+  const forecasts = payload.forecasts || [];
+  // 会場の初期選択: ?venue= → ?openRace=のレースの会場 → 開催中/直近の会場
+  const params = new URLSearchParams(window.location.search);
+  const venueList = venueSummaries(forecasts);
+  const validVenues = new Set(venueList.map((v) => v.venue));
+  if (!state.selectedVenue || !validVenues.has(state.selectedVenue)) {
+    const fromParam = params.get("venue");
+    const openKey = params.get("openRace");
+    const fromOpen = openKey ? forecasts.find((r) => r.race_key === openKey)?.venue : null;
+    state.selectedVenue = (fromParam && validVenues.has(fromParam) && fromParam) || fromOpen || venueList[0]?.venue || null;
+  }
+
+  renderVenueTabs(forecasts);
+  renderValueBoard(forecasts);
+  renderAiPlayerPicks(forecasts);
   renderRecommended(payload.recommended_races || []);
 
-  const rows = filterForecasts(payload.forecasts || []);
+  const rows = filterForecasts(forecasts);
   el("forecastList").innerHTML = rows.length
     ? renderVenueForecastSections(rows)
-    : `<div class="empty">条件に合うレースがありません。</div>`;
+    : `<div class="empty">この会場の未発走レースはありません。上のタブで他場へ。</div>`;
+
+  // 選手ページ等からの深いリンク(?openRace=race_key)で該当レースを開いてスクロール
+  const openRaceKey = params.get("openRace");
+  if (openRaceKey && !state.openedRaceOnce) {
+    state.openedRaceOnce = true;
+    const target = document.getElementById(safeRaceId(openRaceKey));
+    if (target) {
+      target.open = true;
+      setTimeout(() => target.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
+    }
+  }
 }
 
 function safeRaceId(raceKey) {
@@ -2057,11 +2203,88 @@ function renderValueBoard(forecasts) {
     </header>
     <div class="value-rows">${items.join("")}</div>`;
   section.querySelectorAll("[data-open-race]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const target = document.getElementById(safeRaceId(btn.dataset.openRace));
-      if (target) {
-        target.open = true;
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
+    btn.addEventListener("click", () => openRaceByKey(btn.dataset.openRace));
+  });
+}
+
+// AIが自主的に選ぶ「一押し選手」と「初日ベタ買い候補」。
+// 好調・昇級予定・新人の好調・高いAI勝率を加点して選手単位でスコアリングする(レース単位のvalueBoardとは別軸)。
+function aiPlayerScore(entry, race) {
+  let score = Number(entry.win_probability || 0) * 2.4;
+  const reasons = [];
+  if (entry.form?.label === "好調") {
+    score += 1.8;
+    reasons.push("🔥好調");
+  }
+  if (entry.class_move === "up") {
+    score += 1.6;
+    reasons.push("昇級⬆");
+  }
+  const isRookie = entry.term === 129 || entry.term === 130;
+  if (isRookie && entry.form?.label !== "不調") {
+    score += 1.0;
+    reasons.push(`🌱${entry.term}期`);
+  }
+  const isDay1 = race.is_day1 || race.day_index === 1;
+  const flatBet = isDay1 && (entry.form?.label === "好調" || isRookie || Number(entry.win_probability || 0) >= 0.34);
+  return { score, reasons, isDay1, flatBet };
+}
+
+function renderAiPlayerPicks(forecasts) {
+  const section = el("aiPicksBoard");
+  if (!section) return;
+  const active = (forecasts || []).filter((r) => !r.elapsed);
+  const candidates = [];
+  for (const race of active) {
+    for (const entry of race.entries || []) {
+      if (!entry.player_id) continue;
+      const { score, reasons, flatBet } = aiPlayerScore(entry, race);
+      if (!reasons.length) continue; // 根拠が無い選手は挙げない(捏造しない)
+      candidates.push({ entry, race, score, reasons, flatBet });
+    }
+  }
+  if (!candidates.length) {
+    section.hidden = true;
+    return;
+  }
+  const seen = new Set();
+  const dedup = candidates
+    .sort((a, b) => b.score - a.score)
+    .filter((c) => {
+      if (seen.has(c.entry.player_id)) return false;
+      seen.add(c.entry.player_id);
+      return true;
+    });
+  const picks = dedup.slice(0, 5);
+  const day1 = dedup.filter((c) => c.flatBet).slice(0, 5);
+
+  // button内にaタグをネストできないため div+role=button にし、選手名リンクだけクリック伝播を止める
+  const card = (c) => `<div class="consult-race" tabindex="0" role="button" data-open-race="${escapeAttr(c.race.race_key)}">
+    <div class="consult-race-head">
+      <b class="ai-pick-name">${playerLink(c.entry.name, c.entry.player_id)}</b>
+      <span>${escapeHtml(c.race.venue || "")}${escapeHtml(c.race.race_no || "")}R ${escapeHtml(c.race.start_time || "")}</span>
+    </div>
+    <div class="consult-pick">${c.reasons.map((r) => `<span class="reason-chip">${escapeHtml(r)}</span>`).join("")} <em>AI勝率${percent(c.entry.win_probability)}</em></div>
+  </div>`;
+
+  section.hidden = false;
+  section.innerHTML = `
+    <div class="capital-head">
+      <div><h3>🎯 AIの一押し選手 <span class="help-tip" tabindex="0" data-tip="AIが好調・昇級予定・新人の勢いなどから自主的に選んだ注目選手です。全レースの網羅ではありません。">?</span></h3></div>
+      <span class="page-meta">好調・昇級予定・新人の勢いから自動選出</span>
+    </div>
+    <div class="consult-races">${picks.map(card).join("")}</div>
+    ${day1.length ? `<div class="ai-picks-day1">
+      <div class="capital-head"><div><h3>今節初日のベタ買い候補</h3></div><span class="page-meta">初日から追いたい注目選手</span></div>
+      <div class="consult-races">${day1.map(card).join("")}</div>
+    </div>` : ""}`;
+  section.querySelectorAll(".ai-pick-name a").forEach((a) => a.addEventListener("click", (event) => event.stopPropagation()));
+  section.querySelectorAll("[data-open-race]").forEach((btn) => {
+    btn.addEventListener("click", () => openRaceByKey(btn.dataset.openRace));
+    btn.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        btn.click();
       }
     });
   });
@@ -2106,13 +2329,7 @@ function renderRecommended(races) {
     <div class="market-grid">${cards}</div>
   `;
   section.querySelectorAll("[data-open-race]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const target = document.getElementById(safeRaceId(btn.dataset.openRace));
-      if (target) {
-        target.open = true;
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    });
+    btn.addEventListener("click", () => openRaceByKey(btn.dataset.openRace));
   });
 }
 
@@ -2160,45 +2377,85 @@ function groupForecastsByVenue(rows) {
 }
 
 
-function renderVenueBoard(forecasts) {
-  if (!el("venueBoard")) return;
+// 会場ごとの状況をまとめる(タブと会場ページ用)
+function venueSummaries(forecasts) {
   const venues = new Map();
   for (const race of forecasts) {
     const venue = race.venue || "未設定";
-    const current = venues.get(venue) || { venue, total: 0, elapsed: 0, upcoming: [], strong: 0 };
+    const current = venues.get(venue) || { venue, total: 0, elapsed: 0, upcoming: [] };
     current.total += 1;
-    if (race.elapsed) {
-      current.elapsed += 1;
-    } else {
-      current.upcoming.push(race);
-      if (race.confidence?.rank >= 2) current.strong += 1;
-    }
+    if (race.elapsed) current.elapsed += 1;
+    else current.upcoming.push(race);
     venues.set(venue, current);
   }
-  const items = [...venues.values()]
-    .filter((item) => item.upcoming.length > 0) // 全レース終了した会場は「今」から外す
+  return [...venues.values()]
     .map((item) => {
       item.upcoming.sort((a, b) => String(a.start_time || "99:99").localeCompare(String(b.start_time || "99:99")));
-      const next = item.upcoming[0];
-      item.isLive = item.elapsed > 0; // 発走済みレースがある = 現在開催中
-      item.nextTime = next?.start_time || "--:--";
-      item.nextRaceNo = next?.race_no || "-";
+      item.isLive = item.elapsed > 0 && item.upcoming.length > 0;
+      item.done = item.upcoming.length === 0;
+      item.nextTime = item.upcoming[0]?.start_time || "--:--";
+      item.nextRaceNo = item.upcoming[0]?.race_no || "-";
       return item;
     })
     .sort((a, b) => {
-      if (a.isLive !== b.isLive) return a.isLive ? -1 : 1; // 開催中を先頭に
+      if (a.done !== b.done) return a.done ? 1 : -1; // 終了会場は最後
+      if (a.isLive !== b.isLive) return a.isLive ? -1 : 1; // 開催中を先頭
       return String(a.nextTime).localeCompare(String(b.nextTime));
     });
-  el("venueBoard").innerHTML = items
+}
+
+// netkeirin風: 上部の会場タブ。クリックでその会場の予想ページ(1会場分だけ表示)へ切替
+function renderVenueTabs(forecasts) {
+  const nav = el("venueTabs");
+  if (!nav) return;
+  const items = venueSummaries(forecasts);
+  if (!items.length) {
+    nav.innerHTML = "";
+    return;
+  }
+  nav.innerHTML = items
     .map(
-      (item) => `<article class="venue-chip${item.isLive ? " is-live" : ""}">
-        <span class="status-dot">${item.isLive ? "🔴 開催中" : "本日"}</span>
-        <strong>${escapeHtml(item.venue)}</strong>
-        <small>次${escapeHtml(item.nextRaceNo)}R 発走 ${escapeHtml(item.nextTime)} / 残り${item.upcoming.length}R</small>
-        <em>自信 ${item.strong}</em>
-      </article>`
+      (item) => `<button type="button" class="venue-tab${item.venue === state.selectedVenue ? " active" : ""}${item.isLive ? " is-live" : ""}${item.done ? " is-done" : ""}" data-venue="${escapeAttr(item.venue)}">
+        <b>${item.isLive ? '<i class="live-dot"></i>' : ""}${escapeHtml(item.venue)}</b>
+        <small>${item.done ? "終了" : `${escapeHtml(item.nextRaceNo)}R ${escapeHtml(item.nextTime)}`}</small>
+      </button>`
     )
     .join("");
+  nav.querySelectorAll("[data-venue]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      state.selectedVenue = btn.dataset.venue;
+      const url = new URL(window.location.href);
+      url.searchParams.set("venue", state.selectedVenue);
+      url.searchParams.delete("openRace");
+      window.history.replaceState(null, "", url.toString());
+      renderToday();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
+}
+
+// どのページ・どの会場のレースでも開けるヘルパー。
+// レース一覧が無いページや別会場のレースなら、会場を切り替えてから開く。
+function openRaceByKey(raceKey) {
+  const race = (state.today?.forecasts || []).find((r) => r.race_key === raceKey);
+  const target = document.getElementById(safeRaceId(raceKey));
+  if (target) {
+    target.open = true;
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
+  if (race && el("forecastList")) {
+    state.selectedVenue = race.venue || state.selectedVenue;
+    renderToday();
+    const after = document.getElementById(safeRaceId(raceKey));
+    if (after) {
+      after.open = true;
+      setTimeout(() => after.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
+    }
+    return;
+  }
+  // レース一覧が無いページ(車券コンサル等) → トップの該当レースへ
+  window.location.href = `index.html?openRace=${encodeURIComponent(raceKey)}`;
 }
 
 function filterForecasts(rows) {
@@ -2206,6 +2463,7 @@ function filterForecasts(rows) {
   const confidence = confidenceFilter ? confidenceFilter.value : "all";
   return rows.filter((race) => {
     if (race.elapsed) return false; // 発走済みは一覧から外す(モーションメーカーでは選べる)
+    if (state.selectedVenue && (race.venue || "未設定") !== state.selectedVenue) return false; // 選択中の会場だけ
     if (confidence !== "all" && race.confidence?.label !== confidence) return false;
     return true;
   });
@@ -2283,7 +2541,7 @@ function renderForecastCard(race) {
         <div class="prediction-summary">
           <div class="main-pick">
             <span>本命 / AI勝率</span>
-            <strong>${car(top.car_no)} ${escapeHtml(top.name || "-")}${rookieBadge(top.term)}${classMoveBadge(top.class_move)} ${top.form ? playerFormChip(top.form) : ""}</strong>
+            <strong>${car(top.car_no)} ${playerLink(top.name, top.player_id, rookieBadge(top.term))}${classMoveBadge(top.class_move)} ${top.form ? playerFormChip(top.form) : ""}</strong>
             <em>${percent(top.probability)}<small class="unit-label">AI推定勝率</small></em>
           </div>
           <div class="top3-row">
@@ -2396,7 +2654,7 @@ function renderMiniEntries(entries) {
             const od = row.form ? (row.form.official_delta != null ? row.form.official_delta : row.form.score_delta) : null;
             return `<tr>
             <td>${car(row.car_no)}</td>
-            <td><strong>${escapeHtml(row.name)}</strong>${rookieBadge(row.term)}${classMoveBadge(row.class_move)}<br><span class="muted">${escapeHtml(row.prefecture || "")} ${escapeHtml(row.class || "")}</span></td>
+            <td><strong>${playerLink(row.name, row.player_id, rookieBadge(row.term))}</strong>${classMoveBadge(row.class_move)}<br><span class="muted">${escapeHtml(row.prefecture || "")} ${escapeHtml(row.class || "")}</span></td>
             <td>${escapeHtml(row.style || "")}</td>
             <td>${num(row.racing_score)}${od != null ? `<br><span class="score-delta ${od >= 0 ? "kpi-up" : "kpi-down"}" title="${row.form.official_delta != null ? "JKA公式: 直近4ヶ月得点と今期適用得点の差" : "当ラボ収集分の得点変化"}">${od >= 0 ? "▲" : "▼"}${Math.abs(od)}</span>` : ""}</td>
             <td>${playerFormChip(row.form)}${finishTrail(row.form)}</td>
@@ -2468,9 +2726,16 @@ function classMoveBadge(move) {
   return "";
 }
 
+// 選手名を個人ページへのリンクにする(player_idが無ければ素のテキスト)
+function playerLink(name, playerId, extra) {
+  const label = `${escapeHtml(name || "-")}${extra || ""}`;
+  if (!playerId) return label;
+  return `<a href="player.html?id=${encodeURIComponent(playerId)}" class="player-link">${label}</a>`;
+}
+
 function rankPill(rank, row) {
   if (!row || row.car_no == null) return "";
-  return `<span class="rank-pill"><b>${rank}</b>${car(row.car_no)}<span>${escapeHtml(row.name)}${rookieBadge(row.term)}</span><em>${percent(row.probability)}</em></span>`;
+  return `<span class="rank-pill"><b>${rank}</b>${car(row.car_no)}<span>${playerLink(row.name, row.player_id, rookieBadge(row.term))}</span><em>${percent(row.probability)}</em></span>`;
 }
 
 function ticketChip(ticket) {
