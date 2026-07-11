@@ -37,7 +37,7 @@ def stamp_asset_versions() -> str:
     css = (APP_DIR / "styles.css").read_bytes()
     js = (APP_DIR / "app.js").read_bytes()
     ver = hashlib.sha1(css + js).hexdigest()[:8]
-    for name in ("index.html", "results.html", "motion.html", "record.html"):
+    for name in ("index.html", "results.html", "motion.html", "record.html", "consult.html"):
         path = APP_DIR / name
         if not path.exists():
             continue

@@ -94,6 +94,9 @@ document.addEventListener("DOMContentLoaded", () => {
     loadToday(); // モーションメーカーの素材
   } else if (page === "record") {
     loadResults(); // 実績ページ(record/conditions/calibrationを使う)
+  } else if (page === "consult") {
+    loadToday(); // スタイル別コンサルの素材(本日の予想)
+    loadBankroll(); // オリジナル運用(自動)の状況
   }
   renderOnboarding(page);
 });
@@ -1387,9 +1390,6 @@ function renderBankroll(payload) {
   parts.push(renderBankrollHistory(brState));
   body.innerHTML = parts.join("");
 
-  document.querySelectorAll("[data-style-switch]").forEach((btn) => {
-    btn.addEventListener("click", () => changeBankrollStyle(btn.dataset.styleSwitch));
-  });
   on("brCommitBtn", "click", commitBankroll);
   on("brSkipBtn", "click", skipBankroll);
   on("brCopyBtn", "click", copyProposalTickets);
@@ -1528,7 +1528,7 @@ function renderOriginalDaily(history) {
   const box = el("originalDaily");
   if (box) {
     if (!history.length || history.every((day) => !day.sessions.length)) {
-      box.innerHTML = `<div class="empty">まだ運用記録がありません。ホームの「バンクロール運用」でオリジナル(1万円×10R)を開始すると、ここに毎日の収支が貯まります。</div>`;
+      box.innerHTML = `<div class="empty">まだ運用記録がありません。車券コンサルの「オリジナル運用(自動)」が毎朝1万円×10Rで自動開始すると、ここに毎日の収支が貯まります。</div>`;
     } else {
       const rows = history
         .filter((day) => day.sessions.length)
@@ -1802,22 +1802,6 @@ function consultBody(styleKey, forecasts, money) {
   </div>`;
 }
 
-function renderStyleSwitcher(session) {
-  const current = session.config?.style || "balance";
-  const styles = (state.bankroll?.styles || []).filter((s) => s.key !== "original");
-  const buttons = styles
-    .map(
-      (s) => `<button type="button" class="style-switch${s.key === current ? " active" : ""}" data-style-switch="${escapeAttr(s.key)}">${escapeHtml(s.label)}</button>`
-    )
-    .join("");
-  const orig = current === "original" ? `<span class="style-switch-note">オリジナル運用中。乗り方を変えると通常運用へ切り替わります。</span>` : "";
-  return `<div class="style-switcher">
-    <span class="style-switch-label">乗り方(運用中でも変更可)</span>
-    <div class="style-switch-row">${buttons}</div>
-    ${orig}
-  </div>`;
-}
-
 function renderBankrollStatus(session, brState) {
   const config = session.config || {};
   const profit = brState.profit ?? 0;
@@ -1970,7 +1954,12 @@ function renderToday() {
   const learning = payload.learning_status || {};
   const schedule = payload.schedule_summary || {};
   renderMotionMaker();
-  if (!el("todayMeta")) return; // 本日の予想パネルがないページ(モーションメーカー等)
+  renderStyleConsult(); // 車券コンサル(専用ページ)。要素が無いページでは内部でno-op
+  const consultMeta = el("consultMeta");
+  if (consultMeta) {
+    consultMeta.textContent = `${summary.target_date || ""} / ${summary.count ?? 0}レースを分析済み`;
+  }
+  if (!el("todayMeta")) return; // 本日の予想パネルがないページ(モーションメーカー・車券コンサル等)
   const greeting = el("greeting");
   if (greeting) {
     const hour = new Date().getHours();
@@ -1991,7 +1980,6 @@ function renderToday() {
     .join("");
   renderVenueBoard(payload.forecasts || []);
   renderValueBoard(payload.forecasts || []);
-  renderStyleConsult();
   renderRecommended(payload.recommended_races || []);
 
   const rows = filterForecasts(payload.forecasts || []);

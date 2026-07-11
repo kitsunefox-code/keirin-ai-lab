@@ -6,11 +6,12 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="車券コンサル。オリジナル運用の自動状況と、堅実・バランス・冒険のスタイル別コンサルをまとめて確認。" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2310151D'/%3E%3Ctext x='32' y='45' font-size='38' font-weight='900' font-family='Arial' fill='%235EE6A8' text-anchor='middle'%3EK%3C/text%3E%3C/svg%3E" />
-    <title>モーションメーカー | Keirin AI Lab</title>
+    <title>車券コンサル | Keirin AI Lab</title>
     <link rel="stylesheet" href="styles.css?v=da13998f" />
   </head>
-  <body data-page="motion">
+  <body data-page="consult">
     <div class="app-shell">
       <aside class="sidebar" aria-label="メインナビゲーション">
         <div class="brand">
@@ -25,33 +26,38 @@
 
         <nav class="side-nav" aria-label="ページ切替">
           <a href="index.html">本日の予想</a>
-          <a href="consult.html">車券コンサル</a>
+          <a href="consult.html" class="active">車券コンサル</a>
           <a href="record.html">実績</a>
           <a href="results.html">結果と収支</a>
-          <a href="motion.html" class="active">モーションメーカー</a>
+          <a href="motion.html">モーションメーカー</a>
         </nav>
 
-        <p class="notice">展開はイメージです。実際のレースと異なる場合があります。</p>
+        <p class="notice">予想は研究用です。車券購入や利益を保証するものではありません。</p>
       </aside>
 
       <main class="workspace">
-        <section class="panel active" id="panel-motionmaker">
+        <section class="panel active" id="panel-consult">
           <header class="page-header">
             <div>
-              <p class="mm-kicker">展開予想をしたいあなたへ</p>
-              <h2>モーションメーカー</h2>
+              <p class="mm-kicker">買い方に迷ったら</p>
+              <h2>車券コンサル</h2>
             </div>
-            <span class="page-meta">理想の展開を自分で組んで再生</span>
+            <span class="page-meta" id="consultMeta">読み込み中</span>
           </header>
-          <div class="surface-panel motion-maker">
-            <div class="mm-controls" id="mmControls">
-              <div class="empty">本日の予想を読み込み中です。</div>
+
+          <section class="bankroll-session surface-panel" aria-labelledby="bankrollTitle">
+            <div class="capital-head">
+              <div>
+                <h3 id="bankrollTitle">オリジナル運用(自動)</h3>
+              </div>
+              <div class="bankroll-head-actions" id="bankrollHeadActions"></div>
             </div>
-            <div class="motion-stage" id="mmStage" hidden>
-              <div class="motion-caption">周回中</div>
-              <svg class="motion-svg" viewBox="0 0 640 300" role="img" aria-label="カスタム展開アニメーション"></svg>
+            <div id="bankrollBody">
+              <div class="empty">運用状態を読み込み中です。</div>
             </div>
-          </div>
+          </section>
+
+          <section class="surface-panel style-consult" id="styleConsult" hidden></section>
         </section>
       </main>
     </div>

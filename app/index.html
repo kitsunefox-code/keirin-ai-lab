@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2310151D'/%3E%3Ctext x='32' y='45' font-size='38' font-weight='900' font-family='Arial' fill='%235EE6A8' text-anchor='middle'%3EK%3C/text%3E%3C/svg%3E" />
     <title>Keirin AI Lab</title>
-    <link rel="stylesheet" href="styles.css?v=06c38f94" />
+    <link rel="stylesheet" href="styles.css?v=da13998f" />
   </head>
   <body data-page="home">
     <div class="app-shell">
@@ -25,6 +25,7 @@
 
         <nav class="side-nav" aria-label="ページ切替">
           <a href="index.html" class="active">本日の予想</a>
+          <a href="consult.html">車券コンサル</a>
           <a href="record.html">実績</a>
           <a href="results.html">結果と収支</a>
           <a href="motion.html">モーションメーカー</a>
@@ -71,20 +72,6 @@
 
           <div class="metric-strip" id="todayMetrics"></div>
 
-          <section class="bankroll-session surface-panel" aria-labelledby="bankrollTitle">
-            <div class="capital-head">
-              <div>
-                <h3 id="bankrollTitle">バンクロール運用</h3>
-              </div>
-              <div class="bankroll-head-actions" id="bankrollHeadActions"></div>
-            </div>
-            <div id="bankrollBody">
-              <div class="empty">運用状態を読み込み中です。</div>
-            </div>
-          </section>
-
-          <section class="surface-panel style-consult" id="styleConsult" hidden></section>
-
           <section class="value-board" id="valueBoard" hidden></section>
 
           <section class="recommended-races" id="recommendedSection" hidden></section>
@@ -115,6 +102,6 @@
       </main>
     </div>
 
-    <script src="app.js?v=06c38f94"></script>
+    <script src="app.js?v=da13998f"></script>
   </body>
 </html>
