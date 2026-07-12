@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at_jst": "2026-07-12T13:30:38+09:00",
+  "generated_at_jst": "2026-07-12T16:11:54+09:00",
   "rules": [
     "全額転がしは行いません(1レース投資は残高の上限%まで)",
     "負けた後の倍賭け(マーチンゲール)は行いません",
@@ -347,58 +347,58 @@
     }
   },
   "proposal": {
-    "race_key": "winticket:2026071022:3:11",
-    "venue": "前橋",
-    "race_no": 11,
-    "start_time": "15:48",
+    "race_key": "winticket:2026071175:2:6",
+    "venue": "松山",
+    "race_no": 6,
+    "start_time": "18:06",
     "race_date": "2026年7月12日",
-    "url": "https://www.winticket.jp/keirin/maebashi/racecard/2026071022/3/11",
+    "url": "https://www.winticket.jp/keirin/matsuyama/racecard/2026071175/2/6",
     "confidence": "本命",
     "budget": 1000,
-    "total_stake": 500,
-    "ev": 0.749,
-    "expected_return": 370,
+    "total_stake": 1000,
+    "ev": 2.524,
+    "expected_return": 2520,
     "tickets": [
       {
         "role": "本線",
-        "label": "3-1",
-        "stake": 300,
-        "odds": 6.0,
-        "odds_source": "estimated",
-        "popularity": null,
-        "hit_probability": 0.1248,
-        "projected_return": 1800
+        "label": "4-5-7",
+        "stake": 500,
+        "odds": 3.3,
+        "odds_source": "live",
+        "popularity": 1,
+        "hit_probability": 0.272,
+        "projected_return": 1650
       },
       {
         "role": "抑え",
-        "label": "3-7",
-        "stake": 100,
-        "odds": 9.1,
-        "odds_source": "estimated",
-        "popularity": null,
-        "hit_probability": 0.0826,
-        "projected_return": 910
+        "label": "4-5-6",
+        "stake": 300,
+        "odds": 8.2,
+        "odds_source": "live",
+        "popularity": 3,
+        "hit_probability": 0.2699,
+        "projected_return": 2460
       },
       {
         "role": "妙味",
-        "label": "3-2",
-        "stake": 100,
-        "odds": 11.4,
-        "odds_source": "estimated",
-        "popularity": null,
-        "hit_probability": 0.0657,
-        "projected_return": 1140
+        "label": "4-6-7",
+        "stake": 200,
+        "odds": 28.1,
+        "odds_source": "live",
+        "popularity": 8,
+        "hit_probability": 0.2512,
+        "projected_return": 5620
       }
     ],
-    "live_odds_count": 0,
+    "live_odds_count": 3,
     "top_pick": {
-      "car_no": 3,
-      "name": "邊見竜馬",
-      "probability": 0.4111,
-      "score": 11.744,
+      "car_no": 4,
+      "name": "梅川風子",
+      "probability": 0.4583,
+      "score": 4.13,
       "mark": "本命",
       "style": "逃",
-      "comment": "単騎で自力。",
+      "comment": "自力。",
       "emotion": {
         "tone": "中立",
         "score": 0.4,
@@ -416,64 +416,29 @@
       },
       "reasons": [
         "印: 本命",
-        "競走得点上位",
         "勝率高め",
         "バック数あり",
-        "前走後談話: 上向き",
-        "EX攻撃力100%",
-        "ちぎられ率30%"
+        "前検日談話: 不安含み",
+        "直近3着内多い",
+        "対元砂七夕美 7勝0敗",
+        "学習: 割引"
       ],
-      "form": {
-        "label": "不調",
-        "finishes": [
-          1,
-          1
-        ],
-        "top3_rate": null,
-        "avg_finish": null,
-        "score_delta": 0.0,
-        "official_delta": -8.81,
-        "score_now": 97.33,
-        "score_recent": 88.52,
-        "races": 2
-      },
-      "term": 127,
+      "form": null,
+      "term": 112,
       "class_move": null,
-      "player_id": "015875"
+      "player_id": "015219"
     },
-    "scenario_headline": "3邊見竜馬が本線。前で動いてライン3-1-5-4-6を残す展開を重視。",
-    "bet_type": "exacta",
-    "copy_text": "前橋11R 2車単\n本線 3-1 300円\n抑え 3-7 100円\n妙味 3-2 100円",
+    "scenario_headline": "4梅川風子は単騎でも総合評価上位。混戦の好位取りを評価。",
+    "bet_type": "trifecta",
+    "copy_text": "松山6R 3連単\n本線 4-5-7 500円\n抑え 4-5-6 300円\n妙味 4-6-7 200円",
     "odds_status": {
-      "attempted": 6,
-      "fetched": 6,
+      "attempted": 5,
+      "fetched": 5,
       "failed": 0,
       "errors": []
     }
   },
   "judged_races": [
-    {
-      "race_key": "winticket:2026071022:3:11",
-      "venue": "前橋",
-      "race_no": 11,
-      "start_time": "15:48",
-      "confidence": "本命",
-      "decision": "bet",
-      "reason": "予定レース・半分に縮小して実行(EV 0.75 低め・見送りも可)",
-      "ev": 0.75,
-      "is_next": true
-    },
-    {
-      "race_key": "winticket:2026071037:3:1",
-      "venue": "伊東",
-      "race_no": 1,
-      "start_time": "15:55",
-      "confidence": "順当",
-      "decision": "bet",
-      "reason": "予定レース・半分に縮小して実行(EV 0.75 低め・見送りも可)",
-      "ev": 0.746,
-      "is_next": false
-    },
     {
       "race_key": "winticket:2026071175:2:6",
       "venue": "松山",
@@ -481,9 +446,9 @@
       "start_time": "18:06",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 2.42 / 3点分散 / ライブ3点",
-      "ev": 2.418,
-      "is_next": false
+      "reason": "EV 2.52 / 3点分散 / ライブ3点",
+      "ev": 2.524,
+      "is_next": true
     },
     {
       "race_key": "winticket:2026071037:3:7",
@@ -493,7 +458,7 @@
       "confidence": "本命",
       "decision": "bet",
       "reason": "EV 2.88 / 3点分散 / ライブ3点",
-      "ev": 2.878,
+      "ev": 2.882,
       "is_next": false
     },
     {
@@ -987,8 +952,7 @@
         "start_time": "15:48",
         "original": null,
         "changed_at": null,
-        "status": "planned",
-        "is_next": true
+        "status": "missed"
       },
       {
         "race_key": "winticket:2026071037:3:1",
@@ -997,7 +961,7 @@
         "start_time": "15:55",
         "original": null,
         "changed_at": null,
-        "status": "planned"
+        "status": "missed"
       },
       {
         "race_key": "winticket:2026071175:2:6",
@@ -1006,7 +970,8 @@
         "start_time": "18:06",
         "original": null,
         "changed_at": null,
-        "status": "planned"
+        "status": "planned",
+        "is_next": true
       },
       {
         "race_key": "winticket:2026071037:3:7",
