@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at_jst": "2026-07-12T00:35:58+09:00",
+  "generated_at_jst": "2026-07-12T09:11:26+09:00",
   "rules": [
     "全額転がしは行いません(1レース投資は残高の上限%まで)",
     "負けた後の倍賭け(マーチンゲール)は行いません",
@@ -134,10 +134,349 @@
     }
   ],
   "auto_buy_available": false,
-  "session": null,
-  "state": null,
-  "proposal": null,
-  "judged_races": [],
+  "session": {
+    "id": 13,
+    "created_at": "2026-07-12T09:08:11+09:00",
+    "session_date": "2026-07-12",
+    "status": "active",
+    "stop_reason": null,
+    "config": {
+      "start_amount": 10000,
+      "target_amount": 1000000,
+      "style": "original",
+      "per_race_cap_pct": 12,
+      "daily_loss_limit_pct": 25,
+      "max_consecutive_losses": 4,
+      "min_ev": 1.25,
+      "auto_buy": false,
+      "role": "main"
+    },
+    "plan": {
+      "locked_at": "2026-07-12T09:08:11+09:00",
+      "race_limit": 10,
+      "slots": [
+        {
+          "race_key": "winticket:2026071036:3:4",
+          "venue": "小田原",
+          "race_no": 4,
+          "start_time": "09:32",
+          "original": null,
+          "changed_at": null
+        },
+        {
+          "race_key": "winticket:2026071022:3:4",
+          "venue": "前橋",
+          "race_no": 4,
+          "start_time": "12:22",
+          "original": null,
+          "changed_at": null
+        },
+        {
+          "race_key": "winticket:2026071143:2:5",
+          "venue": "岐阜",
+          "race_no": 5,
+          "start_time": "12:36",
+          "original": null,
+          "changed_at": null
+        },
+        {
+          "race_key": "winticket:2026071022:3:11",
+          "venue": "前橋",
+          "race_no": 11,
+          "start_time": "15:48",
+          "original": null,
+          "changed_at": null
+        },
+        {
+          "race_key": "winticket:2026071037:3:1",
+          "venue": "伊東",
+          "race_no": 1,
+          "start_time": "15:55",
+          "original": null,
+          "changed_at": null
+        },
+        {
+          "race_key": "winticket:2026071175:2:6",
+          "venue": "松山",
+          "race_no": 6,
+          "start_time": "18:06",
+          "original": null,
+          "changed_at": null
+        },
+        {
+          "race_key": "winticket:2026071037:3:7",
+          "venue": "伊東",
+          "race_no": 7,
+          "start_time": "18:18",
+          "original": null,
+          "changed_at": null
+        },
+        {
+          "race_key": "winticket:2026071175:2:9",
+          "venue": "松山",
+          "race_no": 9,
+          "start_time": "19:22",
+          "original": null,
+          "changed_at": null
+        },
+        {
+          "race_key": "winticket:2026071175:2:11",
+          "venue": "松山",
+          "race_no": 11,
+          "start_time": "20:16",
+          "original": null,
+          "changed_at": null
+        },
+        {
+          "race_key": "winticket:2026071013:3:8",
+          "venue": "いわき平",
+          "race_no": 8,
+          "start_time": "23:10",
+          "original": null,
+          "changed_at": null
+        }
+      ]
+    }
+  },
+  "state": {
+    "balance": 10000,
+    "profit": 0,
+    "day_loss": 0,
+    "day_loss_limit": 2500,
+    "consecutive_losses": 0,
+    "wins": 0,
+    "losses": 0,
+    "skips": 0,
+    "pending_bet": null,
+    "bets": [],
+    "target_progress": 0.01,
+    "races_to_target": {
+      "expected": 99,
+      "fast": 25
+    }
+  },
+  "proposal": {
+    "race_key": "winticket:2026071036:3:4",
+    "venue": "小田原",
+    "race_no": 4,
+    "start_time": "09:32",
+    "race_date": "2026年7月12日",
+    "url": "https://www.winticket.jp/keirin/odawara/racecard/2026071036/3/4",
+    "confidence": "本命",
+    "budget": 1200,
+    "total_stake": 600,
+    "ev": 0.749,
+    "expected_return": 450,
+    "tickets": [
+      {
+        "role": "本線",
+        "label": "5-4",
+        "stake": 400,
+        "odds": 6.4,
+        "odds_source": "estimated",
+        "popularity": null,
+        "hit_probability": 0.1171,
+        "projected_return": 2560
+      },
+      {
+        "role": "抑え",
+        "label": "5-6",
+        "stake": 100,
+        "odds": 9.7,
+        "odds_source": "estimated",
+        "popularity": null,
+        "hit_probability": 0.0771,
+        "projected_return": 970
+      },
+      {
+        "role": "妙味",
+        "label": "5-3",
+        "stake": 100,
+        "odds": 13.6,
+        "odds_source": "estimated",
+        "popularity": null,
+        "hit_probability": 0.0552,
+        "projected_return": 1360
+      }
+    ],
+    "live_odds_count": 0,
+    "top_pick": {
+      "car_no": 5,
+      "name": "西村剛",
+      "probability": 0.4036,
+      "score": 8.578,
+      "mark": "本命",
+      "style": "逃",
+      "comment": "自力。",
+      "emotion": {
+        "tone": "中立",
+        "score": 0.4,
+        "buckets": {
+          "intent": 0.4
+        },
+        "hits": [
+          {
+            "phrase": "自力",
+            "weight": 0.4,
+            "bucket": "intent"
+          }
+        ],
+        "summary": "戦法意図は見えますが、状態評価は控えめです。"
+      },
+      "reasons": [
+        "印: 本命",
+        "競走得点上位",
+        "勝率高め",
+        "バック数あり",
+        "EX攻撃力75%",
+        "直近3着内多い",
+        "先頭勝率29%"
+      ],
+      "form": {
+        "label": "不調",
+        "finishes": [
+          3,
+          6,
+          3,
+          7,
+          5,
+          1,
+          5
+        ],
+        "top3_rate": 0.333,
+        "avg_finish": 4.5,
+        "score_delta": 1.1,
+        "official_delta": -5.37,
+        "score_now": 93.33,
+        "score_recent": 87.96,
+        "races": 7
+      },
+      "term": 125,
+      "class_move": null,
+      "player_id": "015803"
+    },
+    "scenario_headline": "5西村剛が本線。前で動いてライン5-4-3-7を残す展開を重視。",
+    "bet_type": "exacta",
+    "copy_text": "小田原4R 2車単\n本線 5-4 400円\n抑え 5-6 100円\n妙味 5-3 100円",
+    "odds_status": {
+      "attempted": 6,
+      "fetched": 6,
+      "failed": 0,
+      "errors": []
+    }
+  },
+  "judged_races": [
+    {
+      "race_key": "winticket:2026071036:3:4",
+      "venue": "小田原",
+      "race_no": 4,
+      "start_time": "09:32",
+      "confidence": "本命",
+      "decision": "bet",
+      "reason": "予定レース・半分に縮小して実行(EV 0.75 低め・見送りも可)",
+      "ev": 0.749,
+      "is_next": true
+    },
+    {
+      "race_key": "winticket:2026071022:3:4",
+      "venue": "前橋",
+      "race_no": 4,
+      "start_time": "12:22",
+      "confidence": "本命",
+      "decision": "bet",
+      "reason": "EV 6.20 / 3点分散 / ライブ3点",
+      "ev": 6.204,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026071143:2:5",
+      "venue": "岐阜",
+      "race_no": 5,
+      "start_time": "12:36",
+      "confidence": "本命",
+      "decision": "bet",
+      "reason": "EV 8.02 / 3点分散 / ライブ3点",
+      "ev": 8.023,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026071022:3:11",
+      "venue": "前橋",
+      "race_no": 11,
+      "start_time": "15:48",
+      "confidence": "本命",
+      "decision": "bet",
+      "reason": "予定レース・半分に縮小して実行(EV 0.75 低め・見送りも可)",
+      "ev": 0.75,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026071037:3:1",
+      "venue": "伊東",
+      "race_no": 1,
+      "start_time": "15:55",
+      "confidence": "順当",
+      "decision": "bet",
+      "reason": "予定レース・半分に縮小して実行(EV 0.75 低め・見送りも可)",
+      "ev": 0.746,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026071175:2:6",
+      "venue": "松山",
+      "race_no": 6,
+      "start_time": "18:06",
+      "confidence": "本命",
+      "decision": "bet",
+      "reason": "EV 2.39 / 3点分散 / ライブ3点",
+      "ev": 2.393,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026071037:3:7",
+      "venue": "伊東",
+      "race_no": 7,
+      "start_time": "18:18",
+      "confidence": "本命",
+      "decision": "bet",
+      "reason": "EV 7.58 / 3点分散",
+      "ev": 7.583,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026071175:2:9",
+      "venue": "松山",
+      "race_no": 9,
+      "start_time": "19:22",
+      "confidence": "本命",
+      "decision": "bet",
+      "reason": "予定レース・半分に縮小して実行(EV 0.75 低め・見送りも可)",
+      "ev": 0.753,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026071175:2:11",
+      "venue": "松山",
+      "race_no": 11,
+      "start_time": "20:16",
+      "confidence": "本命",
+      "decision": "bet",
+      "reason": "予定レース・半分に縮小して実行(EV 0.75 低め・見送りも可)",
+      "ev": 0.75,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026071013:3:8",
+      "venue": "いわき平",
+      "race_no": 8,
+      "start_time": "23:10",
+      "confidence": "本命",
+      "decision": "bet",
+      "reason": "予定レース・半分に縮小して実行(EV 0.75 低め・見送りも可)",
+      "ev": 0.752,
+      "is_next": false
+    }
+  ],
   "yesterday": {
     "date": "2026-07-11",
     "sessions": [
@@ -242,8 +581,56 @@
     {
       "date": "2026-07-12",
       "total_profit": 0,
-      "sessions": [],
-      "original": null
+      "sessions": [
+        {
+          "id": 13,
+          "style": "original",
+          "style_label": "オリジナル",
+          "status": "active",
+          "stop_reason": null,
+          "config": {
+            "start_amount": 10000,
+            "target_amount": 1000000,
+            "style": "original",
+            "per_race_cap_pct": 12,
+            "daily_loss_limit_pct": 25,
+            "max_consecutive_losses": 4,
+            "min_ev": 1.25,
+            "auto_buy": false,
+            "role": "main"
+          },
+          "balance": 10000,
+          "profit": 0,
+          "wins": 0,
+          "losses": 0,
+          "skips": 0,
+          "target_reached": false
+        }
+      ],
+      "original": {
+        "id": 13,
+        "style": "original",
+        "style_label": "オリジナル",
+        "status": "active",
+        "stop_reason": null,
+        "config": {
+          "start_amount": 10000,
+          "target_amount": 1000000,
+          "style": "original",
+          "per_race_cap_pct": 12,
+          "daily_loss_limit_pct": 25,
+          "max_consecutive_losses": 4,
+          "min_ev": 1.25,
+          "auto_buy": false,
+          "role": "main"
+        },
+        "balance": 10000,
+        "profit": 0,
+        "wins": 0,
+        "losses": 0,
+        "skips": 0,
+        "target_reached": false
+      }
     },
     {
       "date": "2026-07-11",
@@ -507,35 +894,101 @@
       }
     ]
   },
-  "last_session": {
-    "stop_reason": "比較運用を廃止(コンサル方式へ変更)",
-    "config": {
-      "start_amount": 10000,
-      "target_amount": 1000000,
-      "style": "bouken",
-      "per_race_cap_pct": 30,
-      "daily_loss_limit_pct": 40,
-      "max_consecutive_losses": 4,
-      "min_ev": 1.1,
-      "auto_buy": false,
-      "role": "compare"
-    },
-    "state": {
-      "balance": 10000,
-      "profit": 0,
-      "day_loss": 0,
-      "day_loss_limit": 4000,
-      "consecutive_losses": 0,
-      "wins": 0,
-      "losses": 0,
-      "skips": 0,
-      "pending_bet": null,
-      "bets": [],
-      "target_progress": 0.01,
-      "races_to_target": {
-        "expected": 99,
-        "fast": 9
+  "plan": {
+    "locked_at": "2026-07-12T09:08:11+09:00",
+    "race_limit": 10,
+    "slots": [
+      {
+        "race_key": "winticket:2026071036:3:4",
+        "venue": "小田原",
+        "race_no": 4,
+        "start_time": "09:32",
+        "original": null,
+        "changed_at": null,
+        "status": "planned",
+        "is_next": true
+      },
+      {
+        "race_key": "winticket:2026071022:3:4",
+        "venue": "前橋",
+        "race_no": 4,
+        "start_time": "12:22",
+        "original": null,
+        "changed_at": null,
+        "status": "planned"
+      },
+      {
+        "race_key": "winticket:2026071143:2:5",
+        "venue": "岐阜",
+        "race_no": 5,
+        "start_time": "12:36",
+        "original": null,
+        "changed_at": null,
+        "status": "planned"
+      },
+      {
+        "race_key": "winticket:2026071022:3:11",
+        "venue": "前橋",
+        "race_no": 11,
+        "start_time": "15:48",
+        "original": null,
+        "changed_at": null,
+        "status": "planned"
+      },
+      {
+        "race_key": "winticket:2026071037:3:1",
+        "venue": "伊東",
+        "race_no": 1,
+        "start_time": "15:55",
+        "original": null,
+        "changed_at": null,
+        "status": "planned"
+      },
+      {
+        "race_key": "winticket:2026071175:2:6",
+        "venue": "松山",
+        "race_no": 6,
+        "start_time": "18:06",
+        "original": null,
+        "changed_at": null,
+        "status": "planned"
+      },
+      {
+        "race_key": "winticket:2026071037:3:7",
+        "venue": "伊東",
+        "race_no": 7,
+        "start_time": "18:18",
+        "original": null,
+        "changed_at": null,
+        "status": "planned"
+      },
+      {
+        "race_key": "winticket:2026071175:2:9",
+        "venue": "松山",
+        "race_no": 9,
+        "start_time": "19:22",
+        "original": null,
+        "changed_at": null,
+        "status": "planned"
+      },
+      {
+        "race_key": "winticket:2026071175:2:11",
+        "venue": "松山",
+        "race_no": 11,
+        "start_time": "20:16",
+        "original": null,
+        "changed_at": null,
+        "status": "planned"
+      },
+      {
+        "race_key": "winticket:2026071013:3:8",
+        "venue": "いわき平",
+        "race_no": 8,
+        "start_time": "23:10",
+        "original": null,
+        "changed_at": null,
+        "status": "planned"
       }
-    }
+    ]
   }
 }
