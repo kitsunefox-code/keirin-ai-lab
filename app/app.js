@@ -2886,7 +2886,7 @@ function formationHtml(combos) {
     if (!boxed && !used.has(i)) out.push({ ...rows[i], box: false });
   }
 
-  const grp = (arr) => arr.map(car).join("");
+  const grp = (arr) => [...arr].sort((x, y) => x - y).map(car).join("");
   const rowHtml = (r) => {
     const head = r.box ? r.firsts.map(car).join('<em class="fm-eq">＝</em>') : car(r.firsts[0]);
     const parts = [head];
