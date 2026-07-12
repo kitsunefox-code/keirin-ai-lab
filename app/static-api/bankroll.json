@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at_jst": "2026-07-12T22:58:59+09:00",
+  "generated_at_jst": "2026-07-13T00:07:10+09:00",
   "rules": [
     "全額転がしは行いません(1レース投資は残高の上限%まで)",
     "負けた後の倍賭け(マーチンゲール)は行いません",
@@ -139,14 +139,14 @@
   "proposal": null,
   "judged_races": [],
   "yesterday": {
-    "date": "2026-07-11",
+    "date": "2026-07-12",
     "sessions": [
       {
-        "id": 9,
+        "id": 13,
         "style": "original",
         "style_label": "オリジナル",
         "status": "stopped",
-        "stop_reason": "10レース完了(収支確定 +2230円)",
+        "stop_reason": "1日損失上限(3020円 ≥ 2500円)",
         "config": {
           "start_amount": 10000,
           "target_amount": 1000000,
@@ -155,90 +155,25 @@
           "daily_loss_limit_pct": 25,
           "max_consecutive_losses": 4,
           "min_ev": 1.25,
-          "auto_buy": false
-        },
-        "balance": 12230,
-        "profit": 2230,
-        "wins": 4,
-        "losses": 6,
-        "skips": 0,
-        "target_reached": false
-      },
-      {
-        "id": 10,
-        "style": "kenjitsu",
-        "style_label": "堅実",
-        "status": "stopped",
-        "stop_reason": "比較運用を廃止(コンサル方式へ変更)",
-        "config": {
-          "start_amount": 10000,
-          "target_amount": 1000000,
-          "style": "kenjitsu",
-          "per_race_cap_pct": 10,
-          "daily_loss_limit_pct": 20,
-          "max_consecutive_losses": 2,
-          "min_ev": 1.3,
           "auto_buy": false,
-          "role": "compare"
+          "role": "main"
         },
-        "balance": 10000,
-        "profit": 0,
-        "wins": 0,
-        "losses": 0,
-        "skips": 0,
-        "target_reached": false
-      },
-      {
-        "id": 11,
-        "style": "balance",
-        "style_label": "バランス",
-        "status": "stopped",
-        "stop_reason": "比較運用を廃止(コンサル方式へ変更)",
-        "config": {
-          "start_amount": 10000,
-          "target_amount": 1000000,
-          "style": "balance",
-          "per_race_cap_pct": 20,
-          "daily_loss_limit_pct": 30,
-          "max_consecutive_losses": 3,
-          "min_ev": 1.2,
-          "auto_buy": false,
-          "role": "compare"
-        },
-        "balance": 10000,
-        "profit": 0,
-        "wins": 0,
-        "losses": 0,
-        "skips": 0,
-        "target_reached": false
-      },
-      {
-        "id": 12,
-        "style": "bouken",
-        "style_label": "冒険",
-        "status": "stopped",
-        "stop_reason": "比較運用を廃止(コンサル方式へ変更)",
-        "config": {
-          "start_amount": 10000,
-          "target_amount": 1000000,
-          "style": "bouken",
-          "per_race_cap_pct": 30,
-          "daily_loss_limit_pct": 40,
-          "max_consecutive_losses": 4,
-          "min_ev": 1.1,
-          "auto_buy": false,
-          "role": "compare"
-        },
-        "balance": 10000,
-        "profit": 0,
-        "wins": 0,
-        "losses": 0,
+        "balance": 6180,
+        "profit": -3820,
+        "wins": 1,
+        "losses": 4,
         "skips": 0,
         "target_reached": false
       }
     ]
   },
   "daily_history": [
+    {
+      "date": "2026-07-13",
+      "total_profit": 0,
+      "sessions": [],
+      "original": null
+    },
     {
       "date": "2026-07-12",
       "total_profit": -3820,
@@ -531,7 +466,7 @@
     "wins": 10,
     "losses": 25,
     "hit_rate": 0.2857,
-    "today_profit": -3820,
+    "today_profit": 0,
     "series": [
       {
         "date": "2026-07-09",
@@ -552,6 +487,11 @@
         "date": "2026-07-12",
         "cumulative_profit": -13320,
         "day_profit": -3820
+      },
+      {
+        "date": "2026-07-13",
+        "cumulative_profit": -13320,
+        "day_profit": 0
       }
     ]
   },
