@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at_jst": "2026-07-15T01:02:47+09:00",
+  "generated_at_jst": "2026-07-15T09:05:50+09:00",
   "rules": [
     "全額転がしは行いません(1レース投資は残高の上限%まで)",
     "負けた後の倍賭け(マーチンゲール)は行いません",
@@ -134,10 +134,331 @@
     }
   ],
   "auto_buy_available": false,
-  "session": null,
-  "state": null,
-  "proposal": null,
-  "judged_races": [],
+  "session": {
+    "id": 16,
+    "created_at": "2026-07-15T09:04:58+09:00",
+    "session_date": "2026-07-15",
+    "status": "active",
+    "stop_reason": null,
+    "config": {
+      "start_amount": 10000,
+      "target_amount": 1000000,
+      "style": "original",
+      "per_race_cap_pct": 12,
+      "daily_loss_limit_pct": 25,
+      "max_consecutive_losses": 4,
+      "min_ev": 1.25,
+      "auto_buy": false,
+      "role": "main"
+    },
+    "plan": {
+      "locked_at": "2026-07-15T09:04:58+09:00",
+      "race_limit": 10,
+      "slots": [
+        {
+          "race_key": "winticket:2026071387:3:5",
+          "venue": "熊本",
+          "race_no": 5,
+          "start_time": "09:50",
+          "original": null,
+          "changed_at": null
+        },
+        {
+          "race_key": "winticket:2026071523:1:5",
+          "venue": "取手",
+          "race_no": 5,
+          "start_time": "10:00",
+          "original": null,
+          "changed_at": null
+        },
+        {
+          "race_key": "winticket:2026071523:1:7",
+          "venue": "取手",
+          "race_no": 7,
+          "start_time": "10:40",
+          "original": null,
+          "changed_at": null
+        },
+        {
+          "race_key": "winticket:2026071461:2:4",
+          "venue": "玉野",
+          "race_no": 4,
+          "start_time": "12:01",
+          "original": null,
+          "changed_at": null
+        },
+        {
+          "race_key": "winticket:2026071411:2:1",
+          "venue": "函館",
+          "race_no": 1,
+          "start_time": "15:50",
+          "original": null,
+          "changed_at": null
+        },
+        {
+          "race_key": "winticket:2026071411:2:4",
+          "venue": "函館",
+          "race_no": 4,
+          "start_time": "17:00",
+          "original": null,
+          "changed_at": null
+        },
+        {
+          "race_key": "winticket:2026071411:2:6",
+          "venue": "函館",
+          "race_no": 6,
+          "start_time": "17:48",
+          "original": null,
+          "changed_at": null
+        },
+        {
+          "race_key": "winticket:2026071411:2:7",
+          "venue": "函館",
+          "race_no": 7,
+          "start_time": "18:12",
+          "original": null,
+          "changed_at": null
+        },
+        {
+          "race_key": "winticket:2026071327:3:7",
+          "venue": "京王閣",
+          "race_no": 7,
+          "start_time": "22:50",
+          "original": null,
+          "changed_at": null
+        },
+        {
+          "race_key": "winticket:2026071327:3:8",
+          "venue": "京王閣",
+          "race_no": 8,
+          "start_time": "23:10",
+          "original": null,
+          "changed_at": null
+        }
+      ]
+    }
+  },
+  "state": {
+    "balance": 10000,
+    "profit": 0,
+    "day_loss": 0,
+    "day_loss_limit": 2500,
+    "consecutive_losses": 0,
+    "wins": 0,
+    "losses": 0,
+    "skips": 0,
+    "pending_bet": null,
+    "bets": [],
+    "target_progress": 0.01,
+    "races_to_target": {
+      "expected": 99,
+      "fast": 25
+    }
+  },
+  "proposal": {
+    "race_key": "winticket:2026071387:3:5",
+    "venue": "熊本",
+    "race_no": 5,
+    "start_time": "09:50",
+    "race_date": "2026年7月15日",
+    "url": "https://www.winticket.jp/keirin/kumamoto/racecard/2026071387/3/5",
+    "confidence": "本命",
+    "budget": 1200,
+    "total_stake": 1200,
+    "ev": 15.321,
+    "expected_return": 18390,
+    "tickets": [
+      {
+        "role": "本線",
+        "label": "1-5-3",
+        "stake": 700,
+        "odds": 44.2,
+        "odds_source": "live",
+        "popularity": 10,
+        "hit_probability": 0.2831,
+        "projected_return": 30940
+      },
+      {
+        "role": "抑え",
+        "label": "1-3-5",
+        "stake": 300,
+        "odds": 35.5,
+        "odds_source": "live",
+        "popularity": 7,
+        "hit_probability": 0.2792,
+        "projected_return": 10650
+      },
+      {
+        "role": "妙味",
+        "label": "1-4-5",
+        "stake": 200,
+        "odds": 125.1,
+        "odds_source": "live",
+        "popularity": 51,
+        "hit_probability": 0.2659,
+        "projected_return": 25020
+      }
+    ],
+    "live_odds_count": 3,
+    "top_pick": {
+      "car_no": 1,
+      "name": "佐藤魁皇",
+      "probability": 0.4821,
+      "score": 8.878,
+      "mark": "本命",
+      "style": "逃",
+      "comment": "自力。",
+      "emotion": {
+        "tone": "中立",
+        "score": 0.4,
+        "buckets": {
+          "intent": 0.4
+        },
+        "hits": [
+          {
+            "phrase": "自力",
+            "weight": 0.4,
+            "bucket": "intent"
+          }
+        ],
+        "summary": "戦法意図は見えますが、状態評価は控えめです。"
+      },
+      "reasons": [
+        "印: 本命",
+        "勝率高め",
+        "バック数あり",
+        "EX攻撃力100%",
+        "ちぎられ率25%",
+        "直近3着内多い",
+        "先頭勝率31%"
+      ],
+      "form": null,
+      "term": 127,
+      "class_move": null,
+      "player_id": "015935"
+    },
+    "scenario_headline": "1佐藤魁皇が本線。前で動いてライン1-7を残す展開を重視。",
+    "bet_type": "trifecta",
+    "copy_text": "熊本5R 3連単\n本線 1-5-3 700円\n抑え 1-3-5 300円\n妙味 1-4-5 200円",
+    "odds_status": {
+      "attempted": 6,
+      "fetched": 6,
+      "failed": 0,
+      "errors": []
+    }
+  },
+  "judged_races": [
+    {
+      "race_key": "winticket:2026071387:3:5",
+      "venue": "熊本",
+      "race_no": 5,
+      "start_time": "09:50",
+      "confidence": "本命",
+      "decision": "bet",
+      "reason": "EV 15.32 / 3点分散 / ライブ3点",
+      "ev": 15.321,
+      "is_next": true
+    },
+    {
+      "race_key": "winticket:2026071523:1:5",
+      "venue": "取手",
+      "race_no": 5,
+      "start_time": "10:00",
+      "confidence": "本命",
+      "decision": "bet",
+      "reason": "EV 7.72 / 3点分散 / ライブ3点",
+      "ev": 7.722,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026071523:1:7",
+      "venue": "取手",
+      "race_no": 7,
+      "start_time": "10:40",
+      "confidence": "本命",
+      "decision": "bet",
+      "reason": "予定レース・半分に縮小して実行(EV 0.75 低め・見送りも可)",
+      "ev": 0.748,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026071461:2:4",
+      "venue": "玉野",
+      "race_no": 4,
+      "start_time": "12:01",
+      "confidence": "本命",
+      "decision": "bet",
+      "reason": "EV 7.51 / 3点分散 / ライブ3点",
+      "ev": 7.514,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026071411:2:1",
+      "venue": "函館",
+      "race_no": 1,
+      "start_time": "15:50",
+      "confidence": "本命",
+      "decision": "bet",
+      "reason": "EV 6.32 / 3点分散 / ライブ3点",
+      "ev": 6.318,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026071411:2:4",
+      "venue": "函館",
+      "race_no": 4,
+      "start_time": "17:00",
+      "confidence": "本命",
+      "decision": "bet",
+      "reason": "EV 6.14 / 3点分散 / ライブ3点",
+      "ev": 6.142,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026071411:2:6",
+      "venue": "函館",
+      "race_no": 6,
+      "start_time": "17:48",
+      "confidence": "本命",
+      "decision": "bet",
+      "reason": "EV 7.05 / 3点分散",
+      "ev": 7.054,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026071411:2:7",
+      "venue": "函館",
+      "race_no": 7,
+      "start_time": "18:12",
+      "confidence": "本命",
+      "decision": "bet",
+      "reason": "EV 7.09 / 3点分散",
+      "ev": 7.091,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026071327:3:7",
+      "venue": "京王閣",
+      "race_no": 7,
+      "start_time": "22:50",
+      "confidence": "本命",
+      "decision": "bet",
+      "reason": "EV 7.29 / 3点分散",
+      "ev": 7.292,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026071327:3:8",
+      "venue": "京王閣",
+      "race_no": 8,
+      "start_time": "23:10",
+      "confidence": "本命",
+      "decision": "bet",
+      "reason": "EV 7.45 / 3点分散",
+      "ev": 7.453,
+      "is_next": false
+    }
+  ],
   "yesterday": {
     "date": "2026-07-14",
     "sessions": [
@@ -171,8 +492,56 @@
     {
       "date": "2026-07-15",
       "total_profit": 0,
-      "sessions": [],
-      "original": null
+      "sessions": [
+        {
+          "id": 16,
+          "style": "original",
+          "style_label": "オリジナル",
+          "status": "active",
+          "stop_reason": null,
+          "config": {
+            "start_amount": 10000,
+            "target_amount": 1000000,
+            "style": "original",
+            "per_race_cap_pct": 12,
+            "daily_loss_limit_pct": 25,
+            "max_consecutive_losses": 4,
+            "min_ev": 1.25,
+            "auto_buy": false,
+            "role": "main"
+          },
+          "balance": 10000,
+          "profit": 0,
+          "wins": 0,
+          "losses": 0,
+          "skips": 0,
+          "target_reached": false
+        }
+      ],
+      "original": {
+        "id": 16,
+        "style": "original",
+        "style_label": "オリジナル",
+        "status": "active",
+        "stop_reason": null,
+        "config": {
+          "start_amount": 10000,
+          "target_amount": 1000000,
+          "style": "original",
+          "per_race_cap_pct": 12,
+          "daily_loss_limit_pct": 25,
+          "max_consecutive_losses": 4,
+          "min_ev": 1.25,
+          "auto_buy": false,
+          "role": "main"
+        },
+        "balance": 10000,
+        "profit": 0,
+        "wins": 0,
+        "losses": 0,
+        "skips": 0,
+        "target_reached": false
+      }
     },
     {
       "date": "2026-07-14",
@@ -566,7 +935,7 @@
     }
   ],
   "finance": {
-    "current_balance": 11020,
+    "current_balance": 10000,
     "total_stake": 49700,
     "total_payout": 33500,
     "total_profit": -16200,
@@ -613,316 +982,101 @@
       }
     ]
   },
-  "last_session": {
-    "stop_reason": "1日損失上限(3100円 ≥ 2500円)",
-    "config": {
-      "start_amount": 10000,
-      "target_amount": 1000000,
-      "style": "original",
-      "per_race_cap_pct": 12,
-      "daily_loss_limit_pct": 25,
-      "max_consecutive_losses": 4,
-      "min_ev": 1.25,
-      "auto_buy": false,
-      "role": "main"
-    },
-    "state": {
-      "balance": 11020,
-      "profit": 1020,
-      "day_loss": 0,
-      "day_loss_limit": 2500,
-      "consecutive_losses": 0,
-      "wins": 2,
-      "losses": 3,
-      "skips": 0,
-      "pending_bet": null,
-      "bets": [
-        {
-          "id": 40,
-          "race_key": "winticket:2026071461:1:1",
-          "venue": "玉野",
-          "race_no": 1,
-          "start_time": "10:45",
-          "url": "",
-          "tickets": [
-            {
-              "label": "7-3-2",
-              "cars": [
-                7,
-                3,
-                2
-              ],
-              "stake": 500,
-              "bet_type": "trifecta"
-            },
-            {
-              "label": "7-3-4",
-              "cars": [
-                7,
-                3,
-                4
-              ],
-              "stake": 300,
-              "bet_type": "trifecta"
-            },
-            {
-              "label": "7-3-1",
-              "cars": [
-                7,
-                3,
-                1
-              ],
-              "stake": 200,
-              "bet_type": "trifecta"
-            },
-            {
-              "label": "7-2-3",
-              "cars": [
-                7,
-                2,
-                3
-              ],
-              "stake": 200,
-              "bet_type": "trifecta"
-            }
-          ],
-          "total_stake": 1200,
-          "status": "won",
-          "payout": 1200,
-          "note": null,
-          "created_at": "2026-07-14T13:09:00+09:00",
-          "settled_at": "2026-07-14T13:09:00+09:00"
-        },
-        {
-          "id": 41,
-          "race_key": "winticket:2026071324:2:7",
-          "venue": "宇都宮",
-          "race_no": 7,
-          "start_time": "13:33",
-          "url": "",
-          "tickets": [
-            {
-              "label": "1-4-3",
-              "cars": [
-                1,
-                4,
-                3
-              ],
-              "stake": 500,
-              "bet_type": "trifecta"
-            },
-            {
-              "label": "1-4-5",
-              "cars": [
-                1,
-                4,
-                5
-              ],
-              "stake": 300,
-              "bet_type": "trifecta"
-            },
-            {
-              "label": "1-4-6",
-              "cars": [
-                1,
-                4,
-                6
-              ],
-              "stake": 200,
-              "bet_type": "trifecta"
-            },
-            {
-              "label": "1-3-4",
-              "cars": [
-                1,
-                3,
-                4
-              ],
-              "stake": 200,
-              "bet_type": "trifecta"
-            }
-          ],
-          "total_stake": 1200,
-          "status": "lost",
-          "payout": 0,
-          "note": null,
-          "created_at": "2026-07-14T15:28:53+09:00",
-          "settled_at": "2026-07-14T15:28:53+09:00"
-        },
-        {
-          "id": 42,
-          "race_key": "winticket:2026071356:2:11",
-          "venue": "岸和田",
-          "race_no": 11,
-          "start_time": "15:43",
-          "url": "",
-          "tickets": [
-            {
-              "label": "5-3-4",
-              "cars": [
-                5,
-                3,
-                4
-              ],
-              "stake": 500,
-              "bet_type": "trifecta"
-            },
-            {
-              "label": "5-3-1",
-              "cars": [
-                5,
-                3,
-                1
-              ],
-              "stake": 200,
-              "bet_type": "trifecta"
-            },
-            {
-              "label": "5-3-7",
-              "cars": [
-                5,
-                3,
-                7
-              ],
-              "stake": 200,
-              "bet_type": "trifecta"
-            },
-            {
-              "label": "5-4-3",
-              "cars": [
-                5,
-                4,
-                3
-              ],
-              "stake": 100,
-              "bet_type": "trifecta"
-            }
-          ],
-          "total_stake": 1000,
-          "status": "lost",
-          "payout": 0,
-          "note": null,
-          "created_at": "2026-07-14T17:40:33+09:00",
-          "settled_at": "2026-07-14T17:40:33+09:00"
-        },
-        {
-          "id": 43,
-          "race_key": "winticket:2026071411:1:3",
-          "venue": "函館",
-          "race_no": 3,
-          "start_time": "16:36",
-          "url": "",
-          "tickets": [
-            {
-              "label": "2-5-7",
-              "cars": [
-                2,
-                5,
-                7
-              ],
-              "stake": 500,
-              "bet_type": "trifecta"
-            },
-            {
-              "label": "2-5-3",
-              "cars": [
-                2,
-                5,
-                3
-              ],
-              "stake": 200,
-              "bet_type": "trifecta"
-            },
-            {
-              "label": "2-5-4",
-              "cars": [
-                2,
-                5,
-                4
-              ],
-              "stake": 100,
-              "bet_type": "trifecta"
-            },
-            {
-              "label": "2-7-5",
-              "cars": [
-                2,
-                7,
-                5
-              ],
-              "stake": 100,
-              "bet_type": "trifecta"
-            }
-          ],
-          "total_stake": 900,
-          "status": "lost",
-          "payout": 0,
-          "note": null,
-          "created_at": "2026-07-14T17:40:33+09:00",
-          "settled_at": "2026-07-14T17:40:33+09:00"
-        },
-        {
-          "id": 44,
-          "race_key": "winticket:2026071411:1:4",
-          "venue": "函館",
-          "race_no": 4,
-          "start_time": "17:00",
-          "url": "",
-          "tickets": [
-            {
-              "label": "3-4-7",
-              "cars": [
-                3,
-                4,
-                7
-              ],
-              "stake": 400,
-              "bet_type": "trifecta"
-            },
-            {
-              "label": "3-4-1",
-              "cars": [
-                3,
-                4,
-                1
-              ],
-              "stake": 200,
-              "bet_type": "trifecta"
-            },
-            {
-              "label": "3-4-5",
-              "cars": [
-                3,
-                4,
-                5
-              ],
-              "stake": 100,
-              "bet_type": "trifecta"
-            },
-            {
-              "label": "3-7-4",
-              "cars": [
-                3,
-                7,
-                4
-              ],
-              "stake": 100,
-              "bet_type": "trifecta"
-            }
-          ],
-          "total_stake": 800,
-          "status": "won",
-          "payout": 4920,
-          "note": null,
-          "created_at": "2026-07-14T17:40:33+09:00",
-          "settled_at": "2026-07-14T17:40:33+09:00"
-        }
-      ],
-      "target_progress": 0.01102,
-      "races_to_target": {
-        "expected": 99,
-        "fast": 24
+  "plan": {
+    "locked_at": "2026-07-15T09:04:58+09:00",
+    "race_limit": 10,
+    "slots": [
+      {
+        "race_key": "winticket:2026071387:3:5",
+        "venue": "熊本",
+        "race_no": 5,
+        "start_time": "09:50",
+        "original": null,
+        "changed_at": null,
+        "status": "planned",
+        "is_next": true
+      },
+      {
+        "race_key": "winticket:2026071523:1:5",
+        "venue": "取手",
+        "race_no": 5,
+        "start_time": "10:00",
+        "original": null,
+        "changed_at": null,
+        "status": "planned"
+      },
+      {
+        "race_key": "winticket:2026071523:1:7",
+        "venue": "取手",
+        "race_no": 7,
+        "start_time": "10:40",
+        "original": null,
+        "changed_at": null,
+        "status": "planned"
+      },
+      {
+        "race_key": "winticket:2026071461:2:4",
+        "venue": "玉野",
+        "race_no": 4,
+        "start_time": "12:01",
+        "original": null,
+        "changed_at": null,
+        "status": "planned"
+      },
+      {
+        "race_key": "winticket:2026071411:2:1",
+        "venue": "函館",
+        "race_no": 1,
+        "start_time": "15:50",
+        "original": null,
+        "changed_at": null,
+        "status": "planned"
+      },
+      {
+        "race_key": "winticket:2026071411:2:4",
+        "venue": "函館",
+        "race_no": 4,
+        "start_time": "17:00",
+        "original": null,
+        "changed_at": null,
+        "status": "planned"
+      },
+      {
+        "race_key": "winticket:2026071411:2:6",
+        "venue": "函館",
+        "race_no": 6,
+        "start_time": "17:48",
+        "original": null,
+        "changed_at": null,
+        "status": "planned"
+      },
+      {
+        "race_key": "winticket:2026071411:2:7",
+        "venue": "函館",
+        "race_no": 7,
+        "start_time": "18:12",
+        "original": null,
+        "changed_at": null,
+        "status": "planned"
+      },
+      {
+        "race_key": "winticket:2026071327:3:7",
+        "venue": "京王閣",
+        "race_no": 7,
+        "start_time": "22:50",
+        "original": null,
+        "changed_at": null,
+        "status": "planned"
+      },
+      {
+        "race_key": "winticket:2026071327:3:8",
+        "venue": "京王閣",
+        "race_no": 8,
+        "start_time": "23:10",
+        "original": null,
+        "changed_at": null,
+        "status": "planned"
       }
-    }
+    ]
   }
 }
