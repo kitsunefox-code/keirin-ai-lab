@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at_jst": "2026-07-15T23:22:40+09:00",
+  "generated_at_jst": "2026-07-16T01:04:31+09:00",
   "rules": [
     "全額転がしは行いません(1レース投資は残高の上限%まで)",
     "負けた後の倍賭け(マーチンゲール)は行いません",
@@ -139,14 +139,14 @@
   "proposal": null,
   "judged_races": [],
   "yesterday": {
-    "date": "2026-07-14",
+    "date": "2026-07-15",
     "sessions": [
       {
-        "id": 15,
+        "id": 16,
         "style": "original",
         "style_label": "オリジナル",
         "status": "stopped",
-        "stop_reason": "1日損失上限(3100円 ≥ 2500円)",
+        "stop_reason": "10レース完了(収支確定 +1060円)",
         "config": {
           "start_amount": 10000,
           "target_amount": 1000000,
@@ -158,16 +158,22 @@
           "auto_buy": false,
           "role": "main"
         },
-        "balance": 11020,
-        "profit": 1020,
-        "wins": 2,
-        "losses": 3,
+        "balance": 11060,
+        "profit": 1060,
+        "wins": 4,
+        "losses": 6,
         "skips": 0,
         "target_reached": false
       }
     ]
   },
   "daily_history": [
+    {
+      "date": "2026-07-16",
+      "total_profit": 0,
+      "sessions": [],
+      "original": null
+    },
     {
       "date": "2026-07-15",
       "total_profit": 1060,
@@ -622,7 +628,7 @@
     "wins": 16,
     "losses": 38,
     "hit_rate": 0.2963,
-    "today_profit": 1060,
+    "today_profit": 0,
     "series": [
       {
         "date": "2026-07-09",
@@ -658,6 +664,11 @@
         "date": "2026-07-15",
         "cumulative_profit": -15140,
         "day_profit": 1060
+      },
+      {
+        "date": "2026-07-16",
+        "cumulative_profit": -15140,
+        "day_profit": 0
       }
     ]
   },
