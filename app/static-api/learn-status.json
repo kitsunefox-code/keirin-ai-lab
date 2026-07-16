@@ -3,9 +3,9 @@
   "status": {
     "races": 1150,
     "entries": 7916,
-    "result_races": 1080,
-    "result_entries": 7347,
-    "predictions": 2044,
+    "result_races": 1096,
+    "result_entries": 7458,
+    "predictions": 2060,
     "documents": 15,
     "db_path": "/home/runner/work/keirin-ai-lab/keirin-ai-lab/data/keirin_learning.sqlite3"
   },
@@ -14,30 +14,30 @@
     "backend": "lightgbm",
     "version": "0.2",
     "training": {
-      "rows": 7335,
-      "races": 1078,
-      "positive_rows": 1034,
+      "rows": 7458,
+      "races": 1096,
+      "positive_rows": 1052,
       "best_iteration": 7,
-      "valid_races": 162
+      "valid_races": 165
     },
     "metrics": {
-      "log_loss": 0.3885,
-      "top1_accuracy": 0.4321,
+      "log_loss": 0.3888,
+      "top1_accuracy": 0.4485,
       "eval_split": "time-based 15% holdout"
     },
     "feature_importance": {
-      "ai_honmei": 5397.0,
-      "win_rate": 3862.3,
-      "ai_taiko": 2406.5,
-      "racing_score": 1223.5,
-      "style_escape": 605.0,
-      "style_pursuit": 582.9,
-      "line_second": 459.7,
-      "line_strength_score": 406.2,
-      "emotion_positive": 356.8,
-      "bank_style_fit": 331.2,
-      "emotion_score": 323.5,
-      "track_top3_rate": 287.6
+      "ai_honmei": 5795.0,
+      "win_rate": 4025.1,
+      "ai_taiko": 2550.6,
+      "racing_score": 1135.7,
+      "style_escape": 650.8,
+      "emotion_score": 552.9,
+      "line_second": 394.8,
+      "line_strength_score": 377.9,
+      "emotion_positive": 355.1,
+      "bank_style_fit": 350.7,
+      "line_strength_back": 272.9,
+      "pos_win_rate": 254.9
     }
   }
 }
