@@ -52,29 +52,29 @@
   ],
   "lgbm_model": "data/model_lgbm.txt",
   "training": {
-    "rows": 8224,
-    "races": 1204,
-    "positive_rows": 1160,
-    "best_iteration": 7,
-    "valid_races": 181
+    "rows": 8300,
+    "races": 1215,
+    "positive_rows": 1171,
+    "best_iteration": 6,
+    "valid_races": 183
   },
   "metrics": {
-    "log_loss": 0.3878,
-    "top1_accuracy": 0.4641,
+    "log_loss": 0.3885,
+    "top1_accuracy": 0.4426,
     "eval_split": "time-based 15% holdout"
   },
   "feature_importance": {
-    "ai_honmei": 6315.1,
-    "win_rate": 3474.8,
-    "ai_taiko": 3345.1,
-    "racing_score": 1428.6,
-    "style_escape": 696.0,
-    "style_pursuit": 593.9,
-    "line_strength_score": 516.2,
-    "line_second": 455.0,
-    "three_rate": 396.6,
-    "emotion_positive": 375.3,
-    "emotion_score": 344.3,
-    "line_strength_back": 317.1
+    "ai_honmei": 5862.7,
+    "win_rate": 3386.7,
+    "ai_taiko": 3235.7,
+    "racing_score": 1392.9,
+    "style_escape": 566.3,
+    "style_pursuit": 562.1,
+    "line_strength_score": 468.7,
+    "line_second": 441.3,
+    "emotion_score": 425.2,
+    "emotion_positive": 370.7,
+    "line_strength_back": 365.5,
+    "pos_win_rate": 299.6
   }
 }
