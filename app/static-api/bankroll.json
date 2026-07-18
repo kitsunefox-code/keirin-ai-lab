@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at_jst": "2026-07-18T15:15:27+09:00",
+  "generated_at_jst": "2026-07-18T17:13:31+09:00",
   "rules": [
     "全額転がしは行いません(1レース投資は残高の上限%まで)",
     "負けた後の倍賭け(マーチンゲール)は行いません",
@@ -255,132 +255,8 @@
       "fast": 25
     }
   },
-  "proposal": {
-    "race_key": "winticket:2026071838:1:11",
-    "venue": "静岡",
-    "race_no": 11,
-    "start_time": "15:32",
-    "race_date": "2026年7月18日",
-    "url": "https://www.winticket.jp/keirin/shizuoka/racecard/2026071838/1/11",
-    "confidence": "本命",
-    "budget": 1200,
-    "total_stake": 1200,
-    "ev": 28.237,
-    "expected_return": 33880,
-    "tickets": [
-      {
-        "role": "本線",
-        "label": "1-4-5",
-        "stake": 700,
-        "odds": 17.5,
-        "odds_source": "live",
-        "popularity": 6,
-        "hit_probability": 0.2951,
-        "projected_return": 12250
-      },
-      {
-        "role": "抑え",
-        "label": "1-4-6",
-        "stake": 300,
-        "odds": 50.2,
-        "odds_source": "live",
-        "popularity": 12,
-        "hit_probability": 0.2888,
-        "projected_return": 15060
-      },
-      {
-        "role": "妙味",
-        "label": "1-6-5",
-        "stake": 200,
-        "odds": 527.9,
-        "odds_source": "live",
-        "popularity": 80,
-        "hit_probability": 0.2455,
-        "projected_return": 105580
-      }
-    ],
-    "live_odds_count": 3,
-    "top_pick": {
-      "car_no": 1,
-      "name": "丸山留依",
-      "probability": 0.4424,
-      "score": 12.368,
-      "mark": "",
-      "style": "逃",
-      "comment": "自力で。",
-      "emotion": {
-        "tone": "中立",
-        "score": 0.4,
-        "buckets": {
-          "intent": 0.4
-        },
-        "hits": [
-          {
-            "phrase": "自力",
-            "weight": 0.4,
-            "bucket": "intent"
-          }
-        ],
-        "summary": "戦法意図は見えますが、状態評価は控えめです。"
-      },
-      "reasons": [
-        "競走得点上位",
-        "勝率高め",
-        "バック数あり",
-        "前検日談話: 不安大",
-        "EX攻撃力66%",
-        "直近3着内多い",
-        "先頭勝率64%"
-      ],
-      "form": {
-        "label": "好調",
-        "finishes": [],
-        "top3_rate": null,
-        "avg_finish": null,
-        "score_delta": null,
-        "official_delta": 2.59,
-        "score_now": 101.33,
-        "score_recent": 103.92,
-        "races": 0
-      },
-      "term": null,
-      "class_move": null,
-      "player_id": "015896"
-    },
-    "scenario_headline": "1丸山留依が本線。前で動いてライン1-4-7を残す展開を重視。",
-    "bet_type": "trifecta",
-    "copy_text": "静岡11R 3連単\n本線 1-4-5 700円\n抑え 1-4-6 300円\n妙味 1-6-5 200円",
-    "odds_status": {
-      "attempted": 2,
-      "fetched": 2,
-      "failed": 0,
-      "errors": []
-    }
-  },
-  "judged_races": [
-    {
-      "race_key": "winticket:2026071838:1:11",
-      "venue": "静岡",
-      "race_no": 11,
-      "start_time": "15:32",
-      "confidence": "本命",
-      "decision": "bet",
-      "reason": "EV 28.24 / 3点分散 / ライブ3点",
-      "ev": 28.237,
-      "is_next": true
-    },
-    {
-      "race_key": "winticket:2026071647:3:11",
-      "venue": "松阪",
-      "race_no": 11,
-      "start_time": "15:45",
-      "confidence": "本命",
-      "decision": "bet",
-      "reason": "EV 15.06 / 3点分散 / ライブ3点",
-      "ev": 15.061,
-      "is_next": false
-    }
-  ],
+  "proposal": null,
+  "judged_races": [],
   "yesterday": {
     "date": "2026-07-17",
     "sessions": [
@@ -1164,8 +1040,7 @@
         "start_time": "15:32",
         "original": null,
         "changed_at": null,
-        "status": "planned",
-        "is_next": true
+        "status": "missed"
       },
       {
         "race_key": "winticket:2026071647:3:11",
@@ -1174,8 +1049,9 @@
         "start_time": "15:45",
         "original": null,
         "changed_at": null,
-        "status": "planned"
+        "status": "missed"
       }
     ]
-  }
+  },
+  "message": "予定レースを消化しました。差し替えるか停止してください。"
 }
