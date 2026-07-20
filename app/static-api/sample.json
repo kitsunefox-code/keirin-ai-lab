@@ -407,8 +407,8 @@
         },
         "baseline_score": 9.649,
         "learned_logit": -1.123,
-        "learned_probability": 0.2455,
-        "model_score": 8.751,
+        "learned_probability": 0.2454,
+        "model_score": 8.75,
         "reasons": [
           "印: 本命",
           "競走得点上位",
@@ -416,7 +416,7 @@
           "前検コメ: 強気",
           "学習: 割引"
         ],
-        "win_probability": 0.494
+        "win_probability": 0.4939
       },
       {
         "frame_no": 7,
@@ -517,16 +517,16 @@
           "is_rain": 0.0
         },
         "baseline_score": 5.159,
-        "learned_logit": -1.251,
-        "learned_probability": 0.2225,
-        "model_score": 4.158,
+        "learned_logit": -1.249,
+        "learned_probability": 0.2228,
+        "model_score": 4.16,
         "reasons": [
           "印: 対抗",
           "競走得点上位",
           "前検コメ: 上向き",
           "学習: 割引"
         ],
-        "win_probability": 0.1567
+        "win_probability": 0.1568
       },
       {
         "frame_no": 1,
@@ -627,16 +627,16 @@
           "is_rain": 0.0
         },
         "baseline_score": 4.256,
-        "learned_logit": -1.548,
-        "learned_probability": 0.1754,
-        "model_score": 3.018,
+        "learned_logit": -1.566,
+        "learned_probability": 0.1728,
+        "model_score": 3.004,
         "reasons": [
           "印: 単穴",
           "勝率高め",
           "前検コメ: 上向き",
           "学習: 割引"
         ],
-        "win_probability": 0.1178
+        "win_probability": 0.1174
       },
       {
         "frame_no": 2,
@@ -729,8 +729,8 @@
           "is_rain": 0.0
         },
         "baseline_score": 2.542,
-        "learned_logit": -1.802,
-        "learned_probability": 0.1416,
+        "learned_logit": -1.801,
+        "learned_probability": 0.1418,
         "model_score": 1.182,
         "reasons": [
           "印: 連下",
@@ -838,14 +838,14 @@
           "is_rain": 0.0
         },
         "baseline_score": 2.267,
-        "learned_logit": -1.548,
-        "learned_probability": 0.1754,
-        "model_score": 1.029,
+        "learned_logit": -1.566,
+        "learned_probability": 0.1728,
+        "model_score": 1.014,
         "reasons": [
           "前検コメ: 不安含み",
           "学習: 割引"
         ],
-        "win_probability": 0.0717
+        "win_probability": 0.0714
       },
       {
         "frame_no": 6,
@@ -952,8 +952,8 @@
           "is_rain": 0.0
         },
         "baseline_score": 0.379,
-        "learned_logit": -1.802,
-        "learned_probability": 0.1416,
+        "learned_logit": -1.801,
+        "learned_probability": 0.1418,
         "model_score": -0.981,
         "reasons": [
           "学習: 割引"
@@ -1076,14 +1076,14 @@
           "is_rain": 0.0
         },
         "baseline_score": 0.222,
-        "learned_logit": -1.655,
-        "learned_probability": 0.1605,
-        "model_score": -1.102,
+        "learned_logit": -1.597,
+        "learned_probability": 0.1684,
+        "model_score": -1.055,
         "reasons": [
           "前検コメ: 不安含み",
           "学習: 割引"
         ],
-        "win_probability": 0.0421
+        "win_probability": 0.0426
       }
     ],
     "exacta": [
@@ -1092,7 +1092,7 @@
           3,
           7
         ],
-        "score": 0.1755,
+        "score": 0.1756,
         "label": "3-7",
         "suji": true,
         "bet_type": "exacta"
@@ -1102,7 +1102,7 @@
           3,
           1
         ],
-        "score": 0.1178,
+        "score": 0.1174,
         "label": "3-1",
         "suji": false,
         "bet_type": "exacta"
@@ -1122,7 +1122,7 @@
           3,
           4
         ],
-        "score": 0.0717,
+        "score": 0.0714,
         "label": "3-4",
         "suji": false,
         "bet_type": "exacta"
@@ -1157,7 +1157,7 @@
           1,
           7
         ],
-        "score": 0.3107,
+        "score": 0.3106,
         "label": "3-1-7",
         "suji": false,
         "bet_type": "trifecta"
@@ -1168,7 +1168,7 @@
           1,
           2
         ],
-        "score": 0.2991,
+        "score": 0.299,
         "label": "3-1-2",
         "suji": false,
         "bet_type": "trifecta"
@@ -1190,7 +1190,7 @@
           2,
           1
         ],
-        "score": 0.293,
+        "score": 0.2929,
         "label": "3-2-1",
         "suji": false,
         "bet_type": "trifecta"
@@ -1222,21 +1222,21 @@
       "ライン構成をスコアへ反映しました。",
       "コメントの心理・状態語を補助材料にしました。",
       "2軸ライン強度(先頭の得点とバック回数)を評価に反映しました。",
-      "過去結果の学習重みを反映しました。教師データ: 1430レース / 9844選手。"
+      "過去結果の学習重みを反映しました。教師データ: 1439レース / 9906選手。"
     ],
     "model": {
       "name": "transparent-baseline + online-logistic-win",
       "version": "0.2",
       "training": {
-        "rows": 9844,
-        "races": 1430,
-        "positive_rows": 1386,
+        "rows": 9906,
+        "races": 1439,
+        "positive_rows": 1395,
         "best_iteration": 4,
-        "valid_races": 215
+        "valid_races": 216
       },
       "metrics": {
         "log_loss": 0.3899,
-        "top1_accuracy": 0.3907,
+        "top1_accuracy": 0.4167,
         "eval_split": "time-based 15% holdout"
       },
       "warning": "研究用の相対スコアです。的中や利益を保証するものではありません。"
