@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at_jst": "2026-07-22T22:12:24+09:00",
+  "generated_at_jst": "2026-07-23T00:18:34+09:00",
   "rules": [
     "全額転がしは行いません(1レース投資は残高の上限%まで)",
     "負けた後の倍賭け(マーチンゲール)は行いません",
@@ -139,10 +139,10 @@
   "proposal": null,
   "judged_races": [],
   "yesterday": {
-    "date": "2026-07-21",
+    "date": "2026-07-22",
     "sessions": [
       {
-        "id": 22,
+        "id": 23,
         "style": "original",
         "style_label": "オリジナル",
         "status": "stopped",
@@ -158,8 +158,8 @@
           "auto_buy": false,
           "role": "main"
         },
-        "balance": 6650,
-        "profit": -3350,
+        "balance": 5950,
+        "profit": -4050,
         "wins": 2,
         "losses": 6,
         "skips": 0,
@@ -168,6 +168,12 @@
     ]
   },
   "daily_history": [
+    {
+      "date": "2026-07-23",
+      "total_profit": 0,
+      "sessions": [],
+      "original": null
+    },
     {
       "date": "2026-07-22",
       "total_profit": -4050,
@@ -937,58 +943,6 @@
         "skips": 0,
         "target_reached": false
       }
-    },
-    {
-      "date": "2026-07-09",
-      "total_profit": -8880,
-      "sessions": [
-        {
-          "id": 7,
-          "style": "original",
-          "style_label": "オリジナル",
-          "status": "stopped",
-          "stop_reason": "バックテスト(予定10レースを実結果で答え合わせ) 最終1,120円 / -8,880円",
-          "config": {
-            "start_amount": 10000,
-            "target_amount": 30000,
-            "style": "original",
-            "per_race_cap_pct": 25,
-            "daily_loss_limit_pct": 80,
-            "max_consecutive_losses": 10,
-            "min_ev": 1.1,
-            "auto_buy": false
-          },
-          "balance": 1120,
-          "profit": -8880,
-          "wins": 1,
-          "losses": 9,
-          "skips": 0,
-          "target_reached": false
-        }
-      ],
-      "original": {
-        "id": 7,
-        "style": "original",
-        "style_label": "オリジナル",
-        "status": "stopped",
-        "stop_reason": "バックテスト(予定10レースを実結果で答え合わせ) 最終1,120円 / -8,880円",
-        "config": {
-          "start_amount": 10000,
-          "target_amount": 30000,
-          "style": "original",
-          "per_race_cap_pct": 25,
-          "daily_loss_limit_pct": 80,
-          "max_consecutive_losses": 10,
-          "min_ev": 1.1,
-          "auto_buy": false
-        },
-        "balance": 1120,
-        "profit": -8880,
-        "wins": 1,
-        "losses": 9,
-        "skips": 0,
-        "target_reached": false
-      }
     }
   ],
   "finance": {
@@ -1000,7 +954,7 @@
     "wins": 31,
     "losses": 73,
     "hit_rate": 0.2981,
-    "today_profit": -4050,
+    "today_profit": 0,
     "series": [
       {
         "date": "2026-07-09",
@@ -1071,6 +1025,11 @@
         "date": "2026-07-22",
         "cumulative_profit": -38620,
         "day_profit": -4050
+      },
+      {
+        "date": "2026-07-23",
+        "cumulative_profit": -38620,
+        "day_profit": 0
       }
     ]
   },
