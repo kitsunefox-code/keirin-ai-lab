@@ -406,9 +406,9 @@
           "is_rain": 0.0
         },
         "baseline_score": 9.649,
-        "learned_logit": -0.755,
-        "learned_probability": 0.3196,
-        "model_score": 9.045,
+        "learned_logit": -0.788,
+        "learned_probability": 0.3125,
+        "model_score": 9.018,
         "reasons": [
           "印: 本命",
           "競走得点上位",
@@ -416,7 +416,7 @@
           "前検コメ: 強気",
           "学習: 割引"
         ],
-        "win_probability": 0.5062
+        "win_probability": 0.5055
       },
       {
         "frame_no": 7,
@@ -517,16 +517,16 @@
           "is_rain": 0.0
         },
         "baseline_score": 5.159,
-        "learned_logit": -0.957,
-        "learned_probability": 0.2775,
-        "model_score": 4.394,
+        "learned_logit": -0.959,
+        "learned_probability": 0.2771,
+        "model_score": 4.392,
         "reasons": [
           "印: 対抗",
           "競走得点上位",
           "前検コメ: 上向き",
           "学習: 割引"
         ],
-        "win_probability": 0.1582
+        "win_probability": 0.159
       },
       {
         "frame_no": 1,
@@ -627,16 +627,16 @@
           "is_rain": 0.0
         },
         "baseline_score": 4.256,
-        "learned_logit": -1.536,
-        "learned_probability": 0.177,
-        "model_score": 3.027,
+        "learned_logit": -1.604,
+        "learned_probability": 0.1675,
+        "model_score": 2.973,
         "reasons": [
           "印: 単穴",
           "勝率高め",
           "前検コメ: 上向き",
           "学習: 割引"
         ],
-        "win_probability": 0.1124
+        "win_probability": 0.1115
       },
       {
         "frame_no": 2,
@@ -729,15 +729,15 @@
           "is_rain": 0.0
         },
         "baseline_score": 2.542,
-        "learned_logit": -1.839,
-        "learned_probability": 0.1371,
+        "learned_logit": -1.836,
+        "learned_probability": 0.1376,
         "model_score": 1.182,
         "reasons": [
           "印: 連下",
           "競走得点上位",
           "学習: 割引"
         ],
-        "win_probability": 0.0709
+        "win_probability": 0.0713
       },
       {
         "frame_no": 4,
@@ -838,14 +838,127 @@
           "is_rain": 0.0
         },
         "baseline_score": 2.267,
-        "learned_logit": -1.449,
-        "learned_probability": 0.1902,
-        "model_score": 1.108,
+        "learned_logit": -1.44,
+        "learned_probability": 0.1916,
+        "model_score": 1.115,
         "reasons": [
           "前検コメ: 不安含み",
           "学習: 割引"
         ],
-        "win_probability": 0.0696
+        "win_probability": 0.0701
+      },
+      {
+        "frame_no": 6,
+        "car_no": 6,
+        "name": "松尾正人",
+        "prefecture": "熊本",
+        "class": "A3",
+        "age": 55,
+        "term": 66,
+        "ai_mark": "",
+        "racing_score": 66.3,
+        "style": "追",
+        "gear": "3.92",
+        "comment": "檀さんへ。少し重いが修正して走る。",
+        "stats": {
+          "start_count": 0,
+          "home_count": 0,
+          "back_count": 0,
+          "escape": 0,
+          "makuri": 0,
+          "sashi": 0,
+          "mark": 0,
+          "first": 0,
+          "second": 0,
+          "third": 8,
+          "outside": 23,
+          "win_rate": 0.0,
+          "two_rate": 0.0,
+          "three_rate": 25.8
+        },
+        "line_rank": {
+          "rank_score": 1,
+          "rank_back": 1,
+          "pos": 1,
+          "line_len": 2,
+          "line_count": 3
+        },
+        "emotion": {
+          "tone": "中立",
+          "score": -0.1,
+          "buckets": {
+            "recovery": 0.6,
+            "condition": -0.7
+          },
+          "hits": [
+            {
+              "phrase": "修正",
+              "weight": 0.6,
+              "bucket": "recovery"
+            },
+            {
+              "phrase": "重い",
+              "weight": -0.7,
+              "bucket": "condition"
+            }
+          ],
+          "summary": "コメントだけでは強弱を決めにくいです。"
+        },
+        "features": {
+          "bias": 1.0,
+          "racing_score": -0.7700000000000002,
+          "win_rate": 0.0,
+          "two_rate": 0.0,
+          "three_rate": 0.258,
+          "start_count": 0.0,
+          "home_count": 0.0,
+          "back_count": 0.0,
+          "style_escape": 0.0,
+          "style_pursuit": 1.0,
+          "style_allround": 0.0,
+          "ai_honmei": 0.0,
+          "ai_taiko": 0.0,
+          "ai_tanana": 0.0,
+          "ai_renshita": 0.0,
+          "line_len": 0.5,
+          "line_front": 0.0,
+          "line_second": 1.0,
+          "line_third_plus": 0.0,
+          "emotion_score": -0.03333333333333333,
+          "emotion_positive": 0.0,
+          "emotion_negative": 0.03333333333333333,
+          "age": 0.75,
+          "interview_score": 0.0,
+          "post_race_score": 0.0,
+          "ex_attack": 0.0,
+          "ex_left_behind": 0.0,
+          "recent_top3": 0.0,
+          "recent_avg_finish": 0.5,
+          "partner_top3_rate": 0.45,
+          "head_to_head_ratio": 0.5,
+          "pos_win_rate": 0.12,
+          "pos_top3_rate": 0.35,
+          "venue_top3_rate": 0.35,
+          "track_top3_rate": 0.35,
+          "hour_top3_rate": 0.35,
+          "line_strength_score": 0.5,
+          "line_strength_back": 0.5,
+          "bank_style_fit": 0.5,
+          "is_girls": 0.0,
+          "class_s": 0.0,
+          "class_a": 1.0,
+          "is_night": 0.0,
+          "is_midnight": 0.0,
+          "is_rain": 0.0
+        },
+        "baseline_score": 0.379,
+        "learned_logit": -1.836,
+        "learned_probability": 0.1376,
+        "model_score": -0.981,
+        "reasons": [
+          "学習: 割引"
+        ],
+        "win_probability": 0.0415
       },
       {
         "frame_no": 5,
@@ -963,127 +1076,14 @@
           "is_rain": 0.0
         },
         "baseline_score": 0.222,
-        "learned_logit": -1.494,
-        "learned_probability": 0.1834,
-        "model_score": -0.973,
+        "learned_logit": -1.563,
+        "learned_probability": 0.1733,
+        "model_score": -1.028,
         "reasons": [
           "前検コメ: 不安含み",
           "学習: 割引"
         ],
-        "win_probability": 0.0414
-      },
-      {
-        "frame_no": 6,
-        "car_no": 6,
-        "name": "松尾正人",
-        "prefecture": "熊本",
-        "class": "A3",
-        "age": 55,
-        "term": 66,
-        "ai_mark": "",
-        "racing_score": 66.3,
-        "style": "追",
-        "gear": "3.92",
-        "comment": "檀さんへ。少し重いが修正して走る。",
-        "stats": {
-          "start_count": 0,
-          "home_count": 0,
-          "back_count": 0,
-          "escape": 0,
-          "makuri": 0,
-          "sashi": 0,
-          "mark": 0,
-          "first": 0,
-          "second": 0,
-          "third": 8,
-          "outside": 23,
-          "win_rate": 0.0,
-          "two_rate": 0.0,
-          "three_rate": 25.8
-        },
-        "line_rank": {
-          "rank_score": 1,
-          "rank_back": 1,
-          "pos": 1,
-          "line_len": 2,
-          "line_count": 3
-        },
-        "emotion": {
-          "tone": "中立",
-          "score": -0.1,
-          "buckets": {
-            "recovery": 0.6,
-            "condition": -0.7
-          },
-          "hits": [
-            {
-              "phrase": "修正",
-              "weight": 0.6,
-              "bucket": "recovery"
-            },
-            {
-              "phrase": "重い",
-              "weight": -0.7,
-              "bucket": "condition"
-            }
-          ],
-          "summary": "コメントだけでは強弱を決めにくいです。"
-        },
-        "features": {
-          "bias": 1.0,
-          "racing_score": -0.7700000000000002,
-          "win_rate": 0.0,
-          "two_rate": 0.0,
-          "three_rate": 0.258,
-          "start_count": 0.0,
-          "home_count": 0.0,
-          "back_count": 0.0,
-          "style_escape": 0.0,
-          "style_pursuit": 1.0,
-          "style_allround": 0.0,
-          "ai_honmei": 0.0,
-          "ai_taiko": 0.0,
-          "ai_tanana": 0.0,
-          "ai_renshita": 0.0,
-          "line_len": 0.5,
-          "line_front": 0.0,
-          "line_second": 1.0,
-          "line_third_plus": 0.0,
-          "emotion_score": -0.03333333333333333,
-          "emotion_positive": 0.0,
-          "emotion_negative": 0.03333333333333333,
-          "age": 0.75,
-          "interview_score": 0.0,
-          "post_race_score": 0.0,
-          "ex_attack": 0.0,
-          "ex_left_behind": 0.0,
-          "recent_top3": 0.0,
-          "recent_avg_finish": 0.5,
-          "partner_top3_rate": 0.45,
-          "head_to_head_ratio": 0.5,
-          "pos_win_rate": 0.12,
-          "pos_top3_rate": 0.35,
-          "venue_top3_rate": 0.35,
-          "track_top3_rate": 0.35,
-          "hour_top3_rate": 0.35,
-          "line_strength_score": 0.5,
-          "line_strength_back": 0.5,
-          "bank_style_fit": 0.5,
-          "is_girls": 0.0,
-          "class_s": 0.0,
-          "class_a": 1.0,
-          "is_night": 0.0,
-          "is_midnight": 0.0,
-          "is_rain": 0.0
-        },
-        "baseline_score": 0.379,
-        "learned_logit": -1.839,
-        "learned_probability": 0.1371,
-        "model_score": -0.981,
-        "reasons": [
-          "学習: 割引"
-        ],
-        "win_probability": 0.0413
+        "win_probability": 0.041
       }
     ],
     "exacta": [
@@ -1092,7 +1092,7 @@
           3,
           7
         ],
-        "score": 0.1772,
+        "score": 0.1781,
         "label": "3-7",
         "suji": true,
         "bet_type": "exacta"
@@ -1102,7 +1102,7 @@
           3,
           1
         ],
-        "score": 0.1124,
+        "score": 0.1115,
         "label": "3-1",
         "suji": false,
         "bet_type": "exacta"
@@ -1112,7 +1112,7 @@
           3,
           2
         ],
-        "score": 0.0709,
+        "score": 0.0713,
         "label": "3-2",
         "suji": false,
         "bet_type": "exacta"
@@ -1122,7 +1122,7 @@
           3,
           4
         ],
-        "score": 0.0696,
+        "score": 0.0701,
         "label": "3-4",
         "suji": false,
         "bet_type": "exacta"
@@ -1135,7 +1135,7 @@
           7,
           1
         ],
-        "score": 0.3608,
+        "score": 0.3605,
         "label": "3-7-1",
         "suji": true,
         "bet_type": "trifecta"
@@ -1146,7 +1146,7 @@
           7,
           2
         ],
-        "score": 0.3543,
+        "score": 0.3542,
         "label": "3-7-2",
         "suji": true,
         "bet_type": "trifecta"
@@ -1157,7 +1157,7 @@
           1,
           7
         ],
-        "score": 0.3157,
+        "score": 0.3152,
         "label": "3-1-7",
         "suji": false,
         "bet_type": "trifecta"
@@ -1168,7 +1168,7 @@
           2,
           7
         ],
-        "score": 0.304,
+        "score": 0.3039,
         "label": "3-2-7",
         "suji": false,
         "bet_type": "trifecta"
@@ -1179,7 +1179,7 @@
           1,
           2
         ],
-        "score": 0.3034,
+        "score": 0.3028,
         "label": "3-1-2",
         "suji": false,
         "bet_type": "trifecta"
@@ -1190,7 +1190,7 @@
           2,
           1
         ],
-        "score": 0.2975,
+        "score": 0.2972,
         "label": "3-2-1",
         "suji": false,
         "bet_type": "trifecta"
@@ -1212,7 +1212,7 @@
           3,
           2
         ],
-        "score": 0.2246,
+        "score": 0.2248,
         "label": "7-3-2",
         "suji": false,
         "bet_type": "trifecta"
@@ -1222,21 +1222,21 @@
       "ライン構成をスコアへ反映しました。",
       "コメントの心理・状態語を補助材料にしました。",
       "2軸ライン強度(先頭の得点とバック回数)を評価に反映しました。",
-      "過去結果の学習重みを反映しました。教師データ: 1624レース / 11202選手。"
+      "過去結果の学習重みを反映しました。教師データ: 1644レース / 11345選手。"
     ],
     "model": {
       "name": "transparent-baseline + online-logistic-win",
       "version": "0.2",
       "training": {
-        "rows": 11202,
-        "races": 1624,
-        "positive_rows": 1580,
+        "rows": 11345,
+        "races": 1644,
+        "positive_rows": 1600,
         "best_iteration": 7,
-        "valid_races": 244
+        "valid_races": 247
       },
       "metrics": {
-        "log_loss": 0.3827,
-        "top1_accuracy": 0.4426,
+        "log_loss": 0.3836,
+        "top1_accuracy": 0.4332,
         "eval_split": "time-based 15% holdout"
       },
       "warning": "研究用の相対スコアです。的中や利益を保証するものではありません。"
