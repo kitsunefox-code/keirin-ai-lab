@@ -10,7 +10,7 @@ param(
 )
 
 $ErrorActionPreference = "Continue"
-$repo = "C:\Users\shadai15\Desktop\keirin-ai-lab"
+$repo = "C:\Users\shadai15\Desktop\Claude\keirin-ai-lab"
 Set-Location $repo
 $log = Join-Path $repo "data\auto_update.log"
 

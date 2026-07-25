@@ -7,7 +7,7 @@
 ## 起動
 
 ```powershell
-cd C:\Users\shadai15\Desktop\keirin-ai-lab
+cd C:\Users\shadai15\Desktop\Claude\keirin-ai-lab
 python server.py
 ```
 

@@ -9,8 +9,8 @@
   --color-text: #f4f7fa;
   --color-ink-900: #f4f7fa;
   --color-ink-800: #e6ebf2;
-  --color-muted: #8d97a6;
-  --color-subtle: #5f6b7c;
+  --color-muted: #9aa6b6;
+  --color-subtle: #7a8697;
   --color-border: #202733;
   --color-border-strong: #2c3542;
   --color-accent: #5ee6a8;
@@ -42,9 +42,9 @@
   --space-6: 24px;
   --space-8: 32px;
   --text-xs: 12px;
-  --text-sm: 13px;
-  --text-md: 14px;
-  --text-lg: 16px;
+  --text-sm: 14px;
+  --text-md: 15px;
+  --text-lg: 17px;
   --text-xl: 20px;
   --text-2xl: 26px;
 }
@@ -812,8 +812,8 @@ h4 {
 }
 
 .race-ribbon:hover {
-  border-color: rgba(15, 118, 110, 0.36);
-  box-shadow: 0 8px 18px rgba(16, 24, 32, 0.06);
+  border-color: rgba(94, 230, 168, 0.4);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
   transform: translateY(-1px);
 }
 
@@ -846,14 +846,13 @@ h4 {
 
 .ribbon-summary {
   display: grid;
-  grid-template-columns: 62px 36px minmax(160px, 1fr) minmax(150px, 0.78fr) auto 16px;
+  grid-template-columns: 66px 36px minmax(160px, 1fr) minmax(150px, 0.78fr) auto 16px;
   gap: var(--space-2);
   align-items: center;
-  min-height: 44px;
-  padding: 6px var(--space-3) 6px var(--space-2);
+  min-height: 48px;
+  padding: 8px var(--space-3) 8px var(--space-2);
   border-left: 4px solid var(--ribbon-color);
-  background:
-    linear-gradient(90deg, var(--ribbon-soft) 0%, #ffffff 28%, #ffffff 100%);
+  background: linear-gradient(90deg, var(--ribbon-soft) 0%, transparent 32%);
   cursor: pointer;
 }
 
@@ -875,18 +874,19 @@ h4 {
 
 .ribbon-summary > strong {
   color: var(--color-ink-900);
-  font-size: var(--text-md);
+  font-size: var(--text-lg);
 }
 
 .ribbon-time {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 22px;
+  min-height: 26px;
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-sm);
-  background: linear-gradient(135deg, var(--color-ink-900), #26323d);
-  color: #ffffff;
-  font-size: var(--text-xs);
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  font-size: var(--text-sm);
   font-variant-numeric: tabular-nums;
   font-weight: 900;
 }
@@ -898,7 +898,7 @@ h4 {
   min-width: 0;
   color: var(--color-ink-900);
   font-weight: 800;
-  font-size: var(--text-sm);
+  font-size: var(--text-md);
 }
 
 .ribbon-main .car {
@@ -3119,11 +3119,11 @@ h4 {
   width: 44px;
 }
 .line-flat-member small {
-  max-width: 44px;
+  max-width: 52px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 10px;
+  font-size: 11px;
   color: var(--color-muted);
 }
 .line-flat-member.is-highlight .car {
@@ -3172,7 +3172,7 @@ input, select { background: var(--color-surface-raised); border-color: var(--col
   background: var(--color-surface) !important;
   border-color: var(--color-border) !important;
 }
-.ribbon-summary { background: transparent !important; }
+/* 信頼度の色味(--ribbon-soft)を左端に残すため、summaryの背景は上書きしない */
 .race-card, .analysis-block, .mini-table, .detail-grid section {
   background: var(--color-surface-muted);
   border-color: var(--color-border);
@@ -3191,8 +3191,8 @@ input, select { background: var(--color-surface-raised); border-color: var(--col
 .style-switch.active { background: var(--color-accent); border-color: var(--color-accent); color: #08110c; }
 .plan-chip-won, .hit-badge.hit-honmei { background: var(--color-profit); color: #08110c; }
 .hit-badge.hit-trifecta { background: var(--color-amber); color: #1d1503; }
-.ev-positive { color: var(--color-profit); }
-.ev-caution { color: var(--color-loss); }
+.ev-positive { background: rgba(66, 211, 146, 0.14); color: var(--color-profit); }
+.ev-caution { background: rgba(255, 102, 120, 0.12); color: var(--color-loss); }
 .bankroll-rules, .style-switcher, .bankroll-setup .bankroll-form { background: transparent; border-color: var(--color-border); }
 .empty { color: var(--color-muted); }
 .recommended-races { background: var(--color-surface); border-color: rgba(94, 230, 168, 0.3); }
@@ -3227,7 +3227,7 @@ input, select { background: var(--color-surface-raised); border-color: var(--col
   font-size: var(--text-md);
 }
 .market-countdown { font-size: var(--text-xs); color: var(--color-amber); font-weight: 700; }
-.market-label { font-size: 10px; font-weight: 800; color: var(--color-subtle); letter-spacing: 0.04em; }
+.market-label { font-size: 11px; font-weight: 800; color: var(--color-subtle); letter-spacing: 0.04em; }
 .market-main { display: grid; gap: 4px; }
 .market-pick { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-lg); }
 .market-prob { display: flex; align-items: baseline; gap: var(--space-2); }
@@ -3327,7 +3327,7 @@ input, select { background: var(--color-surface-raised); border-color: var(--col
 /* ===== 修正2: 会場グループ見出しの白グラデ背景残りを潰す(白地に白文字対策) ===== */
 .venue-section-head { background: var(--color-surface-raised) !important; }
 .main-pick,
-.ribbon-summary, .ribbon-body,
+.ribbon-body,
 .line-diagram, .line-node,
 .plan-card, .plan-leg,
 .analysis-block:first-child { background: var(--color-surface-raised) !important; }
@@ -3908,7 +3908,7 @@ input, select { background: var(--color-surface-raised); border-color: var(--col
     justify-content: center;
   }
   .venue-tab b { font-size: var(--text-sm); }
-  .venue-tab small { font-size: 9px; }
+  .venue-tab small { font-size: 10px; }
   .venue-tab.active {
     border-bottom-color: var(--color-accent);
     box-shadow: inset 0 0 0 1.5px var(--color-accent);
