@@ -337,6 +337,7 @@ function renderRecordBar(record) {
         <span class="record-num"><i>回収率</i><b class="${roiClass(item.exacta_roi)}">${pctText(item.exacta_roi)}</b></span>
         <span class="record-num"><i>的中率</i><b>${pctText(item.exacta_hit_rate)}</b></span>
       </div>
+      ${roiBarHtml(item.exacta_roi)}
       <em>本命 ${pctText(item.honmei_rate)} / 2車単 ${item.exacta_priced ? `${item.exacta_priced}R` : "集計待ち"} / 全${item.settled}R</em>
     </div>`;
   };
@@ -355,30 +356,56 @@ function renderRecordPage(payload) {
   const kpis = [
     { label: "検証レース数", value: `${total.settled ?? 0}`, sub: "全て事前予想", cls: "" },
     { label: "本命的中率", value: pct(total.honmei_rate), sub: `較正済みAI勝率 <span class="help-tip" tabindex="0" data-tip="AIの表示勝率は過去の実測に合わせて較正済み。40%と出たら実際に約40%当たります。">?</span>`, cls: "" },
-    { label: "2車単回収率", value: roiText(total.exacta_roi), sub: `${total.exacta_priced ?? 0}R集計(実払戻)`, cls: (total.exacta_roi || 0) >= 1 ? "kpi-up" : "kpi-down" },
+    {
+      label: "2車単回収率",
+      value: roiText(total.exacta_roi),
+      sub: `${total.exacta_priced ?? 0}R集計(実払戻)`,
+      cls: (total.exacta_roi || 0) >= 1 ? "kpi-up" : "kpi-down",
+      hero: true,
+    },
     { label: "3連単的中率", value: pct(total.trifecta_rate), sub: "候補6点以内", cls: "" },
   ];
   hero.innerHTML = kpis
-    .map((k) => `<div class="kpi-card"><span>${k.label}</span><strong class="${k.cls}">${k.value}</strong><em>${k.sub}</em></div>`)
+    .map(
+      (k) =>
+        `<div class="kpi-card${k.hero ? " is-hero" : ""}"><span>${k.label}</span><strong class="${k.cls}">${k.value}</strong><em>${k.sub}</em></div>`
+    )
     .join("");
   const table = el("recordTable");
   if (!table) return;
   const rows = ["today", "week", "last_week", "total"].map((key) => record[key]).filter(Boolean);
-  table.innerHTML = `<div class="table-wrap"><table class="data-table compact-table">
-    <thead><tr><th>期間</th><th>確定R</th><th>本命的中</th><th>2車単的中</th><th>回収率</th><th>調子</th></tr></thead>
-    <tbody>${rows
-      .map(
-        (r) => `<tr>
-        <td><b>${escapeHtml(r.label)}</b></td>
-        <td>${r.settled}</td>
-        <td>${pct(r.honmei_rate)}</td>
-        <td>${pct(r.exacta_hit_rate)}</td>
-        <td class="${(r.exacta_roi || 0) >= 1 ? "kpi-up" : "kpi-down"}"><b>${roiText(r.exacta_roi)}</b></td>
-        <td>${formIcon(r.form) || "—"}</td>
-      </tr>`
-      )
-      .join("")}</tbody>
-  </table></div>`;
+  table.innerHTML = `<div class="roi-rows">${rows.map(roiRowHtml).join("")}</div>
+    <p class="cond-note">バーは回収率。中央の白線が損益分岐(100%)で、超えればプラス収支です。</p>`;
+}
+
+// 回収率をバーで見せる行。100%を基準線として位置を固定し、大小を一目で比較できるようにする。
+const ROI_BAR_MAX = 1.5; // バー全幅=150%。100%は全幅の2/3の位置に来る
+function roiBarHtml(roi) {
+  if (roi == null) return `<div class="roi-bar"><i class="roi-base"></i></div>`;
+  const width = Math.max(0, Math.min(roi / ROI_BAR_MAX, 1)) * 100;
+  const cls = roi >= 1 ? "is-up" : roi >= 0.85 ? "is-mid" : "is-down";
+  return `<div class="roi-bar"><span class="roi-fill ${cls}" style="width:${width.toFixed(1)}%"></span><i class="roi-base"></i></div>`;
+}
+
+function roiRowHtml(r) {
+  const pct = (v) => (v == null ? "—" : `${(v * 100).toFixed(1)}%`);
+  const roi = r.exacta_roi;
+  const cls = roi == null ? "" : roi >= 1 ? "kpi-up" : roi >= 0.85 ? "" : "kpi-down";
+  return `<div class="roi-row">
+    <div class="roi-head">
+      <b>${escapeHtml(r.label)}</b>
+      <small>${r.settled}R</small>
+      ${formIcon(r.form) || ""}
+    </div>
+    <div class="roi-main">
+      <strong class="${cls}">${roi == null ? "—" : `${(roi * 100).toFixed(1)}%`}</strong>
+      ${roiBarHtml(roi)}
+    </div>
+    <div class="roi-sub">
+      <span>本命 <b>${pct(r.honmei_rate)}</b></span>
+      <span>2車単 <b>${pct(r.exacta_hit_rate)}</b></span>
+    </div>
+  </div>`;
 }
 
 // 初回訪問だけの30秒オンボーディング(3ステップ)。閉じたら二度と出さない。
@@ -422,21 +449,24 @@ function renderConditions(conditions) {
   }
   panel.hidden = false;
   const roiClass = (roi) => (roi >= 1 ? "kpi-up" : roi >= 0.85 ? "" : "kpi-down");
-  body.innerHTML = `<div class="table-wrap"><table class="data-table compact-table">
-    <thead><tr><th>条件</th><th>R数</th><th>回収率</th><th>的中率</th></tr></thead>
-    <tbody>${rows
-      .slice(0, 12)
-      .map(
-        (c) => `<tr>
-        <td><small class="cond-cat">${escapeHtml(c.category)}</small> <b>${escapeHtml(c.label)}</b>${c.races >= 30 && c.roi >= 1 ? ' <span class="cond-fav">得意</span>' : ""}</td>
-        <td>${c.races}</td>
-        <td class="${roiClass(c.roi)}"><b>${(c.roi * 100).toFixed(1)}%</b></td>
-        <td>${(c.hit_rate * 100).toFixed(1)}%</td>
-      </tr>`
-      )
-      .join("")}</tbody>
-  </table></div>
-  <p class="cond-note">R数が少ない条件は偶然の可能性あり。30R以上かつ回収率100%超だけ「得意」と表示。</p>`;
+  body.innerHTML = `<div class="cond-rows">${rows
+    .slice(0, 12)
+    .map(
+      (c) => `<div class="cond-row">
+      <div class="cond-name">
+        <small class="cond-cat">${escapeHtml(c.category)}</small>
+        <b>${escapeHtml(c.label)}</b>
+        ${c.races >= 30 && c.roi >= 1 ? '<span class="cond-fav">得意</span>' : ""}
+      </div>
+      <div class="cond-main">
+        <strong class="${roiClass(c.roi)}">${(c.roi * 100).toFixed(1)}%</strong>
+        ${roiBarHtml(c.roi)}
+      </div>
+      <div class="cond-meta"><span>${c.races}R</span><span>的中 ${(c.hit_rate * 100).toFixed(1)}%</span></div>
+    </div>`
+    )
+    .join("")}</div>
+  <p class="cond-note">白線が損益分岐(100%)。R数が少ない条件は偶然の可能性あり、30R以上かつ回収率100%超だけ「得意」と表示。</p>`;
 }
 
 // 較正カーブ: 対角線に乗っていれば「言った勝率どおりに当たっている」
@@ -1752,28 +1782,36 @@ function renderOriginalDaily(history) {
     if (!history.length || history.every((day) => !day.sessions.length)) {
       box.innerHTML = `<div class="empty">まだ運用記録がありません。車券コンサルの「オリジナル運用(自動)」が毎朝1万円×10Rで自動開始すると、ここに毎日の収支が貯まります。</div>`;
     } else {
-      const rows = history
-        .filter((day) => day.sessions.length)
+      const days = history.filter((day) => day.sessions.length);
+      // 収支バーの基準: その期間の最大振れ幅。プラスは右、マイナスは左に伸ばして中央を0円にする
+      const maxSwing = Math.max(1, ...days.map((day) => Math.abs(day.original?.profit ?? day.total_profit ?? 0)));
+      const rows = days
         .map((day) => {
           const original = day.original;
-          const profitClass = (value) => (value >= 0 ? "ev-positive" : "ev-caution");
-          const originalCell = original
-            ? `<td class="${profitClass(original.profit)}">${original.profit >= 0 ? "+" : ""}${yen(original.profit)}</td>
-               <td>${yen(original.balance)}</td>
-               <td>${original.wins}勝${original.losses}敗${original.skips ? `/見送${original.skips}` : ""}</td>
-               <td>${original.target_reached ? "達成" : escapeHtml(original.stop_reason || (original.status === "active" ? "運用中" : "停止"))}</td>`
-            : `<td colspan="4" class="muted">オリジナル運用なし</td>`;
-          return `<tr>
-            <td>${escapeHtml(day.date)}</td>
-            ${originalCell}
-            <td class="${profitClass(day.total_profit)}">${day.total_profit >= 0 ? "+" : ""}${yen(day.total_profit)}</td>
-          </tr>`;
+          const profit = original ? original.profit : day.total_profit;
+          const up = profit >= 0;
+          const width = (Math.min(Math.abs(profit) / maxSwing, 1) * 50).toFixed(1);
+          const note = original
+            ? original.target_reached
+              ? "達成"
+              : escapeHtml(original.stop_reason || (original.status === "active" ? "運用中" : "停止"))
+            : "オリジナル運用なし";
+          return `<div class="day-row">
+            <div class="day-date">${escapeHtml(shortDateAny(day.date) || day.date)}</div>
+            <div class="day-profit ${up ? "kpi-up" : "kpi-down"}">${up ? "+" : ""}${yen(profit)}</div>
+            <div class="day-bar">
+              <i class="day-zero"></i>
+              <span class="day-fill ${up ? "is-up" : "is-down"}" style="width:${width}%;${up ? "left:50%" : `right:50%`}"></span>
+            </div>
+            <div class="day-meta">
+              ${original ? `<b>${original.wins}勝${original.losses}敗</b><span>残高 ${yen(original.balance)}</span>` : ""}
+              <span class="day-note">${note}</span>
+            </div>
+          </div>`;
         })
         .join("");
-      box.innerHTML = `<div class="table-wrap"><table class="data-table compact-table">
-        <thead><tr><th>日付</th><th>オリジナル収支</th><th>最終残高</th><th>戦績</th><th>結果</th><th>全スタイル計</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table></div>`;
+      box.innerHTML = `<div class="day-rows">${rows}</div>
+        <p class="cond-note">中央の線が±0円。1日の損失上限(2,500円)に当たった日は途中で運用を止めています。</p>`;
     }
   }
   // 的中率サマリー(結果ページ)に本日のオリジナル収支を差し込む
