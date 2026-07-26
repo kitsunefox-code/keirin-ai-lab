@@ -63,6 +63,15 @@ class KeirinHandler(BaseHTTPRequestHandler):
             return self._serve_file(APP_DIR / "player.html")
         if path in {"/app.js", "/styles.css"}:
             return self._serve_file(APP_DIR / path.lstrip("/"))
+        # アイコンとPWAマニフェスト。ホーム画面追加に必要なので配信する。
+        # ディレクトリ抜けを防ぐため、解決後のパスが app/icons 配下かを必ず確認する。
+        if path in {"/favicon.ico", "/manifest.webmanifest"}:
+            return self._serve_file(APP_DIR / path.lstrip("/"))
+        if path.startswith("/icons/"):
+            target = (APP_DIR / "icons" / path[len("/icons/"):]).resolve()
+            if target.is_file() and target.is_relative_to((APP_DIR / "icons").resolve()):
+                return self._serve_file(target)
+            return self._send(404, "text/plain; charset=utf-8", "Not found")
         if path == "/api/sample":
             race = self._load_sample()
             return self._json({"ok": True, "race": race, "prediction": predict_race(race)})
