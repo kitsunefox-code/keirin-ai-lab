@@ -73,7 +73,10 @@ jobs:
             python scripts/collect_raceresults.py --limit 50 --delay 0.4
             python scripts/backfill_payouts.py --limit 80 --delay 0.3
             python scripts/settle_original.py
-            python scripts/snapshot_odds.py --window 75 --limit 16 --delay 0.4
+            # 値付けの歪みを探す研究の土台。全レースのオッズ盤を取りこぼさないよう
+            # 2段構えにする: (1)締切間際=市場の最終結論 (2)広めの窓=変動履歴
+            python scripts/snapshot_odds.py --window 12 --limit 40 --delay 0.3
+            python scripts/snapshot_odds.py --window 75 --limit 40 --delay 0.3
           fi
           python scripts/build_static_api.py
 

@@ -22,7 +22,7 @@ if str(ROOT) not in sys.path:
 
 from keirin_ai.odds import odds_url_from_racecard
 from keirin_ai.sources import fetch_url
-from keirin_ai.storage import connect, save_race_odds_snapshot
+from keirin_ai.storage import connect, save_odds_snapshot_history, save_race_odds_snapshot
 from keirin_ai.winticket_state import state_queries
 
 JST = timezone(timedelta(hours=9))
@@ -90,11 +90,18 @@ def main() -> None:
                 odds = state_queries(html).get("FETCH_KEIRIN_RACE_ODDS", {})
                 exacta = _normalize_exacta(odds.get("exacta"))
                 if exacta:
-                    save_race_odds_snapshot(
-                        conn,
-                        race["race_key"],
-                        {"exacta": exacta, "taken_at": datetime.now(JST).isoformat(timespec="seconds")},
-                    )
+                    now2 = datetime.now(JST)
+                    snapshot = {"exacta": exacta, "taken_at": now2.isoformat(timespec="seconds")}
+                    save_race_odds_snapshot(conn, race["race_key"], snapshot)
+                    # 履歴にも残す。発走までの残り分数を添えて、後から
+                    # 「締切間際のオッズ」だけを揃えて分析できるようにする。
+                    # 研究用の付加機能なので、ここで失敗しても妙味ボードは止めない。
+                    try:
+                        start = _start_dt(race.get("start_time"))
+                        mins = int((start - now2).total_seconds() // 60) if start else None
+                        save_odds_snapshot_history(conn, race["race_key"], snapshot, mins)
+                    except Exception:
+                        pass
                     saved += 1
                 else:
                     skipped += 1

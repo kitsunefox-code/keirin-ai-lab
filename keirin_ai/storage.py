@@ -196,6 +196,50 @@ def save_player_profile(conn: sqlite3.Connection, player_id: str, profile: dict,
     conn.commit()
 
 
+def ensure_odds_snapshot_table(conn: sqlite3.Connection) -> None:
+    """発走前オッズの履歴。値付けの歪みを探す研究の土台になる。
+
+    races.latest_odds_json は「最後に取れた1枚」しか残らず上書きされるため、
+    オッズがどう動いたか(市場が何を織り込みにいったか)が追えなかった。
+    こちらは1レースにつき複数枚を発走までの残り時間つきで蓄積する。
+    """
+    conn.execute(
+        """
+        create table if not exists odds_snapshots (
+            race_key text not null,
+            taken_at text not null,
+            minutes_to_post integer,
+            exacta_json text,
+            primary key (race_key, taken_at)
+        )
+        """
+    )
+    conn.execute("create index if not exists idx_odds_snapshots_race on odds_snapshots(race_key)")
+    conn.commit()
+
+
+def save_odds_snapshot_history(
+    conn: sqlite3.Connection, race_key: str, snapshot: dict, minutes_to_post: int | None
+) -> None:
+    """オッズ1枚を履歴として追記する(同一時刻の重複は無視)。"""
+    if not snapshot or not snapshot.get("exacta"):
+        return
+    ensure_odds_snapshot_table(conn)
+    conn.execute(
+        """
+        insert or ignore into odds_snapshots (race_key, taken_at, minutes_to_post, exacta_json)
+        values (?, ?, ?, ?)
+        """,
+        (
+            race_key,
+            snapshot.get("taken_at") or "",
+            minutes_to_post,
+            json.dumps(snapshot.get("exacta"), ensure_ascii=False),
+        ),
+    )
+    conn.commit()
+
+
 def save_race_odds_snapshot(conn: sqlite3.Connection, race_key: str, snapshot: dict) -> None:
     """発走前オッズのスナップショットを保存する。{"exacta": [{"key":"1-5","odds":8.2},...], "taken_at": ISO}"""
     if not snapshot:
