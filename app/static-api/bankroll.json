@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at_jst": "2026-07-26T10:54:59+09:00",
+  "generated_at_jst": "2026-07-25T15:41:41+09:00",
   "rules": [
     "全額転がしは行いません(1レース投資は残高の上限%まで)",
     "負けた後の倍賭け(マーチンゲール)は行いません",
@@ -107,8 +107,8 @@
     {
       "key": "original",
       "label": "オリジナル",
-      "description": "1万円を株の運用のように少しずつ増やす。朝にAIが自信のあるレースだけを厳選し(基準を満たさない日は少なく、0レースでもよい)、小さく張って複利で積み上げる。",
-      "per_race_cap_pct": 5,
+      "description": "1万円を株の運用のように少しずつ増やす10レース。朝にAIが自信のあるレースだけを厳選して確定し、小さく張って複利で積み上げる(差し替えは変更履歴付き)。",
+      "per_race_cap_pct": 12,
       "daily_loss_limit_pct": 25,
       "max_consecutive_losses": 4,
       "min_ev": 1.25,
@@ -127,7 +127,6 @@
         ]
       ],
       "min_confidence_rank": 2,
-      "min_top_probability": 0.35,
       "assumed_main_odds": 5.5,
       "race_limit": 10,
       "default_start": 10000,
@@ -253,20 +252,237 @@
     "target_progress": 0.01,
     "races_to_target": {
       "expected": 99,
-      "fast": 55
+      "fast": 25
     }
   },
-  "proposal": null,
-  "judged_races": [],
+  "proposal": {
+    "race_key": "winticket:2026072455:2:11",
+    "venue": "和歌山",
+    "race_no": 11,
+    "start_time": "15:46",
+    "race_date": "2026年7月25日",
+    "url": "https://www.winticket.jp/keirin/wakayama/racecard/2026072455/2/11",
+    "confidence": "本命",
+    "budget": 1200,
+    "total_stake": 1200,
+    "ev": 8.279,
+    "expected_return": 9940,
+    "tickets": [
+      {
+        "role": "本線",
+        "label": "1-4-7",
+        "stake": 700,
+        "odds": 17.4,
+        "odds_source": "live",
+        "popularity": 6,
+        "hit_probability": 0.3734,
+        "projected_return": 12180
+      },
+      {
+        "role": "抑え",
+        "label": "1-4-3",
+        "stake": 300,
+        "odds": 7.1,
+        "odds_source": "live",
+        "popularity": 3,
+        "hit_probability": 0.3692,
+        "projected_return": 2130
+      },
+      {
+        "role": "妙味",
+        "label": "1-7-4",
+        "stake": 200,
+        "odds": 69.1,
+        "odds_source": "live",
+        "popularity": 13,
+        "hit_probability": 0.3329,
+        "projected_return": 13820
+      }
+    ],
+    "live_odds_count": 3,
+    "top_pick": {
+      "car_no": 1,
+      "name": "三神遼矢",
+      "probability": 0.6261,
+      "score": 14.461,
+      "mark": "本命",
+      "style": "逃",
+      "comment": "自力。",
+      "emotion": {
+        "tone": "中立",
+        "score": 0.4,
+        "buckets": {
+          "intent": 0.4
+        },
+        "hits": [
+          {
+            "phrase": "自力",
+            "weight": 0.4,
+            "bucket": "intent"
+          }
+        ],
+        "summary": "戦法意図は見えますが、状態評価は控えめです。"
+      },
+      "reasons": [
+        "印: 本命",
+        "競走得点上位",
+        "勝率高め",
+        "バック数あり",
+        "EX攻撃力100%",
+        "ちぎられ率26%",
+        "直近3着内多い"
+      ],
+      "form": {
+        "label": "平常",
+        "finishes": [
+          2,
+          1,
+          1,
+          1
+        ],
+        "top3_rate": 1.0,
+        "avg_finish": 1.2,
+        "score_delta": 0.4,
+        "official_delta": -2.22,
+        "score_now": 96.66,
+        "score_recent": 94.44,
+        "races": 4
+      },
+      "term": 127,
+      "class_move": null,
+      "player_id": "015876"
+    },
+    "scenario_headline": "1三神遼矢が本線。前で動いてライン1-4-6を残す展開を重視。",
+    "bet_type": "trifecta",
+    "copy_text": "和歌山11R 3連単\n本線 1-4-7 700円\n抑え 1-4-3 300円\n妙味 1-7-4 200円",
+    "odds_status": {
+      "attempted": 6,
+      "fetched": 6,
+      "failed": 0,
+      "errors": []
+    }
+  },
+  "judged_races": [
+    {
+      "race_key": "winticket:2026072455:2:11",
+      "venue": "和歌山",
+      "race_no": 11,
+      "start_time": "15:46",
+      "confidence": "本命",
+      "decision": "bet",
+      "reason": "EV 8.28 / 3点分散 / ライブ3点",
+      "ev": 8.279,
+      "is_next": true
+    },
+    {
+      "race_key": "winticket:2026072481:2:3",
+      "venue": "小倉",
+      "race_no": 3,
+      "start_time": "16:53",
+      "confidence": "本命",
+      "decision": "bet",
+      "reason": "EV 17.96 / 3点分散 / ライブ3点",
+      "ev": 17.962,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026072553:1:4",
+      "venue": "奈良",
+      "race_no": 4,
+      "start_time": "17:05",
+      "confidence": "本命",
+      "decision": "bet",
+      "reason": "EV 7.00 / 3点分散 / ライブ3点",
+      "ev": 7.003,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026072481:2:6",
+      "venue": "小倉",
+      "race_no": 6,
+      "start_time": "18:05",
+      "confidence": "本命",
+      "decision": "bet",
+      "reason": "EV 1.79 / 3点分散 / ライブ3点",
+      "ev": 1.786,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026072553:1:7",
+      "venue": "奈良",
+      "race_no": 7,
+      "start_time": "18:17",
+      "confidence": "本命",
+      "decision": "bet",
+      "reason": "EV 2.27 / 3点分散 / ライブ3点",
+      "ev": 2.272,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026072481:2:7",
+      "venue": "小倉",
+      "race_no": 7,
+      "start_time": "18:29",
+      "confidence": "本命",
+      "decision": "bet",
+      "reason": "EV 33.92 / 3点分散 / ライブ3点",
+      "ev": 33.916,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026072575:1:2",
+      "venue": "松山",
+      "race_no": 2,
+      "start_time": "21:10",
+      "confidence": "本命",
+      "decision": "bet",
+      "reason": "EV 7.55 / 3点分散",
+      "ev": 7.549,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026072575:1:4",
+      "venue": "松山",
+      "race_no": 4,
+      "start_time": "21:50",
+      "confidence": "本命",
+      "decision": "bet",
+      "reason": "EV 7.12 / 3点分散",
+      "ev": 7.124,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026072575:1:7",
+      "venue": "松山",
+      "race_no": 7,
+      "start_time": "22:50",
+      "confidence": "本命",
+      "decision": "bet",
+      "reason": "EV 7.46 / 3点分散",
+      "ev": 7.464,
+      "is_next": false
+    },
+    {
+      "race_key": "winticket:2026072575:1:8",
+      "venue": "松山",
+      "race_no": 8,
+      "start_time": "23:10",
+      "confidence": "本命",
+      "decision": "bet",
+      "reason": "EV 7.14 / 3点分散",
+      "ev": 7.136,
+      "is_next": false
+    }
+  ],
   "yesterday": {
-    "date": "2026-07-25",
+    "date": "2026-07-24",
     "sessions": [
       {
-        "id": 26,
+        "id": 25,
         "style": "original",
         "style_label": "オリジナル",
-        "status": "active",
-        "stop_reason": null,
+        "status": "stopped",
+        "stop_reason": "1日損失上限(2800円 ≥ 2500円)",
         "config": {
           "start_amount": 10000,
           "target_amount": 1000000,
@@ -278,22 +494,16 @@
           "auto_buy": false,
           "role": "main"
         },
-        "balance": 10000,
-        "profit": 0,
-        "wins": 0,
-        "losses": 0,
+        "balance": 5170,
+        "profit": -4830,
+        "wins": 2,
+        "losses": 6,
         "skips": 0,
         "target_reached": false
       }
     ]
   },
   "daily_history": [
-    {
-      "date": "2026-07-26",
-      "total_profit": 0,
-      "sessions": [],
-      "original": null
-    },
     {
       "date": "2026-07-25",
       "total_profit": 0,
@@ -995,6 +1205,60 @@
         "skips": 0,
         "target_reached": false
       }
+    },
+    {
+      "date": "2026-07-12",
+      "total_profit": -3820,
+      "sessions": [
+        {
+          "id": 13,
+          "style": "original",
+          "style_label": "オリジナル",
+          "status": "stopped",
+          "stop_reason": "1日損失上限(3020円 ≥ 2500円)",
+          "config": {
+            "start_amount": 10000,
+            "target_amount": 1000000,
+            "style": "original",
+            "per_race_cap_pct": 12,
+            "daily_loss_limit_pct": 25,
+            "max_consecutive_losses": 4,
+            "min_ev": 1.25,
+            "auto_buy": false,
+            "role": "main"
+          },
+          "balance": 6180,
+          "profit": -3820,
+          "wins": 1,
+          "losses": 4,
+          "skips": 0,
+          "target_reached": false
+        }
+      ],
+      "original": {
+        "id": 13,
+        "style": "original",
+        "style_label": "オリジナル",
+        "status": "stopped",
+        "stop_reason": "1日損失上限(3020円 ≥ 2500円)",
+        "config": {
+          "start_amount": 10000,
+          "target_amount": 1000000,
+          "style": "original",
+          "per_race_cap_pct": 12,
+          "daily_loss_limit_pct": 25,
+          "max_consecutive_losses": 4,
+          "min_ev": 1.25,
+          "auto_buy": false,
+          "role": "main"
+        },
+        "balance": 6180,
+        "profit": -3820,
+        "wins": 1,
+        "losses": 4,
+        "skips": 0,
+        "target_reached": false
+      }
     }
   ],
   "finance": {
@@ -1090,11 +1354,6 @@
       },
       {
         "date": "2026-07-25",
-        "cumulative_profit": -38950,
-        "day_profit": 0
-      },
-      {
-        "date": "2026-07-26",
         "cumulative_profit": -38950,
         "day_profit": 0
       }
@@ -1196,6 +1455,5 @@
         "status": "planned"
       }
     ]
-  },
-  "message": "予定レースを消化しました。差し替えるか停止してください。"
+  }
 }
