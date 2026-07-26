@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2310151D'/%3E%3Ctext x='32' y='45' font-size='38' font-weight='900' font-family='Arial' fill='%235EE6A8' text-anchor='middle'%3EK%3C/text%3E%3C/svg%3E" />
     <title>Keirin AI Lab</title>
-    <link rel="stylesheet" href="styles.css?v=ab4bf23c" />
+    <link rel="stylesheet" href="styles.css?v=0aedaab7" />
   </head>
   <body data-page="home">
     <div class="app-shell">
@@ -74,30 +74,11 @@
 
           <div class="race-list" id="forecastList"></div>
         </section>
-
-        <section class="panel" id="panel-learn">
-          <header class="page-header">
-            <div>
-              <h2>学習状態</h2>
-            </div>
-            <span class="page-meta" id="learnModelLabel">確認中</span>
-          </header>
-          <div class="metric-strip" id="learnGrid"></div>
-          <div class="table-wrap surface-panel">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>項目</th>
-                  <th>値</th>
-                </tr>
-              </thead>
-              <tbody id="learnBody"></tbody>
-            </table>
-          </div>
-        </section>
+        <!-- 学習状態パネルは非表示(利用者向けの情報ではなく、DBパス等の内部情報も含むため)。
+             renderLearn() は #learnGrid が無ければ何もしないので、この節を消すだけでよい。 -->
       </main>
     </div>
 
-    <script src="app.js?v=ab4bf23c"></script>
+    <script src="app.js?v=0aedaab7"></script>
   </body>
 </html>

@@ -2,8 +2,6 @@
   today: null,
   bundle: null,
   activeTab: "today",
-  learning: null,
-  learnedModel: null,
   bankroll: null,
   bankrollStyle: null,
   bankrollAutoTimer: null,
@@ -87,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // 読み込み中のスケルトン(体感速度の底上げ)
     const list = el("forecastList");
     if (list) list.innerHTML = Array.from({ length: 4 }, () => '<div class="skeleton-row"></div>').join("");
-    loadLearnStatus();
+    // 学習状態パネルを廃止したため /api/learn/status の取得はしない(初回表示の通信を1本減らす)
     loadToday();
     loadBankroll();
     loadResults(); // AI成績バー用
@@ -123,28 +121,13 @@ async function loadToday() {
       return;
     }
     state.today = payload;
-    state.learning = payload.learning_status || state.learning;
     renderToday();
-    renderLearn();
     setStatus(`${payload.summary?.count || 0}レースを表示中`);
   } catch (error) {
     setStatus(`今日の予想エラー: ${error.message}`);
   }
 }
 
-async function loadLearnStatus() {
-  try {
-    const res = await apiGet("/api/learn/status");
-    const payload = await res.json();
-    if (payload.ok) {
-      state.learning = payload.status;
-      if (payload.model) state.learnedModel = payload.model;
-      renderLearn();
-    }
-  } catch {
-    state.learning = null;
-  }
-}
 
 function currentPlayerId() {
   return new URLSearchParams(window.location.search).get("id") || "";
@@ -2802,37 +2785,8 @@ function renderMiniEntries(entries) {
   </table>`;
 }
 
-function renderLearn() {
-  if (!el("learnGrid")) return;
-  const status = state.learning || {};
-  const model = state.learnedModel || {};
-  const training = model.training || {};
-  const metrics = model.metrics || {};
-  const schedule = state.today?.schedule_summary || {};
-  const items = [
-    ["保存レース", status.races ?? 0],
-    ["保存選手", status.entries ?? 0],
-    ["結果付きレース", status.result_races ?? 0],
-    ["教師行", status.result_entries ?? training.rows ?? 0],
-    ["予想保存", status.predictions ?? 0],
-    ["3年開催索引", schedule.total_events ?? "-"],
-    ["Top1精度", metrics.top1_accuracy != null ? percent(metrics.top1_accuracy) : "-"],
-    ["LogLoss", metrics.log_loss ?? "-"],
-    ["DB", status.db_path || "-"],
-  ];
-  el("learnModelLabel").textContent = model.name || "transparent-baseline + online-logistic-win";
-  el("learnGrid").innerHTML = [
-    ["レース", status.races ?? 0, "保存", "teal"],
-    ["教師", status.result_entries ?? training.rows ?? 0, "行", "purple"],
-    ["結果付き", status.result_races ?? 0, "レース", "green"],
-    ["3年索引", schedule.total_events ?? "-", "開催", "slate"],
-  ]
-    .map(metric)
-    .join("");
-  el("learnBody").innerHTML = items
-    .map(([key, value]) => `<tr><td>${escapeHtml(key)}</td><td>${escapeHtml(value)}</td></tr>`)
-    .join("");
-}
+// 学習状態パネル(renderLearn)は廃止した。利用者向けの情報ではなく、
+// 実行環境のDBパスなど内部情報も含んでいたため。
 
 function metric([label, value, caption, tone = "slate"]) {
   return `<div class="metric metric-${tone}">

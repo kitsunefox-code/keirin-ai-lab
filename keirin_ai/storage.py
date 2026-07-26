@@ -650,7 +650,8 @@ def learning_status(conn: sqlite3.Connection) -> dict:
         "result_entries": result_entries,
         "predictions": prediction_count,
         "documents": document_count,
-        "db_path": str(DEFAULT_DB_PATH),
+        # db_path は返さない。この値は静的サイトの公開JSONにもそのまま載るため、
+        # 実行環境の絶対パス(GitHub Actionsのランナーパス等)が外部に出てしまう。
     }
 
 
