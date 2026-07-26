@@ -1780,7 +1780,7 @@ function renderOriginalDaily(history) {
   const box = el("originalDaily");
   if (box) {
     if (!history.length || history.every((day) => !day.sessions.length)) {
-      box.innerHTML = `<div class="empty">まだ運用記録がありません。車券コンサルの「オリジナル運用(自動)」が毎朝1万円×10Rで自動開始すると、ここに毎日の収支が貯まります。</div>`;
+      box.innerHTML = `<div class="empty">まだ運用記録がありません。車券コンサルの「オリジナル運用(自動)」が毎朝1万円で自動開始すると、ここに毎日の収支が貯まります。</div>`;
     } else {
       const days = history.filter((day) => day.sessions.length);
       // 収支バーの基準: その期間の最大振れ幅。プラスは右、マイナスは左に伸ばして中央を0円にする

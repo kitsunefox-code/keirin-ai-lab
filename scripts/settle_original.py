@@ -27,9 +27,11 @@ from keirin_ai.bankroll import (
     active_session,
     choose_bet_type,
     commit_bet,
+    evaluate_stop,
     record_result,
     record_skip,
     session_state,
+    stop_session,
 )
 from keirin_ai.storage import connect
 
@@ -165,6 +167,7 @@ def _settle_session(conn, session: dict) -> dict:
         row["race_key"]
         for row in conn.execute("select race_key from bankroll_bets where session_id=?", (session["id"],)).fetchall()
     }
+    stopped_reason = None
     for slot in slots:
         race_key = slot.get("race_key")
         if not race_key or race_key in recorded:
@@ -174,6 +177,11 @@ def _settle_session(conn, session: dict) -> dict:
             break  # 複利の順序を守るため未確定で停止
         ranking = _first_ranking(conn, race_key)
         state = session_state(conn, session)
+        # 損失上限・連敗上限は「次の1点を張る前」に判定する。
+        # 決済後にラベルを付けるだけだと、上限を超えてから止まるため上限が機能しない。
+        stopped_reason = evaluate_stop(config, state)
+        if stopped_reason:
+            break
         budget = int(state["balance"] * config["per_race_cap_pct"] / 100 // UNIT * UNIT)
         race_meta = {
             "race_key": race_key,
@@ -207,9 +215,13 @@ def _settle_session(conn, session: dict) -> dict:
         settled += 1
 
     final = session_state(conn, session)
+    # 上限に当たっていたらセッションを実際に止める(以降の予定レースは張らない)
+    reason = stopped_reason or evaluate_stop(config, final)
+    if reason and session.get("status") == "active":
+        stop_session(conn, session["id"], reason)
     return {"session_id": session["id"], "style": config.get("style"), "settled": settled, "skipped": skipped,
             "held_no_odds": held, "balance": final["balance"], "profit": final["profit"],
-            "wins": final["wins"], "losses": final["losses"]}
+            "wins": final["wins"], "losses": final["losses"], "stopped": reason}
 
 
 def main() -> None:

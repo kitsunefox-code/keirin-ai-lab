@@ -71,13 +71,18 @@ STYLES: dict[str, dict] = {
     "original": {
         "key": "original",
         "label": "オリジナル",
-        "description": "1万円を株の運用のように少しずつ増やす10レース。朝にAIが自信のあるレースだけを厳選して確定し、小さく張って複利で積み上げる(差し替えは変更履歴付き)。",
-        "per_race_cap_pct": 12,
+        "description": "1万円を株の運用のように少しずつ増やす。朝にAIが自信のあるレースだけを厳選し(基準を満たさない日は少なく、0レースでもよい)、小さく張って複利で積み上げる。",
+        # 1レースへの投入は残高の5%。12%だと24%的中の運用では連敗時の目減りが急で、
+        # 実測でも最大87%の下落を招いていたため引き下げた。
+        "per_race_cap_pct": 5,
         "daily_loss_limit_pct": 25,
         "max_consecutive_losses": 4,
         "min_ev": 1.25,
         "weights": [("本線", 0.5), ("抑え", 0.3), ("妙味", 0.2)],
         "min_confidence_rank": 2,
+        # 1785Rの実測で回収率が最も高かった帯(AI勝率35%以上=72.9%)を選定の下限にする。
+        # ただし100%未満なので「勝てる基準」ではなく「最も負けにくい基準」である点に注意。
+        "min_top_probability": 0.35,
         "assumed_main_odds": 5.5,
         "race_limit": 10,
         "default_start": 10000,
@@ -286,13 +291,20 @@ def build_original_plan(conn: sqlite3.Connection, data_dir, race_limit: int) -> 
         best_ticket = max((t.get("score") or 0) for t in (race.get("tickets") or [{"score": 0}]))
         return int(confidence.get("rank") or 0) * 10 + float(top.get("probability") or 0) * 8 + best_ticket * 4
 
-    # 株運用型: まず信頼度「強・中」だけに絞って厳選。足りない分だけ次点で補う
-    strong = [race for race in active if int((race.get("confidence") or {}).get("rank") or 0) >= 2]
-    pool = sorted(strong, key=score, reverse=True)[: race_limit]
-    if len(pool) < race_limit:
-        rest = [race for race in active if race not in pool]
-        pool += sorted(rest, key=score, reverse=True)[: race_limit - len(pool)]
-    picked = pool
+    # 株運用型: 信頼度「強・中」かつAI勝率が基準以上のレースだけを厳選する。
+    # 以前は10枠を埋めるために次点レースで水増ししていたが、
+    # 回収率100%未満のレースを枠のために足すと、回した金額ぶん確実に損が増える。
+    # 該当が10レース未満なら、その日は少ないまま(0でも)よい。
+    style = STYLES["original"]
+    min_rank = int(style.get("min_confidence_rank") or 2)
+    min_top_prob = float(style.get("min_top_probability") or 0)
+
+    def qualifies(race: dict) -> bool:
+        rank = int((race.get("confidence") or {}).get("rank") or 0)
+        top_prob = float(((race.get("top3") or [{}])[0]).get("probability") or 0)
+        return rank >= min_rank and top_prob >= min_top_prob
+
+    picked = sorted([race for race in active if qualifies(race)], key=score, reverse=True)[:race_limit]
     picked.sort(key=lambda race: race.get("start_time") or "99:99")
     slots = [
         {
