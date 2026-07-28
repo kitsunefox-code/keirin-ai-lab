@@ -1,27 +1,32 @@
 {
-  "checked": 0,
+  "checked": 1,
   "updated_count": 0,
   "updated": [],
-  "skipped_count": 0,
-  "skipped": [],
+  "skipped_count": 1,
+  "skipped": [
+    {
+      "race_key": "winticket:2026072545:4:11",
+      "reason": "official result unavailable"
+    }
+  ],
   "status": {
-    "races": 1933,
-    "entries": 13542,
-    "result_races": 1933,
-    "result_entries": 13390,
-    "predictions": 2065,
+    "races": 2011,
+    "entries": 14103,
+    "result_races": 2010,
+    "result_entries": 13937,
+    "predictions": 2216,
     "documents": 15
   },
   "model_training": {
-    "rows": 13390,
-    "races": 1933,
-    "positive_rows": 1889,
+    "rows": 13937,
+    "races": 2010,
+    "positive_rows": 1966,
     "best_iteration": 6,
-    "valid_races": 290
+    "valid_races": 302
   },
   "model_metrics": {
-    "log_loss": 0.3868,
-    "top1_accuracy": 0.4517,
+    "log_loss": 0.3847,
+    "top1_accuracy": 0.447,
     "eval_split": "time-based 15% holdout"
   }
 }
