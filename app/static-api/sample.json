@@ -406,9 +406,9 @@
           "is_rain": 0.0
         },
         "baseline_score": 9.649,
-        "learned_logit": -0.851,
-        "learned_probability": 0.2992,
-        "model_score": 8.968,
+        "learned_logit": -0.852,
+        "learned_probability": 0.299,
+        "model_score": 8.967,
         "reasons": [
           "印: 本命",
           "競走得点上位",
@@ -416,7 +416,7 @@
           "前検コメ: 強気",
           "学習: 割引"
         ],
-        "win_probability": 0.5057
+        "win_probability": 0.5056
       },
       {
         "frame_no": 7,
@@ -518,7 +518,7 @@
         },
         "baseline_score": 5.159,
         "learned_logit": -1.054,
-        "learned_probability": 0.2585,
+        "learned_probability": 0.2584,
         "model_score": 4.316,
         "reasons": [
           "印: 対抗",
@@ -627,16 +627,16 @@
           "is_rain": 0.0
         },
         "baseline_score": 4.256,
-        "learned_logit": -1.641,
-        "learned_probability": 0.1623,
-        "model_score": 2.943,
+        "learned_logit": -1.639,
+        "learned_probability": 0.1626,
+        "model_score": 2.945,
         "reasons": [
           "印: 単穴",
           "勝率高め",
           "前検コメ: 上向き",
           "学習: 割引"
         ],
-        "win_probability": 0.1121
+        "win_probability": 0.1122
       },
       {
         "frame_no": 2,
@@ -729,8 +729,8 @@
           "is_rain": 0.0
         },
         "baseline_score": 2.542,
-        "learned_logit": -1.809,
-        "learned_probability": 0.1407,
+        "learned_logit": -1.799,
+        "learned_probability": 0.142,
         "model_score": 1.182,
         "reasons": [
           "印: 連下",
@@ -952,8 +952,8 @@
           "is_rain": 0.0
         },
         "baseline_score": 0.379,
-        "learned_logit": -1.809,
-        "learned_probability": 0.1407,
+        "learned_logit": -1.778,
+        "learned_probability": 0.1446,
         "model_score": -0.981,
         "reasons": [
           "学習: 割引"
@@ -1076,8 +1076,8 @@
           "is_rain": 0.0
         },
         "baseline_score": 0.222,
-        "learned_logit": -1.809,
-        "learned_probability": 0.1407,
+        "learned_logit": -1.799,
+        "learned_probability": 0.142,
         "model_score": -1.138,
         "reasons": [
           "前検コメ: 不安含み",
@@ -1102,7 +1102,7 @@
           3,
           1
         ],
-        "score": 0.1121,
+        "score": 0.1122,
         "label": "3-1",
         "suji": false,
         "bet_type": "exacta"
@@ -1135,7 +1135,7 @@
           7,
           1
         ],
-        "score": 0.3605,
+        "score": 0.3604,
         "label": "3-7-1",
         "suji": true,
         "bet_type": "trifecta"
@@ -1146,7 +1146,7 @@
           7,
           2
         ],
-        "score": 0.3542,
+        "score": 0.3541,
         "label": "3-7-2",
         "suji": true,
         "bet_type": "trifecta"
@@ -1157,7 +1157,7 @@
           1,
           7
         ],
-        "score": 0.3154,
+        "score": 0.3153,
         "label": "3-1-7",
         "suji": false,
         "bet_type": "trifecta"
@@ -1168,7 +1168,7 @@
           2,
           7
         ],
-        "score": 0.3041,
+        "score": 0.304,
         "label": "3-2-7",
         "suji": false,
         "bet_type": "trifecta"
@@ -1222,21 +1222,21 @@
       "ライン構成をスコアへ反映しました。",
       "コメントの心理・状態語を補助材料にしました。",
       "2軸ライン強度(先頭の得点とバック回数)を評価に反映しました。",
-      "過去結果の学習重みを反映しました。教師データ: 2089レース / 14477選手。"
+      "過去結果の学習重みを反映しました。教師データ: 2096レース / 14522選手。"
     ],
     "model": {
       "name": "transparent-baseline + online-logistic-win",
       "version": "0.2",
       "training": {
-        "rows": 14477,
-        "races": 2089,
-        "positive_rows": 2045,
+        "rows": 14522,
+        "races": 2096,
+        "positive_rows": 2052,
         "best_iteration": 6,
-        "valid_races": 314
+        "valid_races": 315
       },
       "metrics": {
-        "log_loss": 0.3866,
-        "top1_accuracy": 0.4331,
+        "log_loss": 0.387,
+        "top1_accuracy": 0.4508,
         "eval_split": "time-based 15% holdout"
       },
       "warning": "研究用の相対スコアです。的中や利益を保証するものではありません。"
