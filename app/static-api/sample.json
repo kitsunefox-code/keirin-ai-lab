@@ -406,9 +406,9 @@
           "is_rain": 0.0
         },
         "baseline_score": 9.649,
-        "learned_logit": -0.839,
-        "learned_probability": 0.3017,
-        "model_score": 8.978,
+        "learned_logit": -0.842,
+        "learned_probability": 0.3011,
+        "model_score": 8.975,
         "reasons": [
           "印: 本命",
           "競走得点上位",
@@ -517,9 +517,9 @@
           "is_rain": 0.0
         },
         "baseline_score": 5.159,
-        "learned_logit": -1.049,
-        "learned_probability": 0.2594,
-        "model_score": 4.32,
+        "learned_logit": -1.051,
+        "learned_probability": 0.259,
+        "model_score": 4.318,
         "reasons": [
           "印: 対抗",
           "競走得点上位",
@@ -627,16 +627,16 @@
           "is_rain": 0.0
         },
         "baseline_score": 4.256,
-        "learned_logit": -1.654,
-        "learned_probability": 0.1605,
-        "model_score": 2.933,
+        "learned_logit": -1.672,
+        "learned_probability": 0.1582,
+        "model_score": 2.919,
         "reasons": [
           "印: 単穴",
           "勝率高め",
           "前検コメ: 上向き",
           "学習: 割引"
         ],
-        "win_probability": 0.1117
+        "win_probability": 0.1114
       },
       {
         "frame_no": 2,
@@ -729,8 +729,8 @@
           "is_rain": 0.0
         },
         "baseline_score": 2.542,
-        "learned_logit": -1.823,
-        "learned_probability": 0.1391,
+        "learned_logit": -1.836,
+        "learned_probability": 0.1375,
         "model_score": 1.182,
         "reasons": [
           "印: 連下",
@@ -838,14 +838,14 @@
           "is_rain": 0.0
         },
         "baseline_score": 2.267,
-        "learned_logit": -1.525,
-        "learned_probability": 0.1787,
-        "model_score": 1.047,
+        "learned_logit": -1.513,
+        "learned_probability": 0.1804,
+        "model_score": 1.056,
         "reasons": [
           "前検コメ: 不安含み",
           "学習: 割引"
         ],
-        "win_probability": 0.0697
+        "win_probability": 0.0699
       },
       {
         "frame_no": 6,
@@ -952,8 +952,8 @@
           "is_rain": 0.0
         },
         "baseline_score": 0.379,
-        "learned_logit": -1.788,
-        "learned_probability": 0.1433,
+        "learned_logit": -1.822,
+        "learned_probability": 0.1392,
         "model_score": -0.981,
         "reasons": [
           "学習: 割引"
@@ -1076,8 +1076,8 @@
           "is_rain": 0.0
         },
         "baseline_score": 0.222,
-        "learned_logit": -1.823,
-        "learned_probability": 0.1391,
+        "learned_logit": -1.836,
+        "learned_probability": 0.1375,
         "model_score": -1.138,
         "reasons": [
           "前検コメ: 不安含み",
@@ -1102,7 +1102,7 @@
           3,
           1
         ],
-        "score": 0.1117,
+        "score": 0.1114,
         "label": "3-1",
         "suji": false,
         "bet_type": "exacta"
@@ -1122,7 +1122,7 @@
           3,
           4
         ],
-        "score": 0.0697,
+        "score": 0.0699,
         "label": "3-4",
         "suji": false,
         "bet_type": "exacta"
@@ -1135,7 +1135,7 @@
           7,
           1
         ],
-        "score": 0.3607,
+        "score": 0.3606,
         "label": "3-7-1",
         "suji": true,
         "bet_type": "trifecta"
@@ -1157,7 +1157,7 @@
           1,
           7
         ],
-        "score": 0.3155,
+        "score": 0.3154,
         "label": "3-1-7",
         "suji": false,
         "bet_type": "trifecta"
@@ -1179,7 +1179,7 @@
           1,
           2
         ],
-        "score": 0.3034,
+        "score": 0.3033,
         "label": "3-1-2",
         "suji": false,
         "bet_type": "trifecta"
@@ -1190,7 +1190,7 @@
           2,
           1
         ],
-        "score": 0.2978,
+        "score": 0.2977,
         "label": "3-2-1",
         "suji": false,
         "bet_type": "trifecta"
@@ -1201,7 +1201,7 @@
           3,
           1
         ],
-        "score": 0.23,
+        "score": 0.2299,
         "label": "7-3-1",
         "suji": false,
         "bet_type": "trifecta"
@@ -1222,21 +1222,21 @@
       "ライン構成をスコアへ反映しました。",
       "コメントの心理・状態語を補助材料にしました。",
       "2軸ライン強度(先頭の得点とバック回数)を評価に反映しました。",
-      "過去結果の学習重みを反映しました。教師データ: 2143レース / 14845選手。"
+      "過去結果の学習重みを反映しました。教師データ: 2152レース / 14908選手。"
     ],
     "model": {
       "name": "transparent-baseline + online-logistic-win",
       "version": "0.2",
       "training": {
-        "rows": 14845,
-        "races": 2143,
-        "positive_rows": 2099,
+        "rows": 14908,
+        "races": 2152,
+        "positive_rows": 2108,
         "best_iteration": 6,
-        "valid_races": 322
+        "valid_races": 323
       },
       "metrics": {
-        "log_loss": 0.3875,
-        "top1_accuracy": 0.4752,
+        "log_loss": 0.3885,
+        "top1_accuracy": 0.452,
         "eval_split": "time-based 15% holdout"
       },
       "warning": "研究用の相対スコアです。的中や利益を保証するものではありません。"
