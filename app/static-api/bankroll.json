@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at_jst": "2026-08-02T23:11:03+09:00",
+  "generated_at_jst": "2026-08-03T00:30:01+09:00",
   "rules": [
     "全額転がしは行いません(1レース投資は残高の上限%まで)",
     "負けた後の倍賭け(マーチンゲール)は行いません",
@@ -140,10 +140,10 @@
   "proposal": null,
   "judged_races": [],
   "yesterday": {
-    "date": "2026-08-01",
+    "date": "2026-08-02",
     "sessions": [
       {
-        "id": 32,
+        "id": 33,
         "style": "original",
         "style_label": "オリジナル",
         "status": "stopped",
@@ -159,16 +159,22 @@
           "auto_buy": false,
           "role": "main"
         },
-        "balance": 19300,
-        "profit": 9300,
-        "wins": 2,
-        "losses": 5,
+        "balance": 8300,
+        "profit": -1700,
+        "wins": 0,
+        "losses": 4,
         "skips": 0,
         "target_reached": false
       }
     ]
   },
   "daily_history": [
+    {
+      "date": "2026-08-03",
+      "total_profit": 0,
+      "sessions": [],
+      "original": null
+    },
     {
       "date": "2026-08-02",
       "total_profit": -1700,
@@ -816,60 +822,6 @@
         "skips": 0,
         "target_reached": false
       }
-    },
-    {
-      "date": "2026-07-20",
-      "total_profit": -3440,
-      "sessions": [
-        {
-          "id": 21,
-          "style": "original",
-          "style_label": "オリジナル",
-          "status": "stopped",
-          "stop_reason": "1日損失上限(3100円 ≥ 2500円)",
-          "config": {
-            "start_amount": 10000,
-            "target_amount": 1000000,
-            "style": "original",
-            "per_race_cap_pct": 12,
-            "daily_loss_limit_pct": 25,
-            "max_consecutive_losses": 4,
-            "min_ev": 1.25,
-            "auto_buy": false,
-            "role": "main"
-          },
-          "balance": 6560,
-          "profit": -3440,
-          "wins": 1,
-          "losses": 7,
-          "skips": 0,
-          "target_reached": false
-        }
-      ],
-      "original": {
-        "id": 21,
-        "style": "original",
-        "style_label": "オリジナル",
-        "status": "stopped",
-        "stop_reason": "1日損失上限(3100円 ≥ 2500円)",
-        "config": {
-          "start_amount": 10000,
-          "target_amount": 1000000,
-          "style": "original",
-          "per_race_cap_pct": 12,
-          "daily_loss_limit_pct": 25,
-          "max_consecutive_losses": 4,
-          "min_ev": 1.25,
-          "auto_buy": false,
-          "role": "main"
-        },
-        "balance": 6560,
-        "profit": -3440,
-        "wins": 1,
-        "losses": 7,
-        "skips": 0,
-        "target_reached": false
-      }
     }
   ],
   "finance": {
@@ -881,7 +833,7 @@
     "wins": 57,
     "losses": 120,
     "hit_rate": 0.322,
-    "today_profit": -1700,
+    "today_profit": 0,
     "series": [
       {
         "date": "2026-07-09",
@@ -1002,6 +954,11 @@
         "date": "2026-08-02",
         "cumulative_profit": -43850,
         "day_profit": -1700
+      },
+      {
+        "date": "2026-08-03",
+        "cumulative_profit": -43850,
+        "day_profit": 0
       }
     ]
   },
