@@ -406,9 +406,9 @@
           "is_rain": 0.0
         },
         "baseline_score": 9.649,
-        "learned_logit": -0.841,
-        "learned_probability": 0.3014,
-        "model_score": 8.976,
+        "learned_logit": -0.839,
+        "learned_probability": 0.3016,
+        "model_score": 8.977,
         "reasons": [
           "印: 本命",
           "競走得点上位",
@@ -517,8 +517,8 @@
           "is_rain": 0.0
         },
         "baseline_score": 5.159,
-        "learned_logit": -1.115,
-        "learned_probability": 0.247,
+        "learned_logit": -1.114,
+        "learned_probability": 0.2471,
         "model_score": 4.268,
         "reasons": [
           "印: 対抗",
@@ -526,7 +526,7 @@
           "前検コメ: 上向き",
           "学習: 割引"
         ],
-        "win_probability": 0.1563
+        "win_probability": 0.1562
       },
       {
         "frame_no": 1,
@@ -627,9 +627,9 @@
           "is_rain": 0.0
         },
         "baseline_score": 4.256,
-        "learned_logit": -1.654,
-        "learned_probability": 0.1606,
-        "model_score": 2.933,
+        "learned_logit": -1.655,
+        "learned_probability": 0.1604,
+        "model_score": 2.932,
         "reasons": [
           "印: 単穴",
           "勝率高め",
@@ -729,8 +729,8 @@
           "is_rain": 0.0
         },
         "baseline_score": 2.542,
-        "learned_logit": -1.823,
-        "learned_probability": 0.139,
+        "learned_logit": -1.816,
+        "learned_probability": 0.14,
         "model_score": 1.182,
         "reasons": [
           "印: 連下",
@@ -838,14 +838,14 @@
           "is_rain": 0.0
         },
         "baseline_score": 2.267,
-        "learned_logit": -1.508,
-        "learned_probability": 0.1813,
-        "model_score": 1.061,
+        "learned_logit": -1.499,
+        "learned_probability": 0.1825,
+        "model_score": 1.067,
         "reasons": [
           "前検コメ: 不安含み",
           "学習: 割引"
         ],
-        "win_probability": 0.0701
+        "win_probability": 0.0702
       },
       {
         "frame_no": 6,
@@ -952,8 +952,8 @@
           "is_rain": 0.0
         },
         "baseline_score": 0.379,
-        "learned_logit": -1.805,
-        "learned_probability": 0.1412,
+        "learned_logit": -1.797,
+        "learned_probability": 0.1422,
         "model_score": -0.981,
         "reasons": [
           "学習: 割引"
@@ -1076,8 +1076,8 @@
           "is_rain": 0.0
         },
         "baseline_score": 0.222,
-        "learned_logit": -1.752,
-        "learned_probability": 0.1478,
+        "learned_logit": -1.756,
+        "learned_probability": 0.1473,
         "model_score": -1.138,
         "reasons": [
           "前検コメ: 不安含み",
@@ -1092,7 +1092,7 @@
           3,
           7
         ],
-        "score": 0.1751,
+        "score": 0.1749,
         "label": "3-7",
         "suji": true,
         "bet_type": "exacta"
@@ -1122,7 +1122,7 @@
           3,
           4
         ],
-        "score": 0.0701,
+        "score": 0.0702,
         "label": "3-4",
         "suji": false,
         "bet_type": "exacta"
@@ -1201,7 +1201,7 @@
           3,
           1
         ],
-        "score": 0.2294,
+        "score": 0.2293,
         "label": "7-3-1",
         "suji": false,
         "bet_type": "trifecta"
@@ -1222,21 +1222,21 @@
       "ライン構成をスコアへ反映しました。",
       "コメントの心理・状態語を補助材料にしました。",
       "2軸ライン強度(先頭の得点とバック回数)を評価に反映しました。",
-      "過去結果の学習重みを反映しました。教師データ: 2435レース / 16880選手。"
+      "過去結果の学習重みを反映しました。教師データ: 2456レース / 17026選手。"
     ],
     "model": {
       "name": "transparent-baseline + online-logistic-win",
       "version": "0.2",
       "training": {
-        "rows": 16880,
-        "races": 2435,
-        "positive_rows": 2391,
+        "rows": 17026,
+        "races": 2456,
+        "positive_rows": 2412,
         "best_iteration": 6,
-        "valid_races": 366
+        "valid_races": 369
       },
       "metrics": {
-        "log_loss": 0.3919,
-        "top1_accuracy": 0.4317,
+        "log_loss": 0.3924,
+        "top1_accuracy": 0.4255,
         "eval_split": "time-based 15% holdout"
       },
       "warning": "研究用の相対スコアです。的中や利益を保証するものではありません。"
