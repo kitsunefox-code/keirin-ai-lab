@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at_jst": "2026-08-03T23:51:53+09:00",
+  "generated_at_jst": "2026-08-04T01:58:51+09:00",
   "rules": [
     "全額転がしは行いません(1レース投資は残高の上限%まで)",
     "負けた後の倍賭け(マーチンゲール)は行いません",
@@ -140,10 +140,10 @@
   "proposal": null,
   "judged_races": [],
   "yesterday": {
-    "date": "2026-08-02",
+    "date": "2026-08-03",
     "sessions": [
       {
-        "id": 33,
+        "id": 34,
         "style": "original",
         "style_label": "オリジナル",
         "status": "stopped",
@@ -169,6 +169,12 @@
     ]
   },
   "daily_history": [
+    {
+      "date": "2026-08-04",
+      "total_profit": 0,
+      "sessions": [],
+      "original": null
+    },
     {
       "date": "2026-08-03",
       "total_profit": -1700,
@@ -816,60 +822,6 @@
         "skips": 0,
         "target_reached": false
       }
-    },
-    {
-      "date": "2026-07-21",
-      "total_profit": -3350,
-      "sessions": [
-        {
-          "id": 22,
-          "style": "original",
-          "style_label": "オリジナル",
-          "status": "stopped",
-          "stop_reason": "1日損失上限(2550円 ≥ 2500円)",
-          "config": {
-            "start_amount": 10000,
-            "target_amount": 1000000,
-            "style": "original",
-            "per_race_cap_pct": 12,
-            "daily_loss_limit_pct": 25,
-            "max_consecutive_losses": 4,
-            "min_ev": 1.25,
-            "auto_buy": false,
-            "role": "main"
-          },
-          "balance": 6650,
-          "profit": -3350,
-          "wins": 2,
-          "losses": 6,
-          "skips": 0,
-          "target_reached": false
-        }
-      ],
-      "original": {
-        "id": 22,
-        "style": "original",
-        "style_label": "オリジナル",
-        "status": "stopped",
-        "stop_reason": "1日損失上限(2550円 ≥ 2500円)",
-        "config": {
-          "start_amount": 10000,
-          "target_amount": 1000000,
-          "style": "original",
-          "per_race_cap_pct": 12,
-          "daily_loss_limit_pct": 25,
-          "max_consecutive_losses": 4,
-          "min_ev": 1.25,
-          "auto_buy": false,
-          "role": "main"
-        },
-        "balance": 6650,
-        "profit": -3350,
-        "wins": 2,
-        "losses": 6,
-        "skips": 0,
-        "target_reached": false
-      }
     }
   ],
   "finance": {
@@ -881,7 +833,7 @@
     "wins": 57,
     "losses": 124,
     "hit_rate": 0.3149,
-    "today_profit": -1700,
+    "today_profit": 0,
     "series": [
       {
         "date": "2026-07-09",
@@ -1007,6 +959,11 @@
         "date": "2026-08-03",
         "cumulative_profit": -45550,
         "day_profit": -1700
+      },
+      {
+        "date": "2026-08-04",
+        "cumulative_profit": -45550,
+        "day_profit": 0
       }
     ]
   },
