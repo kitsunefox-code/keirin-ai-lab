@@ -3,9 +3,9 @@
   "status": {
     "races": 2539,
     "entries": 17824,
-    "result_races": 2460,
-    "result_entries": 17053,
-    "predictions": 3174,
+    "result_races": 2464,
+    "result_entries": 17080,
+    "predictions": 3178,
     "documents": 15
   },
   "model": {
@@ -13,30 +13,30 @@
     "backend": "lightgbm",
     "version": "0.2",
     "training": {
-      "rows": 17026,
-      "races": 2456,
-      "positive_rows": 2412,
+      "rows": 17080,
+      "races": 2464,
+      "positive_rows": 2420,
       "best_iteration": 6,
-      "valid_races": 369
+      "valid_races": 370
     },
     "metrics": {
-      "log_loss": 0.3924,
-      "top1_accuracy": 0.4255,
+      "log_loss": 0.3918,
+      "top1_accuracy": 0.427,
       "eval_split": "time-based 15% holdout"
     },
     "feature_importance": {
-      "ai_honmei": 13095.4,
-      "win_rate": 5539.6,
-      "ai_taiko": 3627.1,
-      "line_third_plus": 2925.5,
-      "racing_score": 2649.7,
-      "line_strength_score": 2241.1,
-      "emotion_score": 1297.7,
-      "ai_tanana": 1091.1,
-      "line_len": 921.1,
-      "two_rate": 828.7,
-      "head_to_head_ratio": 539.4,
-      "line_strength_back": 427.0
+      "ai_honmei": 13197.4,
+      "win_rate": 5476.9,
+      "ai_taiko": 3764.3,
+      "line_third_plus": 2945.7,
+      "racing_score": 2761.8,
+      "line_strength_score": 2088.0,
+      "ai_tanana": 1235.4,
+      "emotion_score": 1083.0,
+      "line_len": 1010.9,
+      "two_rate": 793.3,
+      "head_to_head_ratio": 723.5,
+      "age": 454.5
     }
   }
 }
