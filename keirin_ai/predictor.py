@@ -37,16 +37,35 @@ def predict_race(race: dict, use_learning: bool = True) -> dict:
         for e in entrants
     }
     stage2 = stage2_features(base_features)
+    # ライン確率を先に取り込んでおく。取り込む前にスコアを計算すると
+    # 学習時(62特徴)と本数が合わずモデルが読めない。
+    for car_no, feats in base_features.items():
+        feats.update(stage2.get(car_no, {}))
+
+    # ランキング学習(LambdaRank)の出力は確率でなく「並べるためのスコア」で、
+    # 尺度がレースごとに変わる。そのまま既存スコアへ足すと寄与が安定しないため、
+    # レース内でz化してから合成する(順位は変わらない)。
+    is_rank_model = bool(learned_model) and learned_model.get("objective") == "lambdarank"
+    raw_logits = {
+        car_no: (predict_logit(learned_model, feats) if learned_model else 0.0)
+        for car_no, feats in base_features.items()
+    }
+    if is_rank_model and len(raw_logits) > 1:
+        vals = list(raw_logits.values())
+        mean = sum(vals) / len(vals)
+        sd = (sum((v - mean) ** 2 for v in vals) / len(vals)) ** 0.5
+        if sd > 0:
+            raw_logits = {car: (v - mean) / sd for car, v in raw_logits.items()}
 
     scored = []
     for entrant in entrants:
         car_no = int(entrant.get("car_no") or 0)
         emotion = emotions[car_no]
         features = base_features[car_no]
-        features.update(stage2.get(car_no, {}))
         baseline = _baseline_score(entrant, emotion, race)
-        learned_logit = predict_logit(learned_model, features) if learned_model else 0.0
-        learned_prob = predict_probability(learned_model, features) if learned_model else None
+        learned_logit = raw_logits.get(car_no, 0.0)
+        # 順位学習では確率が出ないので保持しない(表示にも使っていない)
+        learned_prob = None if is_rank_model else (predict_probability(learned_model, features) if learned_model else None)
         score = baseline + _learned_adjustment(learned_model, learned_logit)
         scored.append(
             {
