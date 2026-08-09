@@ -85,18 +85,35 @@ def main() -> None:
 
         # 2) ranking_json から features を除去
         slimmed = 0
-        rows = conn.execute("select id, ranking_json from predictions where ranking_json like '%\"features\"%'").fetchall()
+        rows = conn.execute("select id, ranking_json from predictions").fetchall()
         for row in rows:
             try:
                 ranking = json.loads(row["ranking_json"])
             except Exception:
                 continue
-            conn.execute(
-                "update predictions set ranking_json=? where id=?",
-                (json.dumps(slim_rankings(ranking), ensure_ascii=False), row["id"]),
-            )
-            slimmed += 1
+            packed = json.dumps(slim_rankings(ranking), ensure_ascii=False, separators=(",", ":"))
+            if packed != row["ranking_json"]:
+                conn.execute("update predictions set ranking_json=? where id=?", (packed, row["id"]))
+                slimmed += 1
         conn.commit()
+
+        # 3) features_json の冗長な浮動小数を4桁へ丸める
+        #    0.012999999999999545 のような値がそのまま入っており、
+        #    モデルには無意味な桁でDBだけが膨らむ
+        rounded = 0
+        ent = conn.execute("select rowid, features_json from entries where features_json is not null").fetchall()
+        for row in ent:
+            try:
+                feats = json.loads(row["features_json"])
+            except Exception:
+                continue
+            slim = {k: round(float(v), 4) for k, v in feats.items() if isinstance(v, (int, float))}
+            packed = json.dumps(slim, ensure_ascii=False, separators=(",", ":"))
+            if packed != row["features_json"]:
+                conn.execute("update entries set features_json=? where rowid=?", (packed, row["rowid"]))
+                rounded += 1
+        conn.commit()
+        report["rounded_features"] = rounded
 
         races_after = conn.execute("select count(distinct race_key) from predictions").fetchone()[0]
         if races_after != races_before:

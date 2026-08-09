@@ -197,11 +197,26 @@ def save_player_profile(conn: sqlite3.Connection, player_id: str, profile: dict,
 
 
 # 予想として保存する必要のないキー。
-# features は完全にモデル内部の中間値で、UIでは一切使われず、
-# 同じ内容が entries.features_json にも入っている(=二重保存)。
-# ranking_json の約4割を占めDB肥大の主因だったため保存対象から外す。
-# 予想そのもの(車番の並び・勝率・印・根拠)は従来どおり全て残す。
-_RANKING_DROP_KEYS = ("features",)
+# いずれも「特徴量を作るための材料」であって予想の中身ではなく、
+# 画面でも使われていない。ranking_json はDB肥大の最大要因なので落とす。
+#   features        : モデル内部の中間値。entries.features_json に同じものがある
+#   position_stats〜venue_stats : 各種集計の材料。features へ畳み込み済み
+#   head_to_head    : 対戦成績の材料。head_to_head_ratio へ畳み込み済み
+#   interview / post_race_comment : スコア化して features に入れた後は不要
+#   line_rank       : ライン順位の中間値。ln_* 特徴へ畳み込み済み
+# 予想そのもの(車番の並び・勝率・印・根拠・コメント・stats)は残す。
+# ※ stats は forecast_view が ranking から読んで出走表と展開に使うため必須。
+_RANKING_DROP_KEYS = (
+    "features",
+    "position_stats",
+    "head_to_head",
+    "track_stats",
+    "hour_stats",
+    "venue_stats",
+    "interview",
+    "post_race_comment",
+    "line_rank",
+)
 
 
 def slim_rankings(rankings: list[dict]) -> list[dict]:

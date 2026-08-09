@@ -5,7 +5,7 @@ import math
 import random
 from pathlib import Path
 
-from keirin_ai.features import FEATURE_NAMES, dot, feature_vector
+from keirin_ai.features import FEATURE_NAMES, MODEL_FEATURE_NAMES, dot, feature_vector
 from keirin_ai.storage import DEFAULT_DB_PATH, connect, training_rows
 
 
@@ -52,7 +52,7 @@ def predict_logit(model: dict | None, features: dict[str, float]) -> float:
         return 0.0
     if model.get("backend") == "lightgbm" and _HAS_LGBM:
         booster = _load_booster(ROOT / model["lgbm_model"])
-        vector = feature_vector(features, model.get("features", FEATURE_NAMES))
+        vector = feature_vector(features, model.get("features", MODEL_FEATURE_NAMES))
         return float(booster.predict([vector], raw_score=True)[0])
     return dot(model.get("weights", {}), features)
 
@@ -62,7 +62,7 @@ def predict_probability(model: dict | None, features: dict[str, float]) -> float
         return 0.5
     if model.get("backend") == "lightgbm" and _HAS_LGBM:
         booster = _load_booster(ROOT / model["lgbm_model"])
-        vector = feature_vector(features, model.get("features", FEATURE_NAMES))
+        vector = feature_vector(features, model.get("features", MODEL_FEATURE_NAMES))
         return float(booster.predict([vector])[0])
     return _sigmoid(predict_logit(model, features))
 
@@ -90,7 +90,7 @@ def _train_lightgbm(rows: list[dict], model_path: Path | str) -> dict:
 
     X_train, y_train, X_valid, y_valid, valid_row_races = [], [], [], [], []
     for row in rows:
-        vector = feature_vector(row["features"], FEATURE_NAMES)
+        vector = feature_vector(row["features"], MODEL_FEATURE_NAMES)
         if row["race_key"] in valid_races:
             X_valid.append(vector)
             y_valid.append(row["label"])
@@ -135,7 +135,7 @@ def _train_lightgbm(rows: list[dict], model_path: Path | str) -> dict:
         "backend": "lightgbm",
         "version": "0.2",
         "target": "win",
-        "features": FEATURE_NAMES,
+        "features": MODEL_FEATURE_NAMES,
         "lgbm_model": str(LGBM_PATH.relative_to(ROOT)).replace("\\", "/"),
         "training": {
             "rows": len(rows),
@@ -171,12 +171,12 @@ def _evaluate_lgbm(booster, X_valid: list, y_valid: list, race_keys: list) -> di
 
 def _importance(booster) -> dict:
     gains = booster.feature_importance(importance_type="gain")
-    pairs = sorted(zip(FEATURE_NAMES, gains), key=lambda item: item[1], reverse=True)
+    pairs = sorted(zip(MODEL_FEATURE_NAMES, gains), key=lambda item: item[1], reverse=True)
     return {name: round(float(gain), 1) for name, gain in pairs[:12]}
 
 
 def _train_logistic(rows: list[dict], model_path: Path | str) -> dict:
-    weights = {name: 0.0 for name in FEATURE_NAMES}
+    weights = {name: 0.0 for name in MODEL_FEATURE_NAMES}
     rng = random.Random(42)
     epochs = 700
     lr = 0.08
@@ -194,7 +194,7 @@ def _train_logistic(rows: list[dict], model_path: Path | str) -> dict:
             p = _sigmoid(dot(weights, features))
             sample_weight = pos_weight if y == 1.0 else 1.0
             error = (p - y) * sample_weight
-            for name in FEATURE_NAMES:
+            for name in MODEL_FEATURE_NAMES:
                 value = float(features.get(name, 0.0))
                 weights[name] -= lr * (error * value + l2 * weights[name])
 
@@ -204,8 +204,8 @@ def _train_logistic(rows: list[dict], model_path: Path | str) -> dict:
         "backend": "linear",
         "version": "0.1",
         "target": "win",
-        "features": FEATURE_NAMES,
-        "weights": {name: round(weights[name], 6) for name in FEATURE_NAMES},
+        "features": MODEL_FEATURE_NAMES,
+        "weights": {name: round(weights[name], 6) for name in MODEL_FEATURE_NAMES},
         "training": {
             "rows": len(rows),
             "races": len({row["race_key"] for row in rows}),
@@ -246,8 +246,8 @@ def _empty_model(reason: str) -> dict:
         "backend": "linear",
         "version": "0.1",
         "target": "win",
-        "features": FEATURE_NAMES,
-        "weights": {name: 0.0 for name in FEATURE_NAMES},
+        "features": MODEL_FEATURE_NAMES,
+        "weights": {name: 0.0 for name in MODEL_FEATURE_NAMES},
         "training": {"rows": 0, "races": 0, "positive_rows": 0, "epochs": 0},
         "metrics": {},
         "warning": reason,

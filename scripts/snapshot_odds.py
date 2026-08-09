@@ -11,6 +11,7 @@ python scripts\\snapshot_odds.py --window 75 --limit 16
 import argparse
 import json
 import re
+import sqlite3
 import sys
 import time
 from datetime import datetime, timedelta, timezone
@@ -29,16 +30,48 @@ JST = timezone(timedelta(hours=9))
 
 
 def _today_forecasts() -> list[dict]:
-    """今日の forecast_*.json から race_key / url / start_time を拾う。"""
+    """今日の対象レース(race_key / url / start_time)を集める。
+
+    朝の予想ファイルを第一候補にするが、無い場合はDBから拾い直す。
+    以前は予想ファイルが唯一の入口だったため、朝の生成に失敗すると
+    その日はオッズ収集も丸ごと止まっていた(2026-08-04〜09に発生)。
+    """
     stamp = datetime.now(JST).strftime("%Y%m%d")
     files = sorted((ROOT / "data").glob(f"forecast_{stamp}_*.json"))
-    if not files:
-        return []
+    if files:
+        try:
+            payload = json.loads(files[-1].read_text(encoding="utf-8"))
+            rows = payload.get("forecasts") or []
+            if rows:
+                return rows
+        except Exception:
+            pass
+    return _today_races_from_db()
+
+
+def _today_races_from_db() -> list[dict]:
+    """予想ファイルが無いときの保険。DBの当日レースから最低限の情報を作る。"""
+    from keirin_ai.storage import connect
+
+    today = datetime.now(JST)
+    patterns = [today.strftime("%Y-%m-%d"), f"{today.year}年{today.month}月{today.day}日"]
+    rows = []
     try:
-        payload = json.loads(files[-1].read_text(encoding="utf-8"))
+        with connect() as conn:
+            conn.row_factory = sqlite3.Row
+            for pat in patterns:
+                found = conn.execute(
+                    "select race_key, source_url, race_date from races where race_date=?",
+                    (pat,),
+                ).fetchall()
+                for r in found:
+                    if r["source_url"]:
+                        rows.append({"race_key": r["race_key"], "url": r["source_url"], "start_time": ""})
+                if rows:
+                    break
     except Exception:
         return []
-    return payload.get("forecasts") or []
+    return rows
 
 
 def _start_dt(start_time: str) -> datetime | None:
