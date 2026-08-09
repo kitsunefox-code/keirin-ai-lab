@@ -196,6 +196,25 @@ def save_player_profile(conn: sqlite3.Connection, player_id: str, profile: dict,
     conn.commit()
 
 
+# 予想として保存する必要のないキー。
+# features は完全にモデル内部の中間値で、UIでは一切使われず、
+# 同じ内容が entries.features_json にも入っている(=二重保存)。
+# ranking_json の約4割を占めDB肥大の主因だったため保存対象から外す。
+# 予想そのもの(車番の並び・勝率・印・根拠)は従来どおり全て残す。
+_RANKING_DROP_KEYS = ("features",)
+
+
+def slim_rankings(rankings: list[dict]) -> list[dict]:
+    """predictions.ranking_json に保存する前に、表示にも検証にも使わない項目を落とす。"""
+    slim = []
+    for row in rankings or []:
+        if isinstance(row, dict):
+            slim.append({k: v for k, v in row.items() if k not in _RANKING_DROP_KEYS})
+        else:
+            slim.append(row)
+    return slim
+
+
 def ensure_odds_snapshot_table(conn: sqlite3.Connection) -> None:
     """発走前オッズの履歴。値付けの歪みを探す研究の土台になる。
 
@@ -578,7 +597,7 @@ def save_race(conn: sqlite3.Connection, race: dict, prediction: dict | None = No
         )
 
     if prediction:
-        rankings = prediction.get("rankings", [])
+        rankings = slim_rankings(prediction.get("rankings", []))
         top_car = rankings[0].get("car_no") if rankings else None
         model = prediction.get("model", {})
         conn.execute(

@@ -79,6 +79,9 @@ jobs:
             python scripts/snapshot_odds.py --window 75 --limit 40 --delay 0.3
           fi
           python scripts/build_static_api.py
+          # DBが100MBを超えるとpushが拒否され自動更新が完全停止する(2026-08-04に発生)。
+          # 80MBを超えていたら毎回ここで圧縮しておく。閾値以下なら何もしない。
+          python scripts/compact_db.py --apply --threshold-mb 80
 
       - name: Commit and push
         run: |
@@ -88,6 +91,13 @@ jobs:
           if git diff --cached --quiet; then
             echo "no changes"
             exit 0
+          fi
+          # push前の最終防衛線。95MBを超えていたら圧縮でも足りていないので、
+          # 拒否される前に気づけるようログへ大きく出す。
+          DB_MB=$(du -m data/keirin_learning.sqlite3 | cut -f1)
+          echo "DB size: ${DB_MB}MB"
+          if [ "$DB_MB" -ge 95 ]; then
+            echo "::warning::DBが${DB_MB}MB。GitHubの上限100MBに接近しています(超えるとpushが拒否され自動更新が止まります)"
           fi
           git commit -m "Cloud update (${{ steps.mode.outputs.mode }}) $(TZ=Asia/Tokyo date '+%Y-%m-%d %H:%M')"
           for i in 1 2 3; do
