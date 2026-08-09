@@ -5,6 +5,7 @@ import math
 
 from keirin_ai.emotion import analyze_comment
 from keirin_ai.features import build_feature_row
+from keirin_ai.line_model import stage2_features
 from keirin_ai.learner import load_model, predict_logit, predict_probability
 
 
@@ -27,10 +28,22 @@ def predict_race(race: dict, use_learning: bool = True) -> dict:
 
     learned_model = load_model() if use_learning else None
     _attach_line_ranks(race)
+
+    # 1段目: ライン模型で「どのラインが勝者を出すか」を先に見積もり、
+    # その確率を各選手の特徴量へ足してから2段目(選手模型)に渡す。
+    emotions = {int(e.get("car_no") or 0): analyze_comment(e.get("comment")) for e in entrants}
+    base_features = {
+        int(e.get("car_no") or 0): build_feature_row(race, e, emotions[int(e.get("car_no") or 0)])
+        for e in entrants
+    }
+    stage2 = stage2_features(base_features)
+
     scored = []
     for entrant in entrants:
-        emotion = analyze_comment(entrant.get("comment"))
-        features = build_feature_row(race, entrant, emotion)
+        car_no = int(entrant.get("car_no") or 0)
+        emotion = emotions[car_no]
+        features = base_features[car_no]
+        features.update(stage2.get(car_no, {}))
         baseline = _baseline_score(entrant, emotion, race)
         learned_logit = predict_logit(learned_model, features) if learned_model else 0.0
         learned_prob = predict_probability(learned_model, features) if learned_model else None

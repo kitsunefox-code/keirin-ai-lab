@@ -6,6 +6,12 @@ import random
 from pathlib import Path
 
 from keirin_ai.features import FEATURE_NAMES, MODEL_FEATURE_NAMES, dot, feature_vector
+from keirin_ai.line_model import (
+    LINE_MODEL_PATH,
+    STAGE2_FEATURE_NAMES,
+    stage2_features,
+    train_line_model,
+)
 from keirin_ai.storage import DEFAULT_DB_PATH, connect, training_rows
 
 
@@ -78,8 +84,59 @@ def train_win_model(db_path: Path | str = DEFAULT_DB_PATH, model_path: Path | st
 
     race_count = len({row["race_key"] for row in rows})
     if _HAS_LGBM and race_count >= LGBM_MIN_RACES:
+        _train_and_attach_line_stage(rows)
         return _train_lightgbm(rows, model_path)
     return _train_logistic(rows, model_path)
+
+
+def _train_and_attach_line_stage(rows: list[dict], folds: int = 4) -> None:
+    """1段目のライン模型を学習し、その確率を各行の特徴量へ足す。
+
+    学習データに渡す確率は out-of-fold で作る。同じデータで学習した模型の
+    出力をそのまま特徴量にすると、ライン確率が答えを覚えてしまい、
+    見かけの成績だけが良くなるため。
+    """
+    by_race: dict[str, list[dict]] = {}
+    for row in rows:
+        by_race.setdefault(row["race_key"], []).append(row)
+
+    races = []
+    for key, members in by_race.items():
+        fbc = {int(m["car_no"] or 0): m["features"] for m in members}
+        winner = next((int(m["car_no"] or 0) for m in members if m.get("label") == 1), None)
+        races.append({"race_key": key, "features_by_car": fbc, "winner": winner})
+
+    labelled = [r for r in races if r["winner"]]
+    if len(labelled) < 200:
+        # 材料が足りないときは s2_* を0のままにする(模型なしと同じ扱い)
+        for row in rows:
+            row["features"].update({name: 0.0 for name in STAGE2_FEATURE_NAMES})
+        return
+
+    # out-of-fold で学習データ側の確率を作る
+    keys = sorted(r["race_key"] for r in labelled)
+    fold_of = {k: i % folds for i, k in enumerate(keys)}
+    for f in range(folds):
+        subset = [r for r in labelled if fold_of[r["race_key"]] != f]
+        booster = train_line_model(subset, model_path=LINE_MODEL_PATH.with_suffix(".fold.txt"))
+        if booster is None:
+            continue
+        for race in (r for r in races if fold_of.get(r["race_key"]) == f):
+            s2 = stage2_features(race["features_by_car"], model=booster)
+            for member in by_race[race["race_key"]]:
+                member["features"].update(s2.get(int(member["car_no"] or 0), {}))
+
+    # 本番用は全期間で学習して保存する(予想時にはこれを使う)
+    train_line_model(labelled, model_path=LINE_MODEL_PATH)
+
+    # foldに割り当てられなかった行(勝者不明など)は0で埋める
+    for row in rows:
+        for name in STAGE2_FEATURE_NAMES:
+            row["features"].setdefault(name, 0.0)
+    try:
+        LINE_MODEL_PATH.with_suffix(".fold.txt").unlink(missing_ok=True)
+    except Exception:
+        pass
 
 
 def _train_lightgbm(rows: list[dict], model_path: Path | str) -> dict:

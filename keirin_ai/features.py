@@ -85,7 +85,13 @@ LINE_FEATURE_NAMES = [
 MARK_FEATURE_NAMES = ["ai_honmei", "ai_taiko", "ai_tanana", "ai_renshita"]
 
 # 実際にモデルへ渡す特徴量
-MODEL_FEATURE_NAMES = [n for n in FEATURE_NAMES if n not in MARK_FEATURE_NAMES] + LINE_FEATURE_NAMES
+# 2段目(ライン模型の出力)。line_model.STAGE2_FEATURE_NAMES と同じ並びにする。
+# ここで直接importすると循環参照になるため名前だけ持つ。
+STAGE2_FEATURE_NAMES = ["s2_line_win_p", "s2_line_rank", "s2_line_p_x_head", "s2_line_p_x_bante"]
+
+MODEL_FEATURE_NAMES = (
+    [n for n in FEATURE_NAMES if n not in MARK_FEATURE_NAMES] + LINE_FEATURE_NAMES + STAGE2_FEATURE_NAMES
+)
 
 
 def build_feature_row(race: dict, entrant: dict, emotion: dict | None = None) -> dict[str, float]:
