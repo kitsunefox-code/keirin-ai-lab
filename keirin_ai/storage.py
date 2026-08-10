@@ -140,6 +140,11 @@ def _migrate_columns(conn: sqlite3.Connection) -> None:
         ("weather_json", "text"),
         ("payouts_json", "text"),
         ("latest_odds_json", "text"),  # 発走前の2車単オッズのスナップショット(妙味=EV計算用)
+        # レースの段階と勝ち上がり条件。決勝や勝ち上がりのかかった一戦と、
+        # 何もかからない敗者戦とでは選手の本気度が違う。
+        ("race_stage", "text"),
+        ("advancement_text", "text"),
+        ("is_grade_race", "integer"),
     ):
         if column not in race_columns:
             conn.execute(f"alter table races add column {column} {ddl}")
@@ -512,8 +517,9 @@ def save_race(conn: sqlite3.Connection, race: dict, prediction: dict | None = No
         insert into races (
             race_key, source_name, source_url, title, venue, event, race_no, race_class,
             race_date, weather, lineup_json, result_json, raw_quality_json, fetched_at,
-            race_class_official, venue_id, hour_type, weather_json
-        ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            race_class_official, venue_id, hour_type, weather_json,
+            race_stage, advancement_text, is_grade_race
+        ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         on conflict(race_key) do update set
             source_name=excluded.source_name,
             source_url=excluded.source_url,
@@ -531,7 +537,10 @@ def save_race(conn: sqlite3.Connection, race: dict, prediction: dict | None = No
             race_class_official=coalesce(nullif(excluded.race_class_official, ''), races.race_class_official),
             venue_id=coalesce(nullif(excluded.venue_id, ''), races.venue_id),
             hour_type=coalesce(nullif(excluded.hour_type, ''), races.hour_type),
-            weather_json=coalesce(nullif(excluded.weather_json, ''), races.weather_json)
+            weather_json=coalesce(nullif(excluded.weather_json, ''), races.weather_json),
+            race_stage=coalesce(nullif(excluded.race_stage, ''), races.race_stage),
+            advancement_text=coalesce(nullif(excluded.advancement_text, ''), races.advancement_text),
+            is_grade_race=coalesce(excluded.is_grade_race, races.is_grade_race)
         """,
         (
             key,
@@ -552,6 +561,9 @@ def save_race(conn: sqlite3.Connection, race: dict, prediction: dict | None = No
             str((race.get("bank") or {}).get("venue_id") or ""),
             str(race.get("hour_type") or ""),
             _dump(race.get("weather_info")) if race.get("weather_info") else "",
+            str(race.get("race_stage") or ""),
+            str(race.get("advancement_text") or ""),
+            1 if race.get("is_grade_race") else 0,
         ),
     )
 

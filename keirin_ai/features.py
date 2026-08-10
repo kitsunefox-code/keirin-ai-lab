@@ -48,6 +48,16 @@ FEATURE_NAMES = [
     "exf_compete_has",
     "exf_attack_count",
     "exf_split_line_z",
+    # レースに何がかかっているか。勝ち上がりのかかった予選・準決勝は堅く、
+    # 何もかからない特選・選抜は荒れる(2,613レースで実測)。
+    # 数値化されにくい「本気度」なので、市場にも織り込まれにくい。
+    "st_final",
+    "st_semifinal",
+    "st_heat",
+    "st_special",
+    "st_general",
+    "st_has_advance",
+    "st_grade_race",
     "recent_top3",
     "recent_avg_finish",
     "partner_top3_rate",
@@ -169,6 +179,7 @@ def build_feature_row(race: dict, entrant: dict, emotion: dict | None = None) ->
     }
     row.update(build_line_row(race, car_no))
     row.update(build_ex_row(race, entrant))
+    row.update(build_stage_row(race))
     # 印(ai_*)も保存はする。学習に使うかは MODEL_FEATURE_NAMES 側で決める。
     # 4桁に丸める: 勾配ブースティングにそれ以上の精度は不要で、
     # 0.012999999999999545 のような値をそのまま保存するとDBが無駄に膨らむ。
@@ -283,6 +294,47 @@ FEATURE_DEFAULTS: dict[str, float] = {
 def feature_vector(features: dict[str, float], names: list[str] = FEATURE_NAMES) -> list[float]:
     """特徴量dictを固定順ベクトルへ。欠損は中立デフォルト(なければ0)で埋める。"""
     return [float(features.get(name, FEATURE_DEFAULTS.get(name, 0.0))) for name in names]
+
+
+def classify_stage(stage: str) -> str:
+    """レースの段階をまとめる。表記ゆれ(チ予選=チャレンジ予選など)を吸収する。"""
+    s = str(stage or "")
+    # 「準決勝」は「決勝」を含むので、必ず準決を先に判定する
+    if "準決" in s:
+        return "準決勝"
+    if "決勝" in s:
+        return "決勝"
+    if "予選" in s or "予１" in s or "予2" in s or "予２" in s:
+        return "予選"
+    if "特選" in s:
+        return "特選"
+    if "選抜" in s:
+        return "選抜"
+    if "一般" in s:
+        return "一般"
+    return "その他"
+
+
+# 予想が当たりやすい段階(勝ち上がりや優勝がかかっていて、実力どおりに決まりやすい)。
+# 2,613レースの実測では 2車単的中率が
+#   予選 34.7% / 準決勝 33.6% / 決勝 29.9% に対し、
+#   一般 24.7% / 選抜 20.6% / 特選 16.8% と2倍以上の開きがあった。
+RELIABLE_STAGES = ("予選", "準決勝", "決勝")
+VOLATILE_STAGES = ("特選", "選抜")
+
+
+def build_stage_row(race: dict) -> dict[str, float]:
+    """レースに何がかかっているかを数値にする。"""
+    group = classify_stage(race.get("race_stage"))
+    return {
+        "st_final": 1.0 if group == "決勝" else 0.0,
+        "st_semifinal": 1.0 if group == "準決勝" else 0.0,
+        "st_heat": 1.0 if group == "予選" else 0.0,
+        "st_special": 1.0 if group == "特選" else 0.0,
+        "st_general": 1.0 if group in ("一般", "選抜") else 0.0,
+        "st_has_advance": 1.0 if str(race.get("advancement_text") or "").strip() else 0.0,
+        "st_grade_race": 1.0 if race.get("is_grade_race") else 0.0,
+    }
 
 
 _EX_FIELDS = {

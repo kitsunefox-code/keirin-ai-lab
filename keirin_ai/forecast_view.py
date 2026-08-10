@@ -196,6 +196,11 @@ def _enrich_forecast(conn, forecast: dict) -> dict:
         "bank": bank,
         "hour_type": hour_type,
         "hour_label": HOUR_LABELS.get(hour_type, ""),
+        # レースの段階(予選/準決勝/決勝/特選/一般)。
+        # 何がかかっているかで当たりやすさが大きく変わるため、
+        # 運用側のレース選別でも参照する。
+        "race_stage": race.get("race_stage") or "",
+        "advancement_text": race.get("advancement_text") or "",
         "weather": weather,
         "notes": _notes(forecast.get("notes", []), prediction),
     }
@@ -298,7 +303,8 @@ def _race_record(conn, race_key: str) -> dict:
         """
         select race_key, source_url, title, venue, event, race_no, race_class,
                race_date, lineup_json, raw_quality_json, race_class_official,
-               venue_id, hour_type, weather_json, latest_odds_json
+               venue_id, hour_type, weather_json, latest_odds_json,
+               race_stage, advancement_text, is_grade_race
         from races
         where race_key=?
         """,

@@ -119,6 +119,18 @@ def enrich_race_from_state(race: dict, html_text: str) -> dict:
         race["race_class_official"] = race_class_official
     race["is_girls"] = is_girls
 
+    # レースの段階(予選/準決勝/決勝/一般/選抜 など)と勝ち上がり条件。
+    # これまで class を優先して raceType3 を捨てていたが、
+    # 「このレースに何がかかっているか」は選手の本気度を左右する。
+    # 決勝や勝ち上がりのかかった予選と、何もかからない敗者戦・一般戦とでは
+    # 走りの本気度が違う、というのは競輪では常識でありながら
+    # 数値化されにくいため、モデルにも市場にも織り込まれにくい。
+    race["race_stage"] = str(race_meta.get("raceType3") or "")
+    race["advancement_text"] = str(race_meta.get("advancementConditionText") or "")
+    race["is_grade_race"] = bool(race_meta.get("isGradeRace"))
+    if race_meta.get("entriesNumber"):
+        race["entries_number"] = int(race_meta.get("entriesNumber") or 0)
+
     ids_in_race = {str(entrant.get("player_id") or "") for entrant in race.get("entrants", []) if entrant.get("player_id")}
     head_to_head = _head_to_head_within_race(common.get("competitionRecords") or [], ids_in_race, name_by_player)
     if head_to_head:
