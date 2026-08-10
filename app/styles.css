@@ -2393,6 +2393,54 @@ h4 {
   background: #f7f7fa;
 }
 
+/* ライン(隊列)の結線。競輪はライン単位で決まるので、
+   誰と誰が組んでいるかが見えないと展開が読めない。
+   ちぎれたら線が消えるようにして「離れた」ことも伝える。 */
+.motion-line-bond {
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.5;
+}
+.motion-line-bond.line-color-1 { stroke: #5ee6a8; }
+.motion-line-bond.line-color-2 { stroke: #6ea8ff; }
+.motion-line-bond.line-color-3 { stroke: #f4c95d; }
+.motion-line-bond.line-color-4 { stroke: #b18cff; }
+.motion-line-bond.line-color-5 { stroke: #ff6678; }
+
+.motion-rider .rider-no {
+  font-size: 8px;
+  font-weight: 800;
+  pointer-events: none;
+}
+.motion-rider .rider-name {
+  fill: var(--color-text);
+  font-size: 8px;
+  font-weight: 700;
+  paint-order: stroke;
+  stroke: rgba(8, 11, 16, 0.85);
+  stroke-width: 2.5px;
+  pointer-events: none;
+}
+/* 前へ出ている選手の速度線。仕掛けどころが一目で分かる */
+.motion-rider .rider-dash {
+  fill: #fff;
+  transition: opacity 90ms linear;
+}
+
+/* スマホではSVGが約半分に縮み、選手名が実効4px以下になって読めない。
+   潰れた文字を出すより消したほうが見やすいので、車番だけ残す。 */
+@media (max-width: 768px) {
+  .motion-rider .rider-name { display: none; }
+  /* SVGが約半分に縮むので、SVG座標で12pxにして実効6px前後を確保する。
+     競輪は車番の色で見分けるのが基本なので、色の面積も併せて大きくする。 */
+  /* 丸を大きくすると接戦時に重なって隊列が読めなくなるため、
+     半径は据え置き(最小車間12.2に対し直径11.2)で文字だけ拡大する。 */
+  .motion-rider .rider-no { font-size: 11px; }
+  .motion-line-bond { stroke-width: 3.5; opacity: 0.65; }
+}
+
 .motion-svg .bank-track {
   fill: #9ba0a8;
   stroke: #82868e;

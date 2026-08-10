@@ -1237,8 +1237,22 @@ function startRaceMotion(raceKey, race, stage, planOverride) {
     caption.textContent = "出走データが足りないため再生できません";
     return;
   }
-  svg.innerHTML = motionTrackSvg() + motionPacerSvg() + plan.cars.map((car) => motionRiderSvg(car)).join("");
+  // 隊列(ライン)を線で結ぶ。競輪はライン単位で決まる競技なので、
+  // 誰と誰が組んでいるのかが見えないと展開が読み取れない。
+  const lineup = (race?.lineup || []).map((line) => line.map(Number).filter((c) => plan.cars.includes(c)));
+  const nameOf = new Map((race?.entries || []).map((e) => [Number(e.car_no), e.name || ""]));
+  const lineBonds = lineup
+    .map((line, idx) => `<polyline data-line="${idx}" class="motion-line-bond line-color-${(idx % 5) + 1}" points="" />`)
+    .join("");
+
+  svg.innerHTML =
+    motionTrackSvg() +
+    lineBonds +
+    motionPacerSvg() +
+    plan.cars.map((car) => motionRiderSvg(car, nameOf.get(car))).join("");
   const riders = new Map(plan.cars.map((car) => [car, svg.querySelector(`[data-rider="${car}"]`)]));
+  const bonds = lineup.map((_, idx) => svg.querySelector(`[data-line="${idx}"]`));
+  const coords = new Map(); // 各車の現在座標。ライン結線に使う
   const pacer = svg.querySelector('[data-rider="__pacer__"]');
   // 残り周回カウンタ(実際のレースと同じく 青板=残り3周 / 赤板=残り2周 / 打鐘=残り1周半)
   let lapCounter = stage.querySelector(".lap-counter");
@@ -1250,6 +1264,7 @@ function startRaceMotion(raceKey, race, stage, planOverride) {
 
   const started = performance.now();
   const gapStep = 0.014; // 車間(周回の割合)
+  const lastGap = new Map(); // 直前の車間。前へ出ている選手に速度線を出すのに使う
   const PACER_RETREAT = MOTION.bellLap - 0.25; // 先頭誘導員は打鐘の少し前に退避する
 
   const positionAt = (car, coveredLaps) => {
@@ -1300,6 +1315,41 @@ function startRaceMotion(raceKey, race, stage, planOverride) {
       const x = point.x + point.nx * outside;
       const y = point.y + point.ny * outside;
       node.setAttribute("transform", `translate(${x.toFixed(1)}, ${y.toFixed(1)})`);
+      coords.set(car, { x, y });
+
+      // 車体を進行方向へ向ける。少し先の座標との差から角度を出す。
+      const ahead = bankPointAt(covered - gap + 0.004);
+      const angle = (Math.atan2(ahead.y - point.y, ahead.x - point.x) * 180) / Math.PI;
+      const body = node.querySelector(".rider-body");
+      if (body) body.setAttribute("transform", `rotate(${angle.toFixed(1)})`);
+
+      // 仕掛け(順位を上げている最中)は速度線を出して見せ場を作る
+      const prev = lastGap.get(car);
+      lastGap.set(car, gap);
+      const dash = node.querySelector(".rider-dash");
+      if (dash && prev !== undefined) {
+        // gapが小さくなる=前へ出ている
+        const surge = Math.max(0, (prev - gap) * 260);
+        dash.setAttribute("opacity", String(Math.min(0.85, surge)));
+      }
+    });
+
+    // ラインを線で結ぶ。前の選手から後ろへ順に繋ぐ。
+    bonds.forEach((bond, idx) => {
+      if (!bond) return;
+      const pts = (lineup[idx] || [])
+        .map((car) => coords.get(car))
+        .filter(Boolean)
+        .map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`);
+      // 隊列が崩れて離れたら線を消す(ちぎれたことが見えるように)
+      const members = (lineup[idx] || []).map((car) => coords.get(car)).filter(Boolean);
+      let broken = false;
+      for (let i = 0; i < members.length - 1; i += 1) {
+        const dx = members[i].x - members[i + 1].x;
+        const dy = members[i].y - members[i + 1].y;
+        if (Math.hypot(dx, dy) > 46) broken = true;
+      }
+      bond.setAttribute("points", pts.length >= 2 && !broken ? pts.join(" ") : "");
     });
     // 先頭誘導員: 隊列の少し前を走り、打鐘前に外へ膨れて退避する(実レースの流れ)
     if (pacer) {
@@ -1400,11 +1450,18 @@ function playBellSound() {
   }
 }
 
-function motionRiderSvg(car) {
+function motionRiderSvg(car, name = "") {
   const [fill, text] = CAR_COLORS[car] || ["#8d8f97", "#ffffff"];
+  // 車体は進行方向へ向ける(内側の g だけ回す)。名前は常に水平に保つため外に出す。
+  const label = name ? `<text class="rider-name" y="-13" text-anchor="middle">${escapeHtml(name.slice(0, 4))}</text>` : "";
   return `<g data-rider="${car}" class="motion-rider">
-    <circle r="8" fill="${fill}" stroke="#18181a" stroke-width="1.1" />
-    <text y="3.2" text-anchor="middle" fill="${text}" font-size="9" font-weight="700">${car}</text>
+    <g class="rider-body">
+      <ellipse class="rider-dash" rx="16" ry="3.4" cx="-12" opacity="0" />
+      <rect class="rider-frame" x="-7" y="-2.2" width="14" height="4.4" rx="2.2" fill="${fill}" stroke="#18181a" stroke-width="1" />
+      <circle class="rider-head" r="5.6" fill="${fill}" stroke="#18181a" stroke-width="1.1" />
+      <text class="rider-no" y="2.2" text-anchor="middle" fill="${text}">${car}</text>
+    </g>
+    ${label}
   </g>`;
 }
 
