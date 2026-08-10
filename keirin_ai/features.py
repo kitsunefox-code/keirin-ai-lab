@@ -129,6 +129,42 @@ MODEL_FEATURE_NAMES = (
     [n for n in FEATURE_NAMES if n not in MARK_FEATURE_NAMES] + LINE_FEATURE_NAMES + STAGE2_FEATURE_NAMES
 )
 
+# entries.features_json に保存するときの並び。値だけを並べた配列で保存する。
+STORED_FEATURE_NAMES = FEATURE_NAMES + LINE_FEATURE_NAMES
+
+
+def encode_features(features: dict[str, float]) -> str:
+    """特徴量を保存用の文字列にする。
+
+    {"racing_score": 0.13, ...} のまま保存すると、1行あたり1.3KB近くが
+    キー名で占められる(88項目 × 約15文字)。18,801行では24MB相当になり、
+    DBがGitHubの100MB制限に当たって自動更新が止まる原因になっていた。
+    並び順を固定して値だけを保存すればキー名がまるごと不要になる。
+    """
+    import json as _json
+
+    return _json.dumps(
+        [round(float(features.get(name, 0.0)), 4) for name in STORED_FEATURE_NAMES],
+        separators=(",", ":"),
+    )
+
+
+def decode_features(raw: str | None) -> dict[str, float]:
+    """保存された特徴量を辞書に戻す。旧形式(キー付き)もそのまま読める。"""
+    import json as _json
+
+    if not raw:
+        return {}
+    try:
+        data = _json.loads(raw)
+    except Exception:
+        return {}
+    if isinstance(data, dict):
+        return data  # 旧形式
+    if isinstance(data, list):
+        return {name: float(v) for name, v in zip(STORED_FEATURE_NAMES, data)}
+    return {}
+
 
 def build_feature_row(race: dict, entrant: dict, emotion: dict | None = None) -> dict[str, float]:
     stats = entrant.get("stats", {})
@@ -372,6 +408,30 @@ def classify_stage(stage: str) -> str:
 #   一般 24.7% / 選抜 20.6% / 特選 16.8% と2倍以上の開きがあった。
 RELIABLE_STAGES = ("予選", "準決勝", "決勝")
 VOLATILE_STAGES = ("特選", "選抜")
+
+# レースの「読みやすさ」の目安。2,618レースの実測(2車単的中率)に基づく。
+# 買うレースを選ぶときの優先度に使う。数字が大きいほど当たりやすい。
+#   ガールズ 44.8%(ラインを組まないので展開の綾が少ない)
+#   予選 34.7% / 準決勝 33.6%(勝ち上がりがかかり実力どおりに決まる)
+#   決勝 29.9% / 一般 24.7%
+#   選抜 20.6% / 特選 16.8%(かかるものが少なく荒れる)
+STAGE_RELIABILITY = {
+    "予選": 0.35,
+    "準決勝": 0.34,
+    "決勝": 0.30,
+    "一般": 0.25,
+    "選抜": 0.21,
+    "特選": 0.17,
+    "その他": 0.26,
+}
+GIRLS_RELIABILITY = 0.45
+
+
+def race_reliability(race: dict) -> float:
+    """このレースの読みやすさ(2車単的中率の目安)。買う順番を決めるのに使う。"""
+    if race.get("is_girls"):
+        return GIRLS_RELIABILITY
+    return STAGE_RELIABILITY.get(classify_stage(race.get("race_stage")), 0.26)
 
 
 def build_stage_row(race: dict) -> dict[str, float]:

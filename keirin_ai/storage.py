@@ -7,7 +7,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from keirin_ai.emotion import analyze_comment
-from keirin_ai.features import build_feature_row
+from keirin_ai.features import build_feature_row, decode_features, encode_features
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -620,7 +620,7 @@ def save_race(conn: sqlite3.Connection, race: dict, prediction: dict | None = No
                 entrant.get("gear"),
                 _excerpt(entrant.get("comment")),
                 _dump(emotion),
-                _dump(features),
+                encode_features(features),
                 finish_position,
                 1 if finish_position == 1 else (0 if finish_position else None),
                 now,
@@ -679,7 +679,7 @@ def training_rows(conn: sqlite3.Connection) -> list[dict]:
             "race_key": row["race_key"],
             "car_no": row["car_no"],
             "name": row["name"],
-            "features": json.loads(row["features_json"]),
+            "features": decode_features(row["features_json"]),
             "finish_position": row["finish_position"],
             "label": int(row["is_win"] or 0),
         }
