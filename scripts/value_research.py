@@ -55,35 +55,46 @@ def _calibrated(scores: list[float]) -> list[float]:
     return [e / total for e in exps] if total > 0 else []
 
 
-def load(conn: sqlite3.Connection, *, max_minutes_to_post: int | None = None) -> list[dict]:
+def load(conn: sqlite3.Connection, *, max_minutes_to_post: int | None = None, source: str = "any") -> list[dict]:
     """研究用データを読み出す。
+
+    source:
+      "pre"   発走前に取得したスナップショットだけを使う(実運用に近い)
+      "final" 確定後に取り込んだ全通りオッズだけを使う(過去分の一括取込)
+      "any"   両方。発走前があればそちらを優先する
 
     max_minutes_to_post を指定すると、発走までの残り時間がその範囲内で
     最も締切に近い1枚(=市場の最終結論に近いオッズ)だけを使う。
+
+    ⚠️ "final" は買う時点では分からない値なので、これで買い目を選ぶ検証は
+    現実より有利に出る。実運用の判断材料にはしないこと。
+    確定後の取込は minutes_to_post = -1 で目印を付けてある。
     """
-    # 履歴から1レース1枚を選ぶ。締切に近いものを優先し、残り分数不明は最後に回す
-    if max_minutes_to_post is None:
-        pick = """
-            select race_key, exacta_json,
-                   row_number() over (
-                       partition by race_key
-                       order by case when minutes_to_post is null then 1 else 0 end,
-                                minutes_to_post asc, taken_at desc
-                   ) as rn
-            from odds_snapshots
-        """
-        params: tuple = ()
-    else:
-        pick = """
-            select race_key, exacta_json,
-                   row_number() over (
-                       partition by race_key
-                       order by minutes_to_post asc, taken_at desc
-                   ) as rn
-            from odds_snapshots
-            where minutes_to_post is not null and minutes_to_post <= ?
-        """
-        params = (max_minutes_to_post,)
+    where = []
+    params: list = []
+    if source == "pre":
+        where.append("minutes_to_post is not null and minutes_to_post >= 0")
+    elif source == "final":
+        where.append("minutes_to_post = -1")
+    if max_minutes_to_post is not None:
+        where.append("minutes_to_post is not null and minutes_to_post >= 0 and minutes_to_post <= ?")
+        params.append(max_minutes_to_post)
+    cond = ("where " + " and ".join(where)) if where else ""
+
+    # 1レース1枚を選ぶ。発走前のものを優先し、その中では締切に近い順。
+    # 確定後の取込(-1)は最後に回す。
+    pick = f"""
+        select race_key, exacta_json,
+               row_number() over (
+                   partition by race_key
+                   order by case when minutes_to_post is null then 2
+                                 when minutes_to_post < 0 then 1
+                                 else 0 end,
+                            minutes_to_post asc, taken_at desc
+               ) as rn
+        from odds_snapshots
+        {cond}
+    """
 
     rows = conn.execute(
         f"""
@@ -99,7 +110,7 @@ def load(conn: sqlite3.Connection, *, max_minutes_to_post: int | None = None) ->
         where r.payouts_json is not null
           and r.result_json is not null
         """,
-        params,
+        tuple(params),
     ).fetchall()
 
     races = []
@@ -237,11 +248,23 @@ def show(title: str, rows: list[tuple[str, dict]]) -> None:
 
 
 def main() -> None:
+    import argparse
+
     from keirin_ai.storage import connect
+
+    ap = argparse.ArgumentParser(description="市場の値付けに歪みがあるかを検証する。")
+    ap.add_argument(
+        "--source",
+        default="any",
+        choices=["any", "pre", "final"],
+        help="pre=発走前のみ / final=確定後の一括取込のみ / any=両方(発走前優先)",
+    )
+    args = ap.parse_args()
 
     with connect() as conn:
         conn.row_factory = sqlite3.Row
-        races = load(conn)
+        races = load(conn, source=args.source)
+    print(f"オッズの出所: {args.source}")
 
     if len(races) < 50:
         print(f"検証可能なレースが少なすぎます({len(races)}R)")
