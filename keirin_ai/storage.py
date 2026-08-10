@@ -148,6 +148,10 @@ def _migrate_columns(conn: sqlite3.Connection) -> None:
     ):
         if column not in race_columns:
             conn.execute(f"alter table races add column {column} {ddl}")
+    # 競輪場の所在県。選手の出身県と一致すれば「地元」と判定する。
+    venue_columns = {row["name"] for row in conn.execute("pragma table_info(venues)").fetchall()}
+    if "prefecture" not in venue_columns:
+        conn.execute("alter table venues add column prefecture text")
 
 
 def ensure_player_profile_table(conn: sqlite3.Connection) -> None:
@@ -350,11 +354,12 @@ def save_venue(conn: sqlite3.Connection, venue: dict) -> None:
         insert into venues (
             venue_id, name, slug, track_distance, straight, angle_center, angle_straight,
             home_width, back_width, center_width, is_indoor, kimarite_json, bank_bias,
-            bank_feature, updated_at
-        ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            bank_feature, updated_at, prefecture
+        ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         on conflict(venue_id) do update set
             name=coalesce(nullif(excluded.name, ''), venues.name),
             slug=coalesce(nullif(excluded.slug, ''), venues.slug),
+            prefecture=coalesce(nullif(excluded.prefecture, ''), venues.prefecture),
             track_distance=coalesce(excluded.track_distance, venues.track_distance),
             straight=coalesce(excluded.straight, venues.straight),
             angle_center=coalesce(nullif(excluded.angle_center, ''), venues.angle_center),

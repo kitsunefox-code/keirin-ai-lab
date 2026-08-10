@@ -245,6 +245,8 @@ def venue_details(venue: dict) -> dict:
         "venue_id": str(venue.get("id") or ""),
         "name": venue.get("name") or "",
         "slug": venue.get("slug") or "",
+        # 開催場の所在県。選手の出身県と一致すれば「地元」。
+        "prefecture": venue.get("prefecture") or "",
         "track_distance": venue.get("trackDistance"),
         "straight": venue.get("trackStraightDistance"),
         "angle_center": venue.get("trackAngleCenter"),

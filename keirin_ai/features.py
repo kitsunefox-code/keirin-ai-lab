@@ -58,6 +58,15 @@ FEATURE_NAMES = [
     "st_general",
     "st_has_advance",
     "st_grade_race",
+    # 地元と級班。どちらも「気持ちの入り方」と「力の差」に効く。
+    # 地元選手の1着率19.4%(それ以外13.9%)、レース内で最上位級班の
+    # 1着率19.6%(最下位9.5%)と、いずれも実測で明確な差がある。
+    "ps_home",
+    "ps_home_ratio",
+    "ps_class_value",
+    "ps_class_z",
+    "ps_class_top",
+    "ps_class_bottom",
     "recent_top3",
     "recent_avg_finish",
     "partner_top3_rate",
@@ -180,6 +189,7 @@ def build_feature_row(race: dict, entrant: dict, emotion: dict | None = None) ->
     row.update(build_line_row(race, car_no))
     row.update(build_ex_row(race, entrant))
     row.update(build_stage_row(race))
+    row.update(build_psychology_row(race, entrant))
     # 印(ai_*)も保存はする。学習に使うかは MODEL_FEATURE_NAMES 側で決める。
     # 4桁に丸める: 勾配ブースティングにそれ以上の精度は不要で、
     # 0.012999999999999545 のような値をそのまま保存するとDBが無駄に膨らむ。
@@ -294,6 +304,47 @@ FEATURE_DEFAULTS: dict[str, float] = {
 def feature_vector(features: dict[str, float], names: list[str] = FEATURE_NAMES) -> list[float]:
     """特徴量dictを固定順ベクトルへ。欠損は中立デフォルト(なければ0)で埋める。"""
     return [float(features.get(name, FEATURE_DEFAULTS.get(name, 0.0))) for name in names]
+
+
+# 級班の格。上ほど強い。ガールズ(L)は男子と別体系なので中庸に置く。
+CLASS_VALUE = {"S1": 5.0, "S2": 4.0, "A1": 3.0, "A2": 2.0, "A3": 1.0, "L1": 2.5}
+
+
+def build_psychology_row(race: dict, entrant: dict) -> dict[str, float]:
+    """地元かどうかと、レース内での級班の位置を数値にする。
+
+    どちらも「公開情報だが数値化されていない」たぐいの材料で、
+    実測では1着率にはっきり差が出る:
+      地元 19.4% / それ以外 13.9%
+      レース内で最上位の級班 19.6% / 中間 14.3% / 最下位 9.5%
+    """
+    entrants = race.get("entrants") or []
+    venue_pref = str((race.get("bank") or {}).get("prefecture") or "")
+
+    def is_home(e: dict) -> float:
+        pref = str(e.get("prefecture") or "").strip()
+        return 1.0 if (venue_pref and pref and pref in venue_pref) else 0.0
+
+    homes = [is_home(e) for e in entrants] or [0.0]
+    values = [CLASS_VALUE.get(str(e.get("class") or "").strip().upper(), 0.0) for e in entrants]
+    known = [v for v in values if v > 0]
+    mean = sum(known) / len(known) if known else 0.0
+    sd = (sum((v - mean) ** 2 for v in known) / len(known)) ** 0.5 if known else 0.0
+    # 級班が全員同じレース(チャレンジ戦など)では「最上位」に意味が無い。
+    # 差があるレースでだけフラグを立てないと、全員が最上位かつ最下位になる。
+    mixed = len(set(known)) > 1
+    top = max(known) if known else 0.0
+    bottom = min(known) if known else 0.0
+
+    mine = CLASS_VALUE.get(str(entrant.get("class") or "").strip().upper(), 0.0)
+    return {
+        "ps_home": is_home(entrant),
+        "ps_home_ratio": sum(homes) / len(homes),
+        "ps_class_value": mine / 5.0,
+        "ps_class_z": ((mine - mean) / sd) if (sd > 0 and mine > 0) else 0.0,
+        "ps_class_top": 1.0 if (mixed and mine > 0 and mine == top) else 0.0,
+        "ps_class_bottom": 1.0 if (mixed and mine > 0 and mine == bottom) else 0.0,
+    }
 
 
 def classify_stage(stage: str) -> str:
