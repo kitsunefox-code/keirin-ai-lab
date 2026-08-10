@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at_jst": "2026-08-10T23:41:53+09:00",
+  "generated_at_jst": "2026-08-11T00:35:39+09:00",
   "rules": [
     "全額転がしは行いません(1レース投資は残高の上限%まで)",
     "負けた後の倍賭け(マーチンゲール)は行いません",
@@ -140,14 +140,14 @@
   "proposal": null,
   "judged_races": [],
   "yesterday": {
-    "date": "2026-08-09",
+    "date": "2026-08-10",
     "sessions": [
       {
-        "id": 36,
+        "id": 37,
         "style": "original",
         "style_label": "オリジナル",
         "status": "stopped",
-        "stop_reason": "4連敗のため停止",
+        "stop_reason": "10レース完了(収支確定 -1310円)",
         "config": {
           "start_amount": 10000,
           "target_amount": 1000000,
@@ -159,16 +159,22 @@
           "auto_buy": false,
           "role": "main"
         },
-        "balance": 8300,
-        "profit": -1700,
-        "wins": 0,
-        "losses": 4,
+        "balance": 8690,
+        "profit": -1310,
+        "wins": 3,
+        "losses": 7,
         "skips": 0,
         "target_reached": false
       }
     ]
   },
   "daily_history": [
+    {
+      "date": "2026-08-11",
+      "total_profit": 0,
+      "sessions": [],
+      "original": null
+    },
     {
       "date": "2026-08-10",
       "total_profit": -1310,
@@ -654,60 +660,6 @@
         "skips": 0,
         "target_reached": false
       }
-    },
-    {
-      "date": "2026-07-28",
-      "total_profit": -2510,
-      "sessions": [
-        {
-          "id": 28,
-          "style": "original",
-          "style_label": "オリジナル",
-          "status": "stopped",
-          "stop_reason": "1日損失上限(2510円 ≥ 2500円)",
-          "config": {
-            "start_amount": 10000,
-            "target_amount": 1000000,
-            "style": "original",
-            "per_race_cap_pct": 5,
-            "daily_loss_limit_pct": 25,
-            "max_consecutive_losses": 4,
-            "min_ev": 1.25,
-            "auto_buy": false,
-            "role": "main"
-          },
-          "balance": 7490,
-          "profit": -2510,
-          "wins": 4,
-          "losses": 5,
-          "skips": 0,
-          "target_reached": false
-        }
-      ],
-      "original": {
-        "id": 28,
-        "style": "original",
-        "style_label": "オリジナル",
-        "status": "stopped",
-        "stop_reason": "1日損失上限(2510円 ≥ 2500円)",
-        "config": {
-          "start_amount": 10000,
-          "target_amount": 1000000,
-          "style": "original",
-          "per_race_cap_pct": 5,
-          "daily_loss_limit_pct": 25,
-          "max_consecutive_losses": 4,
-          "min_ev": 1.25,
-          "auto_buy": false,
-          "role": "main"
-        },
-        "balance": 7490,
-        "profit": -2510,
-        "wins": 4,
-        "losses": 5,
-        "skips": 0,
-        "target_reached": false
-      }
     }
   ],
   "finance": {
@@ -719,132 +671,132 @@
     "wins": 63,
     "losses": 142,
     "hit_rate": 0.3073,
-    "today_profit": -1310,
+    "today_profit": 0,
     "series": [
       {
-        "date": "2026-07-12",
-        "cumulative_profit": -3820,
-        "day_profit": -3820
-      },
-      {
         "date": "2026-07-13",
-        "cumulative_profit": -7720,
+        "cumulative_profit": -3900,
         "day_profit": -3900
       },
       {
         "date": "2026-07-14",
-        "cumulative_profit": -6700,
+        "cumulative_profit": -2880,
         "day_profit": 1020
       },
       {
         "date": "2026-07-15",
-        "cumulative_profit": -5640,
+        "cumulative_profit": -1820,
         "day_profit": 1060
       },
       {
         "date": "2026-07-16",
-        "cumulative_profit": -9180,
+        "cumulative_profit": -5360,
         "day_profit": -3540
       },
       {
         "date": "2026-07-17",
-        "cumulative_profit": -10210,
+        "cumulative_profit": -6390,
         "day_profit": -1030
       },
       {
         "date": "2026-07-18",
-        "cumulative_profit": -14980,
+        "cumulative_profit": -11160,
         "day_profit": -4770
       },
       {
         "date": "2026-07-19",
-        "cumulative_profit": -18280,
+        "cumulative_profit": -14460,
         "day_profit": -3300
       },
       {
         "date": "2026-07-20",
-        "cumulative_profit": -21720,
+        "cumulative_profit": -17900,
         "day_profit": -3440
       },
       {
         "date": "2026-07-21",
-        "cumulative_profit": -25070,
+        "cumulative_profit": -21250,
         "day_profit": -3350
       },
       {
         "date": "2026-07-22",
-        "cumulative_profit": -29120,
+        "cumulative_profit": -25300,
         "day_profit": -4050
       },
       {
         "date": "2026-07-23",
-        "cumulative_profit": -24620,
+        "cumulative_profit": -20800,
         "day_profit": 4500
       },
       {
         "date": "2026-07-24",
-        "cumulative_profit": -29450,
+        "cumulative_profit": -25630,
         "day_profit": -4830
       },
       {
         "date": "2026-07-25",
-        "cumulative_profit": -32100,
+        "cumulative_profit": -28280,
         "day_profit": -2650
       },
       {
         "date": "2026-07-27",
-        "cumulative_profit": -34310,
+        "cumulative_profit": -30490,
         "day_profit": -2210
       },
       {
         "date": "2026-07-28",
-        "cumulative_profit": -36820,
+        "cumulative_profit": -33000,
         "day_profit": -2510
       },
       {
         "date": "2026-07-29",
-        "cumulative_profit": -38700,
+        "cumulative_profit": -34880,
         "day_profit": -1880
       },
       {
         "date": "2026-07-30",
-        "cumulative_profit": -39610,
+        "cumulative_profit": -35790,
         "day_profit": -910
       },
       {
         "date": "2026-07-31",
-        "cumulative_profit": -41950,
+        "cumulative_profit": -38130,
         "day_profit": -2340
       },
       {
         "date": "2026-08-01",
-        "cumulative_profit": -32650,
+        "cumulative_profit": -28830,
         "day_profit": 9300
       },
       {
         "date": "2026-08-02",
-        "cumulative_profit": -34350,
+        "cumulative_profit": -30530,
         "day_profit": -1700
       },
       {
         "date": "2026-08-03",
-        "cumulative_profit": -36050,
+        "cumulative_profit": -32230,
         "day_profit": -1700
       },
       {
         "date": "2026-08-04",
-        "cumulative_profit": -33420,
+        "cumulative_profit": -29600,
         "day_profit": 2630
       },
       {
         "date": "2026-08-09",
-        "cumulative_profit": -35120,
+        "cumulative_profit": -31300,
         "day_profit": -1700
       },
       {
         "date": "2026-08-10",
-        "cumulative_profit": -36430,
+        "cumulative_profit": -32610,
         "day_profit": -1310
+      },
+      {
+        "date": "2026-08-11",
+        "cumulative_profit": -32610,
+        "day_profit": 0
       }
     ]
   },
