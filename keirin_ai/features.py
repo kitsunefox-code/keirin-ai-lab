@@ -31,6 +31,23 @@ FEATURE_NAMES = [
     "post_race_score",
     "ex_attack",
     "ex_left_behind",
+    # EXデータは6項目あるが、従来は攻撃系3つをmaxで1つに潰し、
+    # exSplitLine(保有率76.7%)と exCompete は丸ごと捨てていた。
+    # 欠損を0で埋めると「成功率0%」と「データなし」を区別できないため、
+    # 値と一緒に「データがあるか」も渡す。
+    "exf_split_line",
+    "exf_split_line_has",
+    "exf_left_behind_has",
+    "exf_spurt",
+    "exf_spurt_has",
+    "exf_thrust",
+    "exf_thrust_has",
+    "exf_snatch",
+    "exf_snatch_has",
+    "exf_compete",
+    "exf_compete_has",
+    "exf_attack_count",
+    "exf_split_line_z",
     "recent_top3",
     "recent_avg_finish",
     "partner_top3_rate",
@@ -151,6 +168,7 @@ def build_feature_row(race: dict, entrant: dict, emotion: dict | None = None) ->
         "is_rain": 1.0 if (race.get("weather_info") or {}).get("is_rain") else 0.0,
     }
     row.update(build_line_row(race, car_no))
+    row.update(build_ex_row(race, entrant))
     # 印(ai_*)も保存はする。学習に使うかは MODEL_FEATURE_NAMES 側で決める。
     # 4桁に丸める: 勾配ブースティングにそれ以上の精度は不要で、
     # 0.012999999999999545 のような値をそのまま保存するとDBが無駄に膨らむ。
@@ -265,6 +283,46 @@ FEATURE_DEFAULTS: dict[str, float] = {
 def feature_vector(features: dict[str, float], names: list[str] = FEATURE_NAMES) -> list[float]:
     """特徴量dictを固定順ベクトルへ。欠損は中立デフォルト(なければ0)で埋める。"""
     return [float(features.get(name, FEATURE_DEFAULTS.get(name, 0.0))) for name in names]
+
+
+_EX_FIELDS = {
+    "exSplitLine": "split_line",
+    "exLeftBehind": "left_behind",
+    "exSpurt": "spurt",
+    "exThrust": "thrust",
+    "exSnatch": "snatch",
+    "exCompete": "compete",
+}
+
+
+def build_ex_row(race: dict, entrant: dict) -> dict[str, float]:
+    """EXデータを全項目そのまま渡す。
+
+    保有率は項目ごとに 10〜77% とばらつく。欠損を0で埋めるだけだと
+    「成功率0%」と「データなし」が同じ値になり区別できないので、
+    値と "_has" フラグを対で渡す。データの有無自体も
+    (出走歴が十分にある選手かどうかの目印として)情報になる。
+    """
+    ex = entrant.get("ex") or {}
+    ex = ex if isinstance(ex, dict) else {}
+    row: dict[str, float] = {}
+    for field, short in _EX_FIELDS.items():
+        value = ex.get(field)
+        row[f"exf_{short}"] = (float(value) / 100.0) if value is not None else 0.0
+        row[f"exf_{short}_has"] = 1.0 if value is not None else 0.0
+    present = [float(ex[f]) for f in ("exSpurt", "exThrust", "exSnatch") if ex.get(f) is not None]
+    row["exf_attack_count"] = len(present) / 3.0
+
+    # レース内での相対化(誰が離れやすい/ちぎりやすいか)
+    values = []
+    for other in race.get("entrants") or []:
+        oex = other.get("ex") or {}
+        v = oex.get("exSplitLine") if isinstance(oex, dict) else None
+        values.append(float(v) / 100.0 if v is not None else 0.0)
+    mean = sum(values) / len(values) if values else 0.0
+    sd = (sum((v - mean) ** 2 for v in values) / len(values)) ** 0.5 if values else 0.0
+    row["exf_split_line_z"] = ((row["exf_split_line"] - mean) / sd) if sd > 0 else 0.0
+    return row
 
 
 def _lines_of(race: dict) -> list[list[int]]:
