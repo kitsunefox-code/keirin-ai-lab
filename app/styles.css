@@ -2414,31 +2414,68 @@ h4 {
   font-weight: 800;
   pointer-events: none;
 }
-.motion-rider .rider-name {
-  fill: var(--color-text);
-  font-size: 8px;
-  font-weight: 700;
-  paint-order: stroke;
-  stroke: rgba(8, 11, 16, 0.85);
-  stroke-width: 2.5px;
-  pointer-events: none;
-}
 /* 前へ出ている選手の速度線。仕掛けどころが一目で分かる */
 .motion-rider .rider-dash {
   fill: #fff;
   transition: opacity 90ms linear;
 }
+/* 上がってきている選手を囲むリング。速度線と同じタイミングで出る */
+.motion-rider .rider-surge {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.6;
+  transition: opacity 90ms linear;
+}
 
-/* スマホではSVGが約半分に縮み、選手名が実効4px以下になって読めない。
-   潰れた文字を出すより消したほうが見やすいので、車番だけ残す。 */
+/* 走行順バー: いま何番手かと、スタートから何番上げたかを常時表示する。
+   コース上の点だけでは「途中から上がってきた選手」が追いにくいため。 */
+.motion-order {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin-top: 8px;
+  min-height: 26px;
+  font-variant-numeric: tabular-nums;
+}
+.motion-order .mo-slot {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.motion-order .car {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+.motion-order .mo-sep {
+  color: var(--color-muted);
+  font-style: normal;
+  font-size: 11px;
+  opacity: 0.55;
+}
+.motion-order i {
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+}
+.motion-order i.up { color: var(--color-profit); }
+.motion-order i.down { color: var(--color-loss); opacity: 0.75; }
+
 @media (max-width: 768px) {
-  .motion-rider .rider-name { display: none; }
   /* SVGが約半分に縮むので、SVG座標で12pxにして実効6px前後を確保する。
      競輪は車番の色で見分けるのが基本なので、色の面積も併せて大きくする。 */
   /* 丸を大きくすると接戦時に重なって隊列が読めなくなるため、
      半径は据え置き(最小車間12.2に対し直径11.2)で文字だけ拡大する。 */
   .motion-rider .rider-no { font-size: 11px; }
   .motion-line-bond { stroke-width: 3.5; opacity: 0.65; }
+  /* 9車立てでも1行に収める(車番20px+印+区切りで横幅が足りなくなるため) */
+  .motion-order .car { width: 18px; height: 18px; font-size: 11px; }
+  .motion-order .mo-sep { font-size: 10px; }
+  .motion-order i { font-size: 9px; }
 }
 
 .motion-svg .bank-track {
