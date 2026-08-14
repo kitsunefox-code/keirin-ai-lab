@@ -80,6 +80,18 @@ jobs:
             # 2段構えにする: (1)締切間際=市場の最終結論 (2)広めの窓=変動履歴
             python scripts/snapshot_odds.py --window 12 --limit 40 --delay 0.3
             python scripts/snapshot_odds.py --window 75 --limit 40 --delay 0.3
+            # 予想を作るのは朝の1回だけなので、そこが失敗するとその日は丸一日
+            # 0件のままになる(2026-08-11〜14に4日間発生)。当日分が無い/空なら
+            # ここで作り直して自力で復帰する。
+            TODAY=$(TZ=Asia/Tokyo date +%F)
+            STAMP=$(TZ=Asia/Tokyo date +%Y%m%d)
+            FC="data/forecast_${STAMP}_after_0000.json"
+            COUNT=$(python -c "import json,sys;print(len(json.load(open(sys.argv[1],encoding='utf-8')).get('forecasts',[])))" "$FC" 2>/dev/null || echo 0)
+            if [ "$COUNT" = "0" ]; then
+              echo "::warning::当日の予想が0件。live実行で作り直します"
+              python scripts/forecast_winticket_after.py --date "$TODAY" --after 00:00 --max-races 150 --delay 0.4 --out "$FC"
+              python scripts/start_original.py
+            fi
           fi
           python scripts/build_static_api.py
           # DBが100MBを超えるとpushが拒否され自動更新が完全停止する(2026-08-04に発生)。
