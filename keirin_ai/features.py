@@ -70,6 +70,15 @@ FEATURE_NAMES = [
     "recent_top3",
     "recent_avg_finish",
     "partner_top3_rate",
+    # 【不採用】ラインの相方との「相性」を特徴量にする案(2026-08-14 検証)。
+    # 個々のペアの相性は測定不能だった。隣接ペア8,664組のうち84%が生涯1回
+    # しか組んでおらず最多6回、選手単位でも中央値8走しかない。
+    # 属性(同県か・前後の脚質)に落とせば実測差は確かに出る:
+    #   同県ペア +3.7pt(n=1,372) / 逃+逃 +11.4pt(n=248) / 両+追 -4.5pt(n=1,575)
+    # しかし特徴量として足しても模型は良くならなかった(5シードでTop1 2勝、
+    # 2車単 1勝。平均は -0.24pt / -0.90pt)。隊列を表す ln_* が同じ情報を
+    # 既に持っているためと見られる。再挑戦するなら ln_* との重複から。
+    # 測定は scripts/chemistry_research.py / chemistry_attr_research.py。
     "head_to_head_ratio",
     "pos_win_rate",
     "pos_top3_rate",
@@ -130,7 +139,106 @@ MODEL_FEATURE_NAMES = (
 )
 
 # entries.features_json に保存するときの並び。値だけを並べた配列で保存する。
-STORED_FEATURE_NAMES = FEATURE_NAMES + LINE_FEATURE_NAMES
+#
+# ここは「追記のみ」。途中に挿したり並べ替えたりすると、過去に保存済みの
+# 配列を復元するときに対応がずれ、学習データが静かに壊れる
+# (decode_features は zip で位置対応させているだけなので気づけない)。
+# 新しい特徴量は FEATURE_NAMES の読みやすい位置に足してよく、
+# 保存順としては下の内包表記が自動で末尾に回す。
+_STORED_ORDER_V1 = [
+    "bias",
+    "racing_score",
+    "win_rate",
+    "two_rate",
+    "three_rate",
+    "start_count",
+    "home_count",
+    "back_count",
+    "style_escape",
+    "style_pursuit",
+    "style_allround",
+    "ai_honmei",
+    "ai_taiko",
+    "ai_tanana",
+    "ai_renshita",
+    "line_len",
+    "line_front",
+    "line_second",
+    "line_third_plus",
+    "emotion_score",
+    "emotion_positive",
+    "emotion_negative",
+    "age",
+    "interview_score",
+    "post_race_score",
+    "ex_attack",
+    "ex_left_behind",
+    "exf_split_line",
+    "exf_split_line_has",
+    "exf_left_behind_has",
+    "exf_spurt",
+    "exf_spurt_has",
+    "exf_thrust",
+    "exf_thrust_has",
+    "exf_snatch",
+    "exf_snatch_has",
+    "exf_compete",
+    "exf_compete_has",
+    "exf_attack_count",
+    "exf_split_line_z",
+    "st_final",
+    "st_semifinal",
+    "st_heat",
+    "st_special",
+    "st_general",
+    "st_has_advance",
+    "st_grade_race",
+    "ps_home",
+    "ps_home_ratio",
+    "ps_class_value",
+    "ps_class_z",
+    "ps_class_top",
+    "ps_class_bottom",
+    "recent_top3",
+    "recent_avg_finish",
+    "partner_top3_rate",
+    "head_to_head_ratio",
+    "pos_win_rate",
+    "pos_top3_rate",
+    "venue_top3_rate",
+    "track_top3_rate",
+    "hour_top3_rate",
+    "line_strength_score",
+    "line_strength_back",
+    "bank_style_fit",
+    "is_girls",
+    "class_s",
+    "class_a",
+    "is_night",
+    "is_midnight",
+    "is_rain",
+    "ln_solo",
+    "ln_pos",
+    "ln_size_rel",
+    "ln_own_avg_score",
+    "ln_score_gap",
+    "ln_is_top_line",
+    "ln_leader_back",
+    "ln_leader_escape",
+    "ln_selfpower_ratio",
+    "ln_line_count",
+    "ln_second_of_top",
+    "ln_score_in_line",
+    "ln_leader_home",
+    "ln_bante_score_diff",
+    "ln_bante_older",
+    "ln_score_z",
+    "ln_win_rate_z",
+]
+
+STORED_FEATURE_NAMES = _STORED_ORDER_V1 + [
+    name for name in (FEATURE_NAMES + LINE_FEATURE_NAMES) if name not in set(_STORED_ORDER_V1)
+]
 
 
 def encode_features(features: dict[str, float]) -> str:

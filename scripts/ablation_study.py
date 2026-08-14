@@ -30,7 +30,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from keirin_ai.features import FEATURE_NAMES  # noqa: E402
+from keirin_ai.features import FEATURE_NAMES, decode_features  # noqa: E402
 
 import lightgbm as lgb  # noqa: E402
 import numpy as np  # noqa: E402
@@ -54,9 +54,10 @@ def load_rows(db: str) -> list[dict]:
     ).fetchall()
     out = []
     for row in rows:
-        try:
-            feats = json.loads(row["features_json"])
-        except Exception:
+        # 2026-08-10 に features_json を「値だけの配列」形式へ変えたため、
+        # json.loads そのままでは list が返り .get で落ちる。復元は decode_features に任せる。
+        feats = decode_features(row["features_json"])
+        if not feats:
             continue
         out.append(
             {
