@@ -389,6 +389,7 @@ def save_venue(conn: sqlite3.Connection, venue: dict) -> None:
             venue.get("bank_bias"),
             venue.get("bank_feature"),
             now,
+            venue.get("prefecture"),
         ),
     )
     conn.commit()
