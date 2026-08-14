@@ -65,7 +65,12 @@ def _booster(path: Path):
     hit = _CACHE.get(key)
     if hit and hit[0] == mtime:
         return hit[1]
-    booster = lgb.Booster(model_file=str(path))
+    try:
+        booster = lgb.Booster(model_file=str(path))
+    except Exception:
+        # 読み込みに失敗しても予想全体を落とさない。2段目なしで素の予想を返す。
+        # (ここで例外を上げると forecast の except に飲まれ「本日0レース」になる)
+        return None
     _CACHE[key] = (mtime, booster)
     return booster
 
@@ -133,7 +138,11 @@ def stage2_features(features_by_car: dict[int, dict], model=None) -> dict[int, d
     if len(lines) < 2:
         return empty
     X = np.array([[r[k] for k in LINE_MODEL_FEATURES] for r in rows], dtype=float)
-    raw = booster.predict(X)
+    try:
+        raw = booster.predict(X)
+    except Exception:
+        # 特徴量の数が模型と食い違う等で落ちても、2段目なしで素の予想を返す。
+        return empty
     total = float(sum(raw)) or 1.0
     probs = [float(p) / total for p in raw]
     order = sorted(range(len(probs)), key=lambda i: -probs[i])

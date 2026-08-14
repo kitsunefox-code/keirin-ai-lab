@@ -35,6 +35,15 @@ def main() -> None:
     candidates = discover_candidates(target)
     forecasts = []
     scanned = 0
+    # 取りこぼしの理由を必ず残す。以前ここを黙って continue していたため、
+    # 全レースが例外で落ちても「本日0レース」としか分からず原因究明が遅れた。
+    dropped = {"fetch_error": 0, "few_entrants": 0, "before_after": 0, "predict_error": 0}
+    errors: list[str] = []
+
+    def note(kind: str, url: str, exc: BaseException) -> None:
+        dropped[kind] += 1
+        if len(errors) < 5:
+            errors.append(f"{url} -> {type(exc).__name__}: {exc}")
 
     with connect() as conn:
         for base in candidates:
@@ -47,19 +56,26 @@ def main() -> None:
                     race = parse_winticket_racecard(html, url)
                     race = enrich_race_from_state(race, html)
                     scanned += 1
-                    if len(race.get("entrants", [])) < 5:
-                        continue
-                    start_time = race.get("start_time")
-                    if not start_time or start_time < args.after:
-                        continue
+                except Exception as exc:
+                    note("fetch_error", url, exc)
+                    continue
+                if len(race.get("entrants", [])) < 5:
+                    dropped["few_entrants"] += 1
+                    continue
+                start_time = race.get("start_time")
+                if not start_time or start_time < args.after:
+                    dropped["before_after"] += 1
+                    continue
+                try:
                     _attach_player_form(conn, race)
                     attach_line_partner_stats(conn, race)
                     prediction = predict_race(race)
                     key = save_race(conn, race, prediction)
                     forecasts.append(summarize_forecast(key, race, prediction))
-                    time.sleep(max(0.1, args.delay))
-                except Exception:
+                except Exception as exc:
+                    note("predict_error", url, exc)
                     continue
+                time.sleep(max(0.1, args.delay))
             if len(forecasts) >= args.max_races:
                 break
 
@@ -67,9 +83,14 @@ def main() -> None:
         "target_date": args.date,
         "after": args.after,
         "scanned_pages": scanned,
+        "dropped": dropped,
+        "errors": errors,
         "candidates": candidates,
         "forecasts": sorted(forecasts, key=lambda item: (item.get("start_time") or "", item.get("venue") or "")),
     }
+    if not forecasts and candidates:
+        # 候補があるのに0件はほぼ常に不具合。Actionsのログで赤く出す。
+        print(f"::error::予想0件。dropped={dropped} errors={errors}", file=sys.stderr)
     out = ROOT / args.out
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
