@@ -122,3 +122,10 @@ jobs:
             git pull --rebase origin main || { git rebase --abort || true; git pull -X ours --no-edit origin main; }
           done
           git push origin main
+
+      # 配信物が壊れていないか最後に確かめる。ここが赤くなればGitHubから通知が来る。
+      # 2026-08-11〜14、予想0件のまま4日間配信され続けたのに、Actionsは毎回
+      # 「成功」と表示していた。同じ見逃しを繰り返さないための最終関門。
+      # push の後に置くのは、集めた結果やDBの更新を捨てずに残すため。
+      - name: Healthcheck
+        run: python scripts/healthcheck.py
