@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at_jst": "2026-08-15T11:45:37+09:00",
+  "generated_at_jst": "2026-08-15T12:23:47+09:00",
   "rules": [
     "全額転がしは行いません(1レース投資は残高の上限%まで)",
     "負けた後の倍賭け(マーチンゲール)は行いません",
@@ -240,20 +240,77 @@
     }
   },
   "state": {
-    "balance": 10000,
-    "profit": 0,
-    "day_loss": 0,
+    "balance": 9500,
+    "profit": -500,
+    "day_loss": 500,
     "day_loss_limit": 2500,
-    "consecutive_losses": 0,
+    "consecutive_losses": 1,
     "wins": 0,
-    "losses": 0,
+    "losses": 1,
     "skips": 0,
     "pending_bet": null,
-    "bets": [],
-    "target_progress": 0.01,
+    "bets": [
+      {
+        "id": 206,
+        "race_key": "winticket:2026081427:2:3",
+        "venue": "京王閣",
+        "race_no": 3,
+        "start_time": "11:29",
+        "url": "",
+        "tickets": [
+          {
+            "label": "7-3-5",
+            "cars": [
+              7,
+              3,
+              5
+            ],
+            "stake": 200,
+            "bet_type": "trifecta"
+          },
+          {
+            "label": "7-3-2",
+            "cars": [
+              7,
+              3,
+              2
+            ],
+            "stake": 100,
+            "bet_type": "trifecta"
+          },
+          {
+            "label": "7-3-1",
+            "cars": [
+              7,
+              3,
+              1
+            ],
+            "stake": 100,
+            "bet_type": "trifecta"
+          },
+          {
+            "label": "7-5-3",
+            "cars": [
+              7,
+              5,
+              3
+            ],
+            "stake": 100,
+            "bet_type": "trifecta"
+          }
+        ],
+        "total_stake": 500,
+        "status": "lost",
+        "payout": 0,
+        "note": null,
+        "created_at": "2026-08-15T12:23:35+09:00",
+        "settled_at": "2026-08-15T12:23:35+09:00"
+      }
+    ],
+    "target_progress": 0.0095,
     "races_to_target": {
       "expected": 99,
-      "fast": 55
+      "fast": 56
     }
   },
   "proposal": {
@@ -264,7 +321,7 @@
     "race_date": "2026年8月15日",
     "url": "https://www.winticket.jp/keirin/maebashi/racecard/2026081522/1/1",
     "confidence": "本命",
-    "budget": 500,
+    "budget": 400,
     "total_stake": 200,
     "ev": 0.752,
     "expected_return": 150,
@@ -368,7 +425,7 @@
       "confidence": "本命",
       "decision": "bet",
       "reason": "予定レース・半分に縮小して実行(EV 0.75 低め・見送りも可)",
-      "ev": 0.754,
+      "ev": 0.753,
       "is_next": true
     },
     {
@@ -378,8 +435,8 @@
       "start_time": "20:50",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 3.31 / 3点分散 / ライブ3点",
-      "ev": 3.314,
+      "reason": "EV 3.83 / 3点分散 / ライブ3点",
+      "ev": 3.833,
       "is_next": false
     },
     {
@@ -389,8 +446,8 @@
       "start_time": "21:00",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 2.26 / 3点分散 / ライブ3点",
-      "ev": 2.258,
+      "reason": "EV 2.37 / 3点分散 / ライブ3点",
+      "ev": 2.366,
       "is_next": false
     },
     {
@@ -400,8 +457,8 @@
       "start_time": "21:10",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 3.08 / 3点分散 / ライブ3点",
-      "ev": 3.078,
+      "reason": "EV 3.53 / 3点分散 / ライブ3点",
+      "ev": 3.535,
       "is_next": false
     },
     {
@@ -411,8 +468,8 @@
       "start_time": "21:30",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 46.53 / 3点分散 / ライブ3点",
-      "ev": 46.531,
+      "reason": "EV 39.66 / 3点分散 / ライブ3点",
+      "ev": 39.664,
       "is_next": false
     },
     {
@@ -422,8 +479,8 @@
       "start_time": "22:00",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 14.32 / 3点分散 / ライブ3点",
-      "ev": 14.318,
+      "reason": "EV 13.78 / 3点分散 / ライブ3点",
+      "ev": 13.784,
       "is_next": false
     },
     {
@@ -445,7 +502,7 @@
       "confidence": "本命",
       "decision": "bet",
       "reason": "予定レース・半分に縮小して実行(EV 0.75 低め・見送りも可)",
-      "ev": 0.75,
+      "ev": 0.749,
       "is_next": false
     },
     {
@@ -455,8 +512,8 @@
       "start_time": "23:10",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 7.10 / 3点分散",
-      "ev": 7.098,
+      "reason": "EV 7.42 / 3点分散",
+      "ev": 7.424,
       "is_next": false
     }
   ],
@@ -492,7 +549,7 @@
   "daily_history": [
     {
       "date": "2026-08-15",
-      "total_profit": 0,
+      "total_profit": -500,
       "sessions": [
         {
           "id": 42,
@@ -511,10 +568,10 @@
             "auto_buy": false,
             "role": "main"
           },
-          "balance": 10000,
-          "profit": 0,
+          "balance": 9500,
+          "profit": -500,
           "wins": 0,
-          "losses": 0,
+          "losses": 1,
           "skips": 0,
           "target_reached": false
         }
@@ -536,10 +593,10 @@
           "auto_buy": false,
           "role": "main"
         },
-        "balance": 10000,
-        "profit": 0,
+        "balance": 9500,
+        "profit": -500,
         "wins": 0,
-        "losses": 0,
+        "losses": 1,
         "skips": 0,
         "target_reached": false
       }
@@ -1032,15 +1089,15 @@
     }
   ],
   "finance": {
-    "current_balance": 10000,
-    "total_stake": 181300,
+    "current_balance": 9500,
+    "total_stake": 181800,
     "total_payout": 135370,
-    "total_profit": -45930,
-    "roi": 0.7467,
+    "total_profit": -46430,
+    "roi": 0.7446,
     "wins": 63,
-    "losses": 142,
-    "hit_rate": 0.3073,
-    "today_profit": 0,
+    "losses": 143,
+    "hit_rate": 0.3058,
+    "today_profit": -500,
     "series": [
       {
         "date": "2026-07-17",
@@ -1164,8 +1221,8 @@
       },
       {
         "date": "2026-08-15",
-        "cumulative_profit": -27250,
-        "day_profit": 0
+        "cumulative_profit": -27750,
+        "day_profit": -500
       }
     ]
   },
@@ -1180,7 +1237,8 @@
         "start_time": "11:29",
         "original": null,
         "changed_at": null,
-        "status": "missed"
+        "status": "lost",
+        "profit": -500
       },
       {
         "race_key": "winticket:2026081522:1:1",
