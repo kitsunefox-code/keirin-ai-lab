@@ -3,9 +3,9 @@
   "status": {
     "races": 3022,
     "entries": 19734,
-    "result_races": 2734,
-    "result_entries": 19005,
-    "predictions": 2942,
+    "result_races": 2737,
+    "result_entries": 19026,
+    "predictions": 2945,
     "documents": 15
   },
   "model": {
@@ -13,29 +13,29 @@
     "backend": "lightgbm",
     "version": "0.3",
     "training": {
-      "rows": 19005,
-      "races": 2734,
-      "positive_rows": 2690,
+      "rows": 19026,
+      "races": 2737,
+      "positive_rows": 2693,
       "best_iteration": 300,
       "valid_races": 411
     },
     "metrics": {
-      "top1_accuracy": 0.4331,
+      "top1_accuracy": 0.4355,
       "eval_split": "time-based 15% holdout"
     },
     "feature_importance": {
-      "ln_score_z": 10095.8,
-      "ln_win_rate_z": 3563.1,
-      "s2_line_p_x_head": 3047.0,
-      "s2_line_win_p": 2989.1,
-      "s2_line_p_x_bante": 2415.3,
-      "two_rate": 1683.8,
-      "ln_score_in_line": 1289.8,
-      "recent_avg_finish": 1213.5,
-      "pos_win_rate": 1209.6,
-      "win_rate": 1202.8,
-      "head_to_head_ratio": 1085.7,
-      "three_rate": 974.3
+      "ln_score_z": 10108.4,
+      "ln_win_rate_z": 3867.5,
+      "s2_line_win_p": 3283.8,
+      "s2_line_p_x_head": 2893.6,
+      "s2_line_p_x_bante": 2253.2,
+      "two_rate": 1697.4,
+      "recent_avg_finish": 1251.9,
+      "ln_score_in_line": 1244.9,
+      "win_rate": 1166.4,
+      "pos_win_rate": 1151.5,
+      "head_to_head_ratio": 1077.4,
+      "ln_score_gap": 1047.3
     }
   }
 }
