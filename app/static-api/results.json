@@ -19,14 +19,14 @@
   ],
   "summary": {
     "races": 71,
-    "settled": 0,
-    "pending": 71,
-    "honmei_hits": 0,
-    "honmei_rate": null,
-    "in_top3_hits": 0,
-    "in_top3_rate": null,
-    "trifecta_hits": 0,
-    "trifecta_rate": null
+    "settled": 1,
+    "pending": 70,
+    "honmei_hits": 1,
+    "honmei_rate": 1.0,
+    "in_top3_hits": 1,
+    "in_top3_rate": 1.0,
+    "trifecta_hits": 1,
+    "trifecta_rate": 1.0
   },
   "venues": [
     {
@@ -632,15 +632,25 @@
             "2-7-3",
             "2-5-3"
           ],
-          "result_order": [],
-          "status": "pending",
+          "result_order": [
+            2,
+            7,
+            5
+          ],
+          "status": "hit_trifecta",
           "hits": {
-            "honmei": null,
-            "in_top3": null,
-            "trifecta": null,
-            "trifecta_label": null
+            "honmei": true,
+            "in_top3": true,
+            "trifecta": true,
+            "trifecta_label": "2-7-5"
           },
-          "payout": null
+          "payout": {
+            "trifecta_odds": 17.5,
+            "trifecta_payout": 1750,
+            "exacta_odds": 6.2,
+            "exacta_hit_label": "2-7",
+            "exacta_payout": 620
+          }
         },
         {
           "race_key": "winticket:2026081453:3:2",
@@ -2199,32 +2209,32 @@
     "as_of": "2026-08-16",
     "today": {
       "label": "今日",
-      "settled": 0,
-      "honmei_hits": 0,
-      "honmei_rate": null,
-      "in_top3_rate": null,
-      "trifecta_hits": 0,
-      "trifecta_rate": null,
-      "exacta_roi": null,
-      "exacta_priced": 0,
-      "exacta_hits": 0,
-      "exacta_hit_rate": null,
-      "trifecta_roi": null,
+      "settled": 1,
+      "honmei_hits": 1,
+      "honmei_rate": 1.0,
+      "in_top3_rate": 1.0,
+      "trifecta_hits": 1,
+      "trifecta_rate": 1.0,
+      "exacta_roi": 3.1,
+      "exacta_priced": 1,
+      "exacta_hits": 1,
+      "exacta_hit_rate": 1.0,
+      "trifecta_roi": 2.9167,
       "form": null
     },
     "week": {
       "label": "今週",
-      "settled": 186,
-      "honmei_hits": 71,
-      "honmei_rate": 0.3817,
-      "in_top3_rate": 0.7097,
-      "trifecta_hits": 32,
-      "trifecta_rate": 0.172,
-      "exacta_roi": 0.6677,
-      "exacta_priced": 186,
-      "exacta_hits": 43,
-      "exacta_hit_rate": 0.2312,
-      "trifecta_roi": 0.7849,
+      "settled": 187,
+      "honmei_hits": 72,
+      "honmei_rate": 0.385,
+      "in_top3_rate": 0.7112,
+      "trifecta_hits": 33,
+      "trifecta_rate": 0.1765,
+      "exacta_roi": 0.6807,
+      "exacta_priced": 187,
+      "exacta_hits": 44,
+      "exacta_hit_rate": 0.2353,
+      "trifecta_roi": 0.7963,
       "form": "even"
     },
     "last_week": {
@@ -2244,17 +2254,17 @@
     },
     "total": {
       "label": "通算",
-      "settled": 2803,
-      "honmei_hits": 1113,
-      "honmei_rate": 0.3971,
-      "in_top3_rate": 0.7271,
-      "trifecta_hits": 492,
-      "trifecta_rate": 0.1755,
-      "exacta_roi": 0.7049,
-      "exacta_priced": 2801,
-      "exacta_hits": 684,
-      "exacta_hit_rate": 0.2442,
-      "trifecta_roi": 0.7062,
+      "settled": 2804,
+      "honmei_hits": 1114,
+      "honmei_rate": 0.3973,
+      "in_top3_rate": 0.7272,
+      "trifecta_hits": 493,
+      "trifecta_rate": 0.1758,
+      "exacta_roi": 0.7057,
+      "exacta_priced": 2802,
+      "exacta_hits": 685,
+      "exacta_hit_rate": 0.2445,
+      "trifecta_roi": 0.7069,
       "form": null
     }
   },
@@ -2366,6 +2376,13 @@
     },
     {
       "category": "会場",
+      "label": "奈良",
+      "races": 90,
+      "roi": 0.78,
+      "hit_rate": 0.1778
+    },
+    {
+      "category": "会場",
       "label": "西武園",
       "races": 98,
       "roi": 0.7786,
@@ -2384,13 +2401,6 @@
       "races": 714,
       "roi": 0.7541,
       "hit_rate": 0.1583
-    },
-    {
-      "category": "会場",
-      "label": "奈良",
-      "races": 89,
-      "roi": 0.7539,
-      "hit_rate": 0.1685
     },
     {
       "category": "会場",
@@ -2414,6 +2424,13 @@
       "hit_rate": 0.2262
     },
     {
+      "category": "車立て",
+      "label": "7車",
+      "races": 2386,
+      "roi": 0.7101,
+      "hit_rate": 0.2544
+    },
+    {
       "category": "会場",
       "label": "高知",
       "races": 69,
@@ -2421,18 +2438,11 @@
       "hit_rate": 0.2174
     },
     {
-      "category": "車立て",
-      "label": "7車",
-      "races": 2385,
-      "roi": 0.7091,
-      "hit_rate": 0.2541
-    },
-    {
       "category": "時間帯",
       "label": "モーニング",
-      "races": 424,
-      "roi": 0.7034,
-      "hit_rate": 0.309
+      "races": 425,
+      "roi": 0.7091,
+      "hit_rate": 0.3106
     },
     {
       "category": "時間帯",
@@ -2465,9 +2475,9 @@
     {
       "category": "級班",
       "label": "A級",
-      "races": 1817,
-      "roi": 0.6772,
-      "hit_rate": 0.2482
+      "races": 1818,
+      "roi": 0.6785,
+      "hit_rate": 0.2486
     },
     {
       "category": "会場",
@@ -2626,8 +2636,8 @@
     {
       "bin": "30-40%",
       "predicted": 0.3444,
-      "actual": 0.405,
-      "races": 874
+      "actual": 0.4057,
+      "races": 875
     },
     {
       "bin": "40-50%",
