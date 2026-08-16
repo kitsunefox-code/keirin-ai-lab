@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at": "2026-08-16T11:10:08.310023+00:00",
+  "generated_at": "2026-08-16T11:32:55.524200+00:00",
   "forecast_file": "/home/runner/work/keirin-ai-lab/keirin-ai-lab/data/forecast_20260816_after_0000.json",
   "source": {
     "target_date": "2026-08-16",
@@ -50,13 +50,13 @@
     ]
   },
   "summary": {
-    "count": 20,
-    "elapsed_count": 51,
+    "count": 18,
+    "elapsed_count": 53,
     "after": "00:00",
     "target_date": "2026-08-16",
     "high_confidence": 0,
     "middle_confidence": 0,
-    "mixed": 3
+    "mixed": 1
   },
   "forecasts": [
     {
@@ -94795,7 +94795,7 @@
         {
           "car_no": 3,
           "name": "金澤幸司",
-          "probability": 0.2433,
+          "probability": 0.245,
           "score": 10.043,
           "mark": "本命",
           "style": "追",
@@ -94822,15 +94822,16 @@
               1,
               5,
               1,
-              2
+              2,
+              1
             ],
-            "top3_rate": 0.6,
-            "avg_finish": 2.6,
+            "top3_rate": 0.667,
+            "avg_finish": 2.3,
             "score_delta": -0.9,
             "official_delta": 0.67,
             "score_now": 95.33,
             "score_recent": 96.0,
-            "races": 5
+            "races": 6
           },
           "term": 91,
           "class_move": null,
@@ -94839,8 +94840,8 @@
         {
           "car_no": 5,
           "name": "坂本紘規",
-          "probability": 0.1953,
-          "score": 9.164,
+          "probability": 0.1852,
+          "score": 8.924,
           "mark": "単穴",
           "style": "逃",
           "comment": "自力。",
@@ -94879,7 +94880,8 @@
               1,
               4,
               2,
-              1
+              1,
+              2
             ],
             "top3_rate": 0.667,
             "avg_finish": 2.3,
@@ -94887,7 +94889,7 @@
             "official_delta": 0.75,
             "score_now": 93.77,
             "score_recent": 94.52,
-            "races": 9
+            "races": 10
           },
           "term": 117,
           "class_move": null,
@@ -94896,8 +94898,8 @@
         {
           "car_no": 1,
           "name": "鈴木輝大",
-          "probability": 0.1478,
-          "score": 8.048,
+          "probability": 0.1428,
+          "score": 7.885,
           "mark": "対抗",
           "style": "追",
           "comment": "秋本君。",
@@ -94927,15 +94929,16 @@
               2,
               5,
               1,
+              5,
               5
             ],
-            "top3_rate": 0.667,
-            "avg_finish": 3.2,
+            "top3_rate": 0.5,
+            "avg_finish": 3.5,
             "score_delta": -3.7,
             "official_delta": 1.93,
             "score_now": 94.22,
             "score_recent": 96.15,
-            "races": 8
+            "races": 9
           },
           "term": 113,
           "class_move": null,
@@ -94944,18 +94947,8 @@
       ],
       "tickets": [
         {
-          "label": "5-3-1",
-          "score": 0.2042,
-          "cars": [
-            5,
-            3,
-            1
-          ],
-          "suji": true
-        },
-        {
           "label": "3-5-1",
-          "score": 0.2017,
+          "score": 0.199,
           "cars": [
             3,
             5,
@@ -94964,18 +94957,18 @@
           "suji": false
         },
         {
-          "label": "5-3-7",
-          "score": 0.2003,
+          "label": "5-3-1",
+          "score": 0.1984,
           "cars": [
             5,
             3,
-            7
+            1
           ],
           "suji": true
         },
         {
           "label": "3-5-7",
-          "score": 0.198,
+          "score": 0.1964,
           "cars": [
             3,
             5,
@@ -94984,8 +94977,18 @@
           "suji": false
         },
         {
+          "label": "5-3-7",
+          "score": 0.1956,
+          "cars": [
+            5,
+            3,
+            7
+          ],
+          "suji": true
+        },
+        {
           "label": "3-1-5",
-          "score": 0.195,
+          "score": 0.193,
           "cars": [
             3,
             1,
@@ -94994,18 +94997,8 @@
           "suji": false
         },
         {
-          "label": "5-1-3",
-          "score": 0.1883,
-          "cars": [
-            5,
-            1,
-            3
-          ],
-          "suji": false
-        },
-        {
           "label": "3-1-7",
-          "score": 0.1846,
+          "score": 0.1845,
           "cars": [
             3,
             1,
@@ -95014,12 +95007,22 @@
           "suji": false
         },
         {
-          "label": "5-7-3",
-          "score": 0.1804,
+          "label": "5-1-3",
+          "score": 0.1815,
           "cars": [
             5,
-            7,
+            1,
             3
+          ],
+          "suji": false
+        },
+        {
+          "label": "3-7-5",
+          "score": 0.1788,
+          "cars": [
+            3,
+            7,
+            5
           ],
           "suji": false
         }
@@ -95030,74 +95033,74 @@
             3,
             5
           ],
-          "score": 0.1953,
+          "score": 0.1852,
           "label": "3-5",
           "suji": false,
           "bet_type": "exacta",
           "live_odds": 6.6,
-          "hit_prob": 0.0628,
-          "ev": 0.41
+          "hit_prob": 0.0601,
+          "ev": 0.4
         },
         {
           "cars": [
             3,
             1
           ],
-          "score": 0.1478,
+          "score": 0.1428,
           "label": "3-1",
           "suji": false,
           "bet_type": "exacta",
           "live_odds": 13.0,
-          "hit_prob": 0.0475,
-          "ev": 0.62
+          "hit_prob": 0.0463,
+          "ev": 0.6
         },
         {
           "cars": [
             3,
             2
           ],
-          "score": 0.1167,
+          "score": 0.1203,
           "label": "3-2",
           "suji": false,
           "bet_type": "exacta",
           "live_odds": 60.8,
-          "hit_prob": 0.0375,
-          "ev": 2.28
+          "hit_prob": 0.039,
+          "ev": 2.37
         },
         {
           "cars": [
             3,
             7
           ],
-          "score": 0.116,
+          "score": 0.1183,
           "label": "3-7",
           "suji": false,
           "bet_type": "exacta",
           "live_odds": 8.3,
-          "hit_prob": 0.0392,
+          "hit_prob": 0.0403,
           "ev": 0.33
         }
       ],
       "value": {
         "label": "3-2",
         "odds": 60.8,
-        "prob": 0.0375,
-        "ev": 2.28,
+        "prob": 0.039,
+        "ev": 2.37,
         "taken_at": "2026-08-16T20:09:59+09:00"
       },
       "hit_estimate": {
-        "exacta": 0.1103,
-        "trifecta": 0.0549
+        "exacta": 0.1064,
+        "trifecta": 0.0516
       },
       "confidence": {
         "label": "混戦",
         "rank": 1,
-        "reason": "本命確率24.3%で割れ気味。"
+        "reason": "本命確率24.5%で割れ気味。"
       },
       "scenario": {
         "headline": "3金澤幸司は番手/追走からの差しが中心。5坂本紘規が形を作れるかが鍵。",
         "flow": "3分戦。 ライン5-3-7の前が主導権を取れば、3金澤幸司の差し込みが見えます。早めに踏み合うと外のまくりを受けるリスク。",
-        "watch": "対抗は5坂本紘規。1着確率差は約4.8ポイントです。",
+        "watch": "対抗は5坂本紘規。1着確率差は約6.0ポイントです。",
         "upset": "崩れるなら2高本和也の主導権取り、またはライン分断で番手が離れるケース。",
         "pattern": "3分戦",
         "sequence": [
@@ -95141,7 +95144,7 @@
               "name": "坂本紘規",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.1953,
+              "probability": 0.1852,
               "player_id": "015415"
             },
             {
@@ -95149,7 +95152,7 @@
               "name": "金澤幸司",
               "style": "追",
               "comment": "坂本君。",
-              "probability": 0.2433,
+              "probability": 0.245,
               "player_id": "014135"
             },
             {
@@ -95157,7 +95160,7 @@
               "name": "三浦雄大",
               "style": "追",
               "comment": "北日本３番手。",
-              "probability": 0.1218,
+              "probability": 0.1243,
               "player_id": "014646"
             }
           ],
@@ -95173,7 +95176,7 @@
               "name": "高本和也",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.1167,
+              "probability": 0.1203,
               "player_id": "015618"
             },
             {
@@ -95181,7 +95184,7 @@
               "name": "江守昇",
               "style": "追",
               "comment": "高本君。",
-              "probability": 0.0729,
+              "probability": 0.0707,
               "player_id": "012811"
             }
           ],
@@ -95197,7 +95200,7 @@
               "name": "秋本耀太郎",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.1022,
+              "probability": 0.1117,
               "player_id": "015421"
             },
             {
@@ -95205,7 +95208,7 @@
               "name": "鈴木輝大",
               "style": "追",
               "comment": "秋本君。",
-              "probability": 0.1478,
+              "probability": 0.1428,
               "player_id": "015254"
             }
           ],
@@ -95339,8 +95342,8 @@
             "two_rate": 26.0,
             "three_rate": 43.4
           },
-          "win_probability": 0.1478,
-          "model_score": 8.048,
+          "win_probability": 0.1428,
+          "model_score": 7.885,
           "reasons": [
             "印: 対抗",
             "競走得点上位",
@@ -95381,15 +95384,16 @@
               2,
               5,
               1,
+              5,
               5
             ],
-            "top3_rate": 0.667,
-            "avg_finish": 3.2,
+            "top3_rate": 0.5,
+            "avg_finish": 3.5,
             "score_delta": -3.7,
             "official_delta": 1.93,
             "score_now": 94.22,
             "score_recent": 96.15,
-            "races": 8
+            "races": 9
           }
         },
         {
@@ -95525,8 +95529,8 @@
             "two_rate": 33.3,
             "three_rate": 55.5
           },
-          "win_probability": 0.1167,
-          "model_score": 7.102,
+          "win_probability": 0.1203,
+          "model_score": 7.2,
           "reasons": [
             "競走得点上位",
             "バック数あり",
@@ -95565,15 +95569,16 @@
               2,
               4,
               3,
+              7,
               7
             ],
             "top3_rate": 0.5,
-            "avg_finish": 4.2,
+            "avg_finish": 4.3,
             "score_delta": -0.8,
             "official_delta": 3.72,
             "score_now": 87.83,
             "score_recent": 91.55,
-            "races": 6
+            "races": 7
           }
         },
         {
@@ -95701,7 +95706,7 @@
             "two_rate": 26.0,
             "three_rate": 43.4
           },
-          "win_probability": 0.2433,
+          "win_probability": 0.245,
           "model_score": 10.043,
           "reasons": [
             "印: 本命",
@@ -95739,15 +95744,16 @@
               1,
               5,
               1,
-              2
+              2,
+              1
             ],
-            "top3_rate": 0.6,
-            "avg_finish": 2.6,
+            "top3_rate": 0.667,
+            "avg_finish": 2.3,
             "score_delta": -0.9,
             "official_delta": 0.67,
             "score_now": 95.33,
             "score_recent": 96.0,
-            "races": 5
+            "races": 6
           }
         },
         {
@@ -95883,8 +95889,8 @@
             "two_rate": 23.7,
             "three_rate": 28.5
           },
-          "win_probability": 0.1022,
-          "model_score": 6.573,
+          "win_probability": 0.1117,
+          "model_score": 6.902,
           "reasons": [
             "競走得点上位",
             "前検日談話: 不安含み",
@@ -95924,15 +95930,16 @@
               4,
               6,
               2,
-              1
+              1,
+              3
             ],
-            "top3_rate": 0.5,
-            "avg_finish": 3.8,
+            "top3_rate": 0.667,
+            "avg_finish": 3.2,
             "score_delta": -4.5,
             "official_delta": 7.67,
             "score_now": 85.66,
             "score_recent": 93.33,
-            "races": 7
+            "races": 8
           }
         },
         {
@@ -96068,8 +96075,8 @@
             "two_rate": 28.0,
             "three_rate": 32.0
           },
-          "win_probability": 0.1953,
-          "model_score": 9.164,
+          "win_probability": 0.1852,
+          "model_score": 8.924,
           "reasons": [
             "印: 単穴",
             "競走得点上位",
@@ -96111,7 +96118,8 @@
               1,
               4,
               2,
-              1
+              1,
+              2
             ],
             "top3_rate": 0.667,
             "avg_finish": 2.3,
@@ -96119,7 +96127,7 @@
             "official_delta": 0.75,
             "score_now": 93.77,
             "score_recent": 94.52,
-            "races": 9
+            "races": 10
           }
         },
         {
@@ -96247,8 +96255,8 @@
             "two_rate": 33.3,
             "three_rate": 55.5
           },
-          "win_probability": 0.0729,
-          "model_score": 5.223,
+          "win_probability": 0.0707,
+          "model_score": 5.073,
           "reasons": [
             "競走得点上位",
             "直近3着内多い",
@@ -96288,15 +96296,16 @@
               3,
               3,
               5,
-              3
+              3,
+              6
             ],
             "top3_rate": 0.667,
-            "avg_finish": 3.3,
+            "avg_finish": 3.7,
             "score_delta": -1.1,
             "official_delta": 1.78,
             "score_now": 89.77,
             "score_recent": 91.55,
-            "races": 9
+            "races": 10
           }
         },
         {
@@ -96424,14 +96433,14 @@
             "two_rate": 54.1,
             "three_rate": 62.5
           },
-          "win_probability": 0.1218,
-          "model_score": 7.273,
+          "win_probability": 0.1243,
+          "model_score": 7.329,
           "reasons": [
             "印: 連下",
             "競走得点上位",
             "勝率高め",
             "当所3着内50%",
-            "対高本和也 1勝1敗",
+            "対鈴木輝大 1勝1敗",
             "学習: 割引"
           ],
           "player_id": "014646",
@@ -96460,15 +96469,16 @@
             "finishes": [
               4,
               1,
-              5
+              5,
+              4
             ],
-            "top3_rate": 0.333,
-            "avg_finish": 3.3,
+            "top3_rate": 0.25,
+            "avg_finish": 3.5,
             "score_delta": 1.0,
             "official_delta": -2.25,
             "score_now": 95.33,
             "score_recent": 93.08,
-            "races": 3
+            "races": 4
           }
         }
       ],
@@ -96494,8 +96504,8 @@
       "weather": {
         "weather": "曇",
         "temperature": "25.0",
-        "wind_speed": "2.0",
-        "wind_direction": 4,
+        "wind_speed": "1.0",
+        "wind_direction": 3,
         "precipitation": "0.0",
         "is_rain": false
       },
@@ -96506,7 +96516,7 @@
         "前走レース後の談話を評価に反映しました。",
         "EXデータ(スパート・ちぎられ率等)を評価に反映しました。"
       ],
-      "elapsed": false,
+      "elapsed": true,
       "recommended": false
     },
     {
@@ -98679,7 +98689,7 @@
         "EXデータ(スパート・ちぎられ率等)を評価に反映しました。",
         "ライン相方との過去の連携成績を評価に反映しました。"
       ],
-      "elapsed": false,
+      "elapsed": true,
       "recommended": false
     },
     {
@@ -98940,9 +98950,9 @@
           "label": "1-2",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 2.5,
+          "live_odds": 2.3,
           "hit_prob": 0.1029,
-          "ev": 0.26
+          "ev": 0.24
         },
         {
           "cars": [
@@ -98953,9 +98963,9 @@
           "label": "1-3",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 4.3,
+          "live_odds": 5.3,
           "hit_prob": 0.0855,
-          "ev": 0.37
+          "ev": 0.45
         },
         {
           "cars": [
@@ -98966,9 +98976,9 @@
           "label": "1-4",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 12.5,
+          "live_odds": 11.0,
           "hit_prob": 0.0677,
-          "ev": 0.85
+          "ev": 0.74
         },
         {
           "cars": [
@@ -98979,17 +98989,17 @@
           "label": "1-5",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 16.4,
+          "live_odds": 12.2,
           "hit_prob": 0.0602,
-          "ev": 0.99
+          "ev": 0.73
         }
       ],
       "value": {
-        "label": "1-5",
-        "odds": 16.4,
-        "prob": 0.0602,
-        "ev": 0.99,
-        "taken_at": "2026-08-16T20:10:01+09:00"
+        "label": "1-4",
+        "odds": 11.0,
+        "prob": 0.0677,
+        "ev": 0.74,
+        "taken_at": "2026-08-16T20:32:47+09:00"
       },
       "hit_estimate": {
         "exacta": 0.1884,
@@ -100493,9 +100503,9 @@
           "label": "1-2",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 1.1,
+          "live_odds": 1.2,
           "hit_prob": 0.1736,
-          "ev": 0.19
+          "ev": 0.21
         },
         {
           "cars": [
@@ -100506,9 +100516,9 @@
           "label": "1-3",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 11.8,
+          "live_odds": 10.3,
           "hit_prob": 0.1004,
-          "ev": 1.19
+          "ev": 1.03
         },
         {
           "cars": [
@@ -100519,9 +100529,9 @@
           "label": "1-5",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 36.0,
+          "live_odds": 35.5,
           "hit_prob": 0.0488,
-          "ev": 1.76
+          "ev": 1.73
         },
         {
           "cars": [
@@ -100532,17 +100542,17 @@
           "label": "1-4",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 24.7,
+          "live_odds": 23.3,
           "hit_prob": 0.0386,
-          "ev": 0.95
+          "ev": 0.9
         }
       ],
       "value": {
         "label": "1-5",
-        "odds": 36.0,
+        "odds": 35.5,
         "prob": 0.0488,
-        "ev": 1.76,
-        "taken_at": "2026-08-16T20:10:03+09:00"
+        "ev": 1.73,
+        "taken_at": "2026-08-16T20:32:48+09:00"
       },
       "hit_estimate": {
         "exacta": 0.274,
@@ -102035,9 +102045,9 @@
           "label": "1-3",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 3.8,
+          "live_odds": 3.1,
           "hit_prob": 0.1526,
-          "ev": 0.58
+          "ev": 0.47
         },
         {
           "cars": [
@@ -102048,9 +102058,9 @@
           "label": "1-2",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 2.0,
+          "live_odds": 2.1,
           "hit_prob": 0.1248,
-          "ev": 0.25
+          "ev": 0.26
         },
         {
           "cars": [
@@ -102061,9 +102071,9 @@
           "label": "1-4",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 5.1,
+          "live_odds": 6.2,
           "hit_prob": 0.0583,
-          "ev": 0.3
+          "ev": 0.36
         },
         {
           "cars": [
@@ -102074,17 +102084,17 @@
           "label": "1-5",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 33.0,
+          "live_odds": 33.9,
           "hit_prob": 0.0422,
-          "ev": 1.39
+          "ev": 1.43
         }
       ],
       "value": {
         "label": "1-5",
-        "odds": 33.0,
+        "odds": 33.9,
         "prob": 0.0422,
-        "ev": 1.39,
-        "taken_at": "2026-08-16T20:10:04+09:00"
+        "ev": 1.43,
+        "taken_at": "2026-08-16T20:32:50+09:00"
       },
       "hit_estimate": {
         "exacta": 0.2774,
@@ -103605,9 +103615,9 @@
           "label": "1-2",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 1.9,
+          "live_odds": 1.2,
           "hit_prob": 0.1673,
-          "ev": 0.32
+          "ev": 0.2
         },
         {
           "cars": [
@@ -103618,9 +103628,9 @@
           "label": "1-4",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 5.6,
+          "live_odds": 8.3,
           "hit_prob": 0.1252,
-          "ev": 0.7
+          "ev": 1.04
         },
         {
           "cars": [
@@ -103631,9 +103641,9 @@
           "label": "1-3",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 5.7,
+          "live_odds": 8.7,
           "hit_prob": 0.112,
-          "ev": 0.64
+          "ev": 0.97
         },
         {
           "cars": [
@@ -103644,17 +103654,17 @@
           "label": "1-5",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 15.8,
+          "live_odds": 23.0,
           "hit_prob": 0.0674,
-          "ev": 1.06
+          "ev": 1.55
         }
       ],
       "value": {
         "label": "1-5",
-        "odds": 15.8,
+        "odds": 23.0,
         "prob": 0.0674,
-        "ev": 1.06,
-        "taken_at": "2026-08-16T20:10:05+09:00"
+        "ev": 1.55,
+        "taken_at": "2026-08-16T20:32:51+09:00"
       },
       "hit_estimate": {
         "exacta": 0.2924,
@@ -105192,9 +105202,9 @@
           "label": "1-2",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 10.6,
+          "live_odds": 9.3,
           "hit_prob": 0.1089,
-          "ev": 1.15
+          "ev": 1.01
         },
         {
           "cars": [
@@ -105205,9 +105215,9 @@
           "label": "1-3",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 21.2,
+          "live_odds": 20.5,
           "hit_prob": 0.0776,
-          "ev": 1.64
+          "ev": 1.59
         },
         {
           "cars": [
@@ -105218,9 +105228,9 @@
           "label": "1-5",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 21.2,
+          "live_odds": 25.6,
           "hit_prob": 0.0371,
-          "ev": 0.79
+          "ev": 0.95
         },
         {
           "cars": [
@@ -105231,17 +105241,17 @@
           "label": "1-4",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 2.8,
+          "live_odds": 3.9,
           "hit_prob": 0.0361,
-          "ev": 0.1
+          "ev": 0.14
         }
       ],
       "value": {
         "label": "1-3",
-        "odds": 21.2,
+        "odds": 20.5,
         "prob": 0.0776,
-        "ev": 1.64,
-        "taken_at": "2026-08-16T20:10:06+09:00"
+        "ev": 1.59,
+        "taken_at": "2026-08-16T20:32:52+09:00"
       },
       "hit_estimate": {
         "exacta": 0.1865,
@@ -106806,7 +106816,10 @@
           "score": 0.1605,
           "label": "1-3",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 11.7,
+          "hit_prob": 0.0929,
+          "ev": 1.09
         },
         {
           "cars": [
@@ -106816,7 +106829,10 @@
           "score": 0.1536,
           "label": "1-2",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 9.0,
+          "hit_prob": 0.0889,
+          "ev": 0.8
         },
         {
           "cars": [
@@ -106826,7 +106842,10 @@
           "score": 0.1105,
           "label": "1-4",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 8.5,
+          "hit_prob": 0.064,
+          "ev": 0.54
         },
         {
           "cars": [
@@ -106836,10 +106855,19 @@
           "score": 0.0992,
           "label": "1-5",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 11.7,
+          "hit_prob": 0.0574,
+          "ev": 0.67
         }
       ],
-      "value": null,
+      "value": {
+        "label": "1-3",
+        "odds": 11.7,
+        "prob": 0.0929,
+        "ev": 1.09,
+        "taken_at": "2026-08-16T20:32:53+09:00"
+      },
       "hit_estimate": {
         "exacta": 0.1818,
         "trifecta": 0.1021
@@ -108397,7 +108425,10 @@
           "score": 0.2377,
           "label": "1-3",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 17.4,
+          "hit_prob": 0.1056,
+          "ev": 1.84
         },
         {
           "cars": [
@@ -108407,7 +108438,10 @@
           "score": 0.1655,
           "label": "1-2",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 8.3,
+          "hit_prob": 0.0736,
+          "ev": 0.61
         },
         {
           "cars": [
@@ -108417,7 +108451,10 @@
           "score": 0.0853,
           "label": "1-6",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 15.8,
+          "hit_prob": 0.0379,
+          "ev": 0.6
         },
         {
           "cars": [
@@ -108427,10 +108464,19 @@
           "score": 0.0806,
           "label": "1-4",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 34.9,
+          "hit_prob": 0.0358,
+          "ev": 1.25
         }
       ],
-      "value": null,
+      "value": {
+        "label": "1-3",
+        "odds": 17.4,
+        "prob": 0.1056,
+        "ev": 1.84,
+        "taken_at": "2026-08-16T20:32:53+09:00"
+      },
       "hit_estimate": {
         "exacta": 0.1792,
         "trifecta": 0.1034
@@ -127420,9 +127466,9 @@
           "label": "1-2",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 1.9,
+          "live_odds": 1.2,
           "hit_prob": 0.1673,
-          "ev": 0.32
+          "ev": 0.2
         },
         {
           "cars": [
@@ -127433,9 +127479,9 @@
           "label": "1-4",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 5.6,
+          "live_odds": 8.3,
           "hit_prob": 0.1252,
-          "ev": 0.7
+          "ev": 1.04
         },
         {
           "cars": [
@@ -127446,9 +127492,9 @@
           "label": "1-3",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 5.7,
+          "live_odds": 8.7,
           "hit_prob": 0.112,
-          "ev": 0.64
+          "ev": 0.97
         },
         {
           "cars": [
@@ -127459,17 +127505,17 @@
           "label": "1-5",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 15.8,
+          "live_odds": 23.0,
           "hit_prob": 0.0674,
-          "ev": 1.06
+          "ev": 1.55
         }
       ],
       "value": {
         "label": "1-5",
-        "odds": 15.8,
+        "odds": 23.0,
         "prob": 0.0674,
-        "ev": 1.06,
-        "taken_at": "2026-08-16T20:10:05+09:00"
+        "ev": 1.55,
+        "taken_at": "2026-08-16T20:32:51+09:00"
       },
       "hit_estimate": {
         "exacta": 0.2924,
@@ -128996,9 +129042,9 @@
           "label": "1-3",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 3.8,
+          "live_odds": 3.1,
           "hit_prob": 0.1526,
-          "ev": 0.58
+          "ev": 0.47
         },
         {
           "cars": [
@@ -129009,9 +129055,9 @@
           "label": "1-2",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 2.0,
+          "live_odds": 2.1,
           "hit_prob": 0.1248,
-          "ev": 0.25
+          "ev": 0.26
         },
         {
           "cars": [
@@ -129022,9 +129068,9 @@
           "label": "1-4",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 5.1,
+          "live_odds": 6.2,
           "hit_prob": 0.0583,
-          "ev": 0.3
+          "ev": 0.36
         },
         {
           "cars": [
@@ -129035,17 +129081,17 @@
           "label": "1-5",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 33.0,
+          "live_odds": 33.9,
           "hit_prob": 0.0422,
-          "ev": 1.39
+          "ev": 1.43
         }
       ],
       "value": {
         "label": "1-5",
-        "odds": 33.0,
+        "odds": 33.9,
         "prob": 0.0422,
-        "ev": 1.39,
-        "taken_at": "2026-08-16T20:10:04+09:00"
+        "ev": 1.43,
+        "taken_at": "2026-08-16T20:32:50+09:00"
       },
       "hit_estimate": {
         "exacta": 0.2774,
@@ -130562,9 +130608,9 @@
           "label": "1-2",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 1.1,
+          "live_odds": 1.2,
           "hit_prob": 0.1736,
-          "ev": 0.19
+          "ev": 0.21
         },
         {
           "cars": [
@@ -130575,9 +130621,9 @@
           "label": "1-3",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 11.8,
+          "live_odds": 10.3,
           "hit_prob": 0.1004,
-          "ev": 1.19
+          "ev": 1.03
         },
         {
           "cars": [
@@ -130588,9 +130634,9 @@
           "label": "1-5",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 36.0,
+          "live_odds": 35.5,
           "hit_prob": 0.0488,
-          "ev": 1.76
+          "ev": 1.73
         },
         {
           "cars": [
@@ -130601,17 +130647,17 @@
           "label": "1-4",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 24.7,
+          "live_odds": 23.3,
           "hit_prob": 0.0386,
-          "ev": 0.95
+          "ev": 0.9
         }
       ],
       "value": {
         "label": "1-5",
-        "odds": 36.0,
+        "odds": 35.5,
         "prob": 0.0488,
-        "ev": 1.76,
-        "taken_at": "2026-08-16T20:10:03+09:00"
+        "ev": 1.73,
+        "taken_at": "2026-08-16T20:32:48+09:00"
       },
       "hit_estimate": {
         "exacta": 0.274,
@@ -135137,9 +135183,9 @@
   "learning_status": {
     "races": 3093,
     "entries": 20253,
-    "result_races": 2796,
-    "result_entries": 19448,
-    "predictions": 3075,
+    "result_races": 2797,
+    "result_entries": 19455,
+    "predictions": 3076,
     "documents": 15
   }
 }
