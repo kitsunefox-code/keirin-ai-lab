@@ -19,14 +19,14 @@
   ],
   "summary": {
     "races": 90,
-    "settled": 68,
-    "pending": 22,
+    "settled": 69,
+    "pending": 21,
     "honmei_hits": 24,
-    "honmei_rate": 0.3529,
-    "in_top3_hits": 46,
-    "in_top3_rate": 0.6765,
-    "trifecta_hits": 8,
-    "trifecta_rate": 0.1176
+    "honmei_rate": 0.3478,
+    "in_top3_hits": 47,
+    "in_top3_rate": 0.6812,
+    "trifecta_hits": 9,
+    "trifecta_rate": 0.1304
   },
   "venues": [
     {
@@ -2862,15 +2862,25 @@
             "6-5-3",
             "3-6-5"
           ],
-          "result_order": [],
-          "status": "pending",
+          "result_order": [
+            3,
+            6,
+            1
+          ],
+          "status": "hit_trifecta",
           "hits": {
-            "honmei": null,
-            "in_top3": null,
-            "trifecta": null,
-            "trifecta_label": null
+            "honmei": false,
+            "in_top3": true,
+            "trifecta": true,
+            "trifecta_label": "3-6-1"
           },
-          "payout": null
+          "payout": {
+            "trifecta_odds": 3.4,
+            "trifecta_payout": 340,
+            "exacta_odds": 1.6,
+            "exacta_hit_label": null,
+            "exacta_payout": null
+          }
         },
         {
           "race_key": "winticket:2026081637:3:11",
@@ -3459,32 +3469,32 @@
     "as_of": "2026-08-18",
     "today": {
       "label": "今日",
-      "settled": 68,
+      "settled": 69,
       "honmei_hits": 24,
-      "honmei_rate": 0.3529,
-      "in_top3_rate": 0.6765,
-      "trifecta_hits": 8,
-      "trifecta_rate": 0.1176,
-      "exacta_roi": 0.5375,
-      "exacta_priced": 68,
+      "honmei_rate": 0.3478,
+      "in_top3_rate": 0.6812,
+      "trifecta_hits": 9,
+      "trifecta_rate": 0.1304,
+      "exacta_roi": 0.5297,
+      "exacta_priced": 69,
       "exacta_hits": 13,
-      "exacta_hit_rate": 0.1912,
-      "trifecta_roi": 0.5353,
+      "exacta_hit_rate": 0.1884,
+      "trifecta_roi": 0.5357,
       "form": "cold"
     },
     "week": {
       "label": "今週",
-      "settled": 139,
+      "settled": 140,
       "honmei_hits": 59,
-      "honmei_rate": 0.4245,
-      "in_top3_rate": 0.7698,
-      "trifecta_hits": 33,
-      "trifecta_rate": 0.2374,
-      "exacta_roi": 0.5781,
-      "exacta_priced": 139,
+      "honmei_rate": 0.4214,
+      "in_top3_rate": 0.7714,
+      "trifecta_hits": 34,
+      "trifecta_rate": 0.2429,
+      "exacta_roi": 0.5739,
+      "exacta_priced": 140,
       "exacta_hits": 36,
-      "exacta_hit_rate": 0.259,
-      "trifecta_roi": 0.9032,
+      "exacta_hit_rate": 0.2571,
+      "trifecta_roi": 0.9008,
       "form": "cold"
     },
     "last_week": {
@@ -3504,16 +3514,16 @@
     },
     "total": {
       "label": "通算",
-      "settled": 3013,
+      "settled": 3014,
       "honmei_hits": 1211,
-      "honmei_rate": 0.4019,
-      "in_top3_rate": 0.7305,
-      "trifecta_hits": 541,
-      "trifecta_rate": 0.1796,
-      "exacta_roi": 0.7162,
-      "exacta_priced": 3011,
+      "honmei_rate": 0.4018,
+      "in_top3_rate": 0.7306,
+      "trifecta_hits": 542,
+      "trifecta_rate": 0.1798,
+      "exacta_roi": 0.716,
+      "exacta_priced": 3012,
       "exacta_hits": 746,
-      "exacta_hit_rate": 0.2478,
+      "exacta_hit_rate": 0.2477,
       "trifecta_roi": 0.7618,
       "form": null
     }
@@ -3620,9 +3630,9 @@
     {
       "category": "級班",
       "label": "その他",
-      "races": 291,
-      "roi": 0.8033,
-      "hit_rate": 0.4639
+      "races": 292,
+      "roi": 0.8005,
+      "hit_rate": 0.4623
     },
     {
       "category": "会場",
@@ -3683,16 +3693,16 @@
     {
       "category": "会場",
       "label": "伊東",
-      "races": 154,
-      "roi": 0.7192,
-      "hit_rate": 0.2468
+      "races": 155,
+      "roi": 0.7145,
+      "hit_rate": 0.2452
     },
     {
       "category": "車立て",
       "label": "7車",
-      "races": 2572,
-      "roi": 0.7089,
-      "hit_rate": 0.2574
+      "races": 2573,
+      "roi": 0.7086,
+      "hit_rate": 0.2573
     },
     {
       "category": "時間帯",
@@ -3725,9 +3735,9 @@
     {
       "category": "時間帯",
       "label": "ナイター",
-      "races": 671,
-      "roi": 0.6943,
-      "hit_rate": 0.231
+      "races": 672,
+      "roi": 0.6933,
+      "hit_rate": 0.2307
     },
     {
       "category": "級班",
@@ -3892,8 +3902,8 @@
     {
       "bin": "40-50%",
       "predicted": 0.4428,
-      "actual": 0.5251,
-      "races": 438
+      "actual": 0.5239,
+      "races": 439
     },
     {
       "bin": "50-60%",
