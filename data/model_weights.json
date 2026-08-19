@@ -96,28 +96,28 @@
   ],
   "lgbm_model": "data/model_lgbm.txt",
   "training": {
-    "rows": 21202,
-    "races": 3052,
-    "positive_rows": 3008,
+    "rows": 21230,
+    "races": 3056,
+    "positive_rows": 3012,
     "best_iteration": 300,
-    "valid_races": 458
+    "valid_races": 459
   },
   "metrics": {
-    "top1_accuracy": 0.441,
+    "top1_accuracy": 0.4466,
     "eval_split": "time-based 15% holdout"
   },
   "feature_importance": {
-    "ln_score_z": 11164.6,
-    "s2_line_win_p": 5019.4,
-    "ln_win_rate_z": 4909.3,
-    "s2_line_p_x_bante": 1771.8,
-    "s2_line_p_x_head": 1571.3,
-    "two_rate": 1408.1,
-    "ln_score_in_line": 1398.9,
-    "recent_avg_finish": 1363.5,
-    "pos_win_rate": 1275.3,
-    "three_rate": 1270.2,
-    "ln_pos": 1203.1,
-    "win_rate": 1147.9
+    "ln_score_z": 11260.4,
+    "ln_win_rate_z": 4991.9,
+    "s2_line_win_p": 4694.0,
+    "s2_line_p_x_bante": 1836.1,
+    "s2_line_p_x_head": 1732.8,
+    "line_third_plus": 1529.0,
+    "pos_win_rate": 1506.1,
+    "two_rate": 1449.0,
+    "three_rate": 1284.5,
+    "recent_avg_finish": 1260.7,
+    "ln_score_in_line": 1230.8,
+    "ln_score_gap": 1109.9
   }
 }
