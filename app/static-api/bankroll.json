@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at_jst": "2026-08-19T11:55:24+09:00",
+  "generated_at_jst": "2026-08-19T12:37:52+09:00",
   "rules": [
     "全額転がしは行いません(1レース投資は残高の上限%まで)",
     "負けた後の倍賭け(マーチンゲール)は行いません",
@@ -370,48 +370,48 @@
     }
   },
   "proposal": {
-    "race_key": "winticket:2026081874:2:5",
-    "venue": "高知",
-    "race_no": 5,
-    "start_time": "12:28",
+    "race_key": "winticket:2026081934:1:1",
+    "venue": "川崎",
+    "race_no": 1,
+    "start_time": "15:50",
     "race_date": "2026年8月19日",
-    "url": "https://www.winticket.jp/keirin/kochi/racecard/2026081874/2/5",
+    "url": "https://www.winticket.jp/keirin/kawasaki/racecard/2026081934/1/1",
     "confidence": "本命",
     "budget": 500,
     "total_stake": 200,
-    "ev": 0.75,
+    "ev": 0.751,
     "expected_return": 150,
     "tickets": [
       {
         "role": "本線",
-        "label": "1-2",
+        "label": "1-4",
         "stake": 100,
-        "odds": 7.8,
+        "odds": 4.9,
         "odds_source": "estimated",
         "popularity": null,
-        "hit_probability": 0.0965,
-        "projected_return": 780
+        "hit_probability": 0.1531,
+        "projected_return": 490
       },
       {
         "role": "抑え",
-        "label": "1-6",
+        "label": "1-7",
         "stake": 100,
-        "odds": 8.5,
+        "odds": 9.2,
         "odds_source": "estimated",
         "popularity": null,
-        "hit_probability": 0.0879,
-        "projected_return": 850
+        "hit_probability": 0.0817,
+        "projected_return": 920
       }
     ],
     "live_odds_count": 0,
     "top_pick": {
       "car_no": 1,
-      "name": "田中和磨",
-      "probability": 0.3792,
-      "score": 12.137,
-      "mark": "本命",
+      "name": "金田涼馬",
+      "probability": 0.3842,
+      "score": 10.921,
+      "mark": "対抗",
       "style": "逃",
-      "comment": "自力。",
+      "comment": "自力です。",
       "emotion": {
         "tone": "中立",
         "score": 0.4,
@@ -428,45 +428,38 @@
         "summary": "戦法意図は見えますが、状態評価は控えめです。"
       },
       "reasons": [
-        "印: 本命",
+        "印: 対抗",
         "競走得点上位",
         "勝率高め",
         "バック数あり",
         "EX攻撃力100%",
-        "ちぎられ率34%",
-        "先頭勝率26%"
+        "先頭勝率22%",
+        "当所3着内59%"
       ],
       "form": {
         "label": "好調",
         "finishes": [
-          2,
-          2,
-          2,
-          6,
-          2,
-          2,
-          5,
-          1,
-          3,
+          4,
           1,
           1,
-          3
+          7,
+          1
         ],
-        "top3_rate": 0.833,
-        "avg_finish": 2.3,
-        "score_delta": 0.9,
-        "official_delta": -0.51,
-        "score_now": 93.41,
-        "score_recent": 92.9,
-        "races": 12
+        "top3_rate": 0.6,
+        "avg_finish": 2.8,
+        "score_delta": 0.8,
+        "official_delta": 0.52,
+        "score_now": 89.44,
+        "score_recent": 89.96,
+        "races": 5
       },
-      "term": 113,
+      "term": 119,
       "class_move": null,
-      "player_id": "015278"
+      "player_id": "015594"
     },
-    "scenario_headline": "1田中和磨が本線。前で動いてライン1-7を残す展開を重視。",
+    "scenario_headline": "1金田涼馬が本線。前で動いてライン1-7-5を残す展開を重視。",
     "bet_type": "exacta",
-    "copy_text": "高知5R 2車単\n本線 1-2 100円\n抑え 1-6 100円",
+    "copy_text": "川崎1R 2車単\n本線 1-4 100円\n抑え 1-7 100円",
     "odds_status": {
       "attempted": 6,
       "fetched": 6,
@@ -476,17 +469,6 @@
   },
   "judged_races": [
     {
-      "race_key": "winticket:2026081874:2:5",
-      "venue": "高知",
-      "race_no": 5,
-      "start_time": "12:28",
-      "confidence": "本命",
-      "decision": "bet",
-      "reason": "予定レース・半分に縮小して実行(EV 0.75 低め・見送りも可)",
-      "ev": 0.752,
-      "is_next": true
-    },
-    {
       "race_key": "winticket:2026081934:1:1",
       "venue": "川崎",
       "race_no": 1,
@@ -495,7 +477,7 @@
       "decision": "bet",
       "reason": "予定レース・半分に縮小して実行(EV 0.75 低め・見送りも可)",
       "ev": 0.75,
-      "is_next": false
+      "is_next": true
     },
     {
       "race_key": "winticket:2026081874:2:12",
@@ -548,8 +530,8 @@
       "start_time": "21:00",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 7.29 / 3点分散",
-      "ev": 7.294,
+      "reason": "EV 2.13 / 3点分散 / ライブ3点",
+      "ev": 2.131,
       "is_next": false
     },
     {
@@ -1358,8 +1340,7 @@
         "start_time": "12:28",
         "original": null,
         "changed_at": null,
-        "status": "planned",
-        "is_next": true
+        "status": "missed"
       },
       {
         "race_key": "winticket:2026081934:1:1",
@@ -1368,7 +1349,8 @@
         "start_time": "15:50",
         "original": null,
         "changed_at": null,
-        "status": "planned"
+        "status": "planned",
+        "is_next": true
       },
       {
         "race_key": "winticket:2026081874:2:12",
