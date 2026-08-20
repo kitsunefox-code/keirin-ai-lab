@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at_jst": "2026-08-20T18:03:46+09:00",
+  "generated_at_jst": "2026-08-20T18:49:49+09:00",
   "rules": [
     "全額転がしは行いません(1レース投資は残高の上限%まで)",
     "負けた後の倍賭け(マーチンゲール)は行いません",
@@ -135,566 +135,8 @@
     }
   ],
   "auto_buy_available": false,
-  "session": {
-    "id": 47,
-    "created_at": "2026-08-20T08:35:49+09:00",
-    "session_date": "2026-08-20",
-    "status": "active",
-    "stop_reason": null,
-    "config": {
-      "start_amount": 10000,
-      "target_amount": 1000000,
-      "style": "original",
-      "per_race_cap_pct": 5,
-      "daily_loss_limit_pct": 25,
-      "max_consecutive_losses": 4,
-      "min_ev": 1.25,
-      "auto_buy": false,
-      "role": "main"
-    },
-    "plan": {
-      "locked_at": "2026-08-20T08:35:49+09:00",
-      "race_limit": 10,
-      "slots": [
-        {
-          "race_key": "winticket:2026082046:1:1",
-          "venue": "富山",
-          "race_no": 1,
-          "start_time": "10:45",
-          "original": null,
-          "changed_at": null
-        },
-        {
-          "race_key": "winticket:2026082053:1:2",
-          "venue": "奈良",
-          "race_no": 2,
-          "start_time": "11:25",
-          "original": null,
-          "changed_at": null
-        },
-        {
-          "race_key": "winticket:2026082053:1:3",
-          "venue": "奈良",
-          "race_no": 3,
-          "start_time": "11:52",
-          "original": null,
-          "changed_at": null
-        },
-        {
-          "race_key": "winticket:2026082053:1:6",
-          "venue": "奈良",
-          "race_no": 6,
-          "start_time": "13:16",
-          "original": null,
-          "changed_at": null
-        },
-        {
-          "race_key": "winticket:2026082053:1:10",
-          "venue": "奈良",
-          "race_no": 10,
-          "start_time": "15:16",
-          "original": null,
-          "changed_at": null
-        },
-        {
-          "race_key": "winticket:2026082046:1:11",
-          "venue": "富山",
-          "race_no": 11,
-          "start_time": "15:28",
-          "original": null,
-          "changed_at": null
-        },
-        {
-          "race_key": "winticket:2026082061:1:2",
-          "venue": "玉野",
-          "race_no": 2,
-          "start_time": "16:31",
-          "original": null,
-          "changed_at": null
-        },
-        {
-          "race_key": "winticket:2026082061:1:3",
-          "venue": "玉野",
-          "race_no": 3,
-          "start_time": "16:53",
-          "original": null,
-          "changed_at": null
-        },
-        {
-          "race_key": "winticket:2026082061:1:4",
-          "venue": "玉野",
-          "race_no": 4,
-          "start_time": "17:17",
-          "original": null,
-          "changed_at": null
-        },
-        {
-          "race_key": "winticket:2026082061:1:6",
-          "venue": "玉野",
-          "race_no": 6,
-          "start_time": "18:05",
-          "original": null,
-          "changed_at": null
-        }
-      ]
-    }
-  },
-  "state": {
-    "balance": 11180,
-    "profit": 1180,
-    "day_loss": 0,
-    "day_loss_limit": 2500,
-    "consecutive_losses": 0,
-    "wins": 5,
-    "losses": 4,
-    "skips": 0,
-    "pending_bet": null,
-    "bets": [
-      {
-        "id": 244,
-        "race_key": "winticket:2026082046:1:1",
-        "venue": "富山",
-        "race_no": 1,
-        "start_time": "10:45",
-        "url": "",
-        "tickets": [
-          {
-            "label": "3-1-2",
-            "cars": [
-              3,
-              1,
-              2
-            ],
-            "stake": 200,
-            "bet_type": "trifecta"
-          },
-          {
-            "label": "3-1-4",
-            "cars": [
-              3,
-              1,
-              4
-            ],
-            "stake": 100,
-            "bet_type": "trifecta"
-          },
-          {
-            "label": "3-1-7",
-            "cars": [
-              3,
-              1,
-              7
-            ],
-            "stake": 100,
-            "bet_type": "trifecta"
-          },
-          {
-            "label": "3-2-1",
-            "cars": [
-              3,
-              2,
-              1
-            ],
-            "stake": 100,
-            "bet_type": "trifecta"
-          }
-        ],
-        "total_stake": 500,
-        "status": "lost",
-        "payout": 0,
-        "note": null,
-        "created_at": "2026-08-20T10:59:46+09:00",
-        "settled_at": "2026-08-20T10:59:46+09:00"
-      },
-      {
-        "id": 245,
-        "race_key": "winticket:2026082053:1:2",
-        "venue": "奈良",
-        "race_no": 2,
-        "start_time": "11:25",
-        "url": "",
-        "tickets": [
-          {
-            "label": "7-1",
-            "cars": [
-              7,
-              1
-            ],
-            "stake": 300,
-            "bet_type": "exacta"
-          },
-          {
-            "label": "7-5",
-            "cars": [
-              7,
-              5
-            ],
-            "stake": 100,
-            "bet_type": "exacta"
-          }
-        ],
-        "total_stake": 400,
-        "status": "won",
-        "payout": 1250,
-        "note": null,
-        "created_at": "2026-08-20T11:52:32+09:00",
-        "settled_at": "2026-08-20T11:52:32+09:00"
-      },
-      {
-        "id": 246,
-        "race_key": "winticket:2026082053:1:3",
-        "venue": "奈良",
-        "race_no": 3,
-        "start_time": "11:52",
-        "url": "",
-        "tickets": [
-          {
-            "label": "2-1-7",
-            "cars": [
-              2,
-              1,
-              7
-            ],
-            "stake": 200,
-            "bet_type": "trifecta"
-          },
-          {
-            "label": "2-1-4",
-            "cars": [
-              2,
-              1,
-              4
-            ],
-            "stake": 100,
-            "bet_type": "trifecta"
-          },
-          {
-            "label": "2-1-5",
-            "cars": [
-              2,
-              1,
-              5
-            ],
-            "stake": 100,
-            "bet_type": "trifecta"
-          },
-          {
-            "label": "2-7-1",
-            "cars": [
-              2,
-              7,
-              1
-            ],
-            "stake": 100,
-            "bet_type": "trifecta"
-          }
-        ],
-        "total_stake": 500,
-        "status": "lost",
-        "payout": 0,
-        "note": null,
-        "created_at": "2026-08-20T12:37:37+09:00",
-        "settled_at": "2026-08-20T12:37:37+09:00"
-      },
-      {
-        "id": 247,
-        "race_key": "winticket:2026082053:1:6",
-        "venue": "奈良",
-        "race_no": 6,
-        "start_time": "13:16",
-        "url": "",
-        "tickets": [
-          {
-            "label": "1-6-4",
-            "cars": [
-              1,
-              6,
-              4
-            ],
-            "stake": 100,
-            "bet_type": "trifecta"
-          },
-          {
-            "label": "1-6-7",
-            "cars": [
-              1,
-              6,
-              7
-            ],
-            "stake": 100,
-            "bet_type": "trifecta"
-          },
-          {
-            "label": "1-6-2",
-            "cars": [
-              1,
-              6,
-              2
-            ],
-            "stake": 100,
-            "bet_type": "trifecta"
-          },
-          {
-            "label": "1-4-6",
-            "cars": [
-              1,
-              4,
-              6
-            ],
-            "stake": 100,
-            "bet_type": "trifecta"
-          }
-        ],
-        "total_stake": 400,
-        "status": "lost",
-        "payout": 0,
-        "note": null,
-        "created_at": "2026-08-20T14:01:53+09:00",
-        "settled_at": "2026-08-20T14:01:53+09:00"
-      },
-      {
-        "id": 248,
-        "race_key": "winticket:2026082053:1:10",
-        "venue": "奈良",
-        "race_no": 10,
-        "start_time": "15:16",
-        "url": "",
-        "tickets": [
-          {
-            "label": "7-1-5",
-            "cars": [
-              7,
-              1,
-              5
-            ],
-            "stake": 100,
-            "bet_type": "trifecta"
-          },
-          {
-            "label": "7-1-3",
-            "cars": [
-              7,
-              1,
-              3
-            ],
-            "stake": 100,
-            "bet_type": "trifecta"
-          },
-          {
-            "label": "7-1-4",
-            "cars": [
-              7,
-              1,
-              4
-            ],
-            "stake": 100,
-            "bet_type": "trifecta"
-          },
-          {
-            "label": "7-5-1",
-            "cars": [
-              7,
-              5,
-              1
-            ],
-            "stake": 100,
-            "bet_type": "trifecta"
-          }
-        ],
-        "total_stake": 400,
-        "status": "won",
-        "payout": 240,
-        "note": null,
-        "created_at": "2026-08-20T15:27:05+09:00",
-        "settled_at": "2026-08-20T15:27:05+09:00"
-      },
-      {
-        "id": 249,
-        "race_key": "winticket:2026082046:1:11",
-        "venue": "富山",
-        "race_no": 11,
-        "start_time": "15:28",
-        "url": "",
-        "tickets": [
-          {
-            "label": "1-7",
-            "cars": [
-              1,
-              7
-            ],
-            "stake": 300,
-            "bet_type": "exacta"
-          },
-          {
-            "label": "1-5",
-            "cars": [
-              1,
-              5
-            ],
-            "stake": 100,
-            "bet_type": "exacta"
-          }
-        ],
-        "total_stake": 400,
-        "status": "lost",
-        "payout": 0,
-        "note": null,
-        "created_at": "2026-08-20T16:15:19+09:00",
-        "settled_at": "2026-08-20T16:15:19+09:00"
-      },
-      {
-        "id": 250,
-        "race_key": "winticket:2026082061:1:2",
-        "venue": "玉野",
-        "race_no": 2,
-        "start_time": "16:31",
-        "url": "",
-        "tickets": [
-          {
-            "label": "1-5-4",
-            "cars": [
-              1,
-              5,
-              4
-            ],
-            "stake": 100,
-            "bet_type": "trifecta"
-          },
-          {
-            "label": "1-5-7",
-            "cars": [
-              1,
-              5,
-              7
-            ],
-            "stake": 100,
-            "bet_type": "trifecta"
-          },
-          {
-            "label": "1-5-2",
-            "cars": [
-              1,
-              5,
-              2
-            ],
-            "stake": 100,
-            "bet_type": "trifecta"
-          },
-          {
-            "label": "1-4-5",
-            "cars": [
-              1,
-              4,
-              5
-            ],
-            "stake": 100,
-            "bet_type": "trifecta"
-          }
-        ],
-        "total_stake": 400,
-        "status": "won",
-        "payout": 860,
-        "note": null,
-        "created_at": "2026-08-20T16:57:21+09:00",
-        "settled_at": "2026-08-20T16:57:21+09:00"
-      },
-      {
-        "id": 251,
-        "race_key": "winticket:2026082061:1:3",
-        "venue": "玉野",
-        "race_no": 3,
-        "start_time": "16:53",
-        "url": "",
-        "tickets": [
-          {
-            "label": "3-5",
-            "cars": [
-              3,
-              5
-            ],
-            "stake": 300,
-            "bet_type": "exacta"
-          },
-          {
-            "label": "3-7",
-            "cars": [
-              3,
-              7
-            ],
-            "stake": 100,
-            "bet_type": "exacta"
-          }
-        ],
-        "total_stake": 400,
-        "status": "won",
-        "payout": 660,
-        "note": null,
-        "created_at": "2026-08-20T17:23:32+09:00",
-        "settled_at": "2026-08-20T17:23:32+09:00"
-      },
-      {
-        "id": 252,
-        "race_key": "winticket:2026082061:1:4",
-        "venue": "玉野",
-        "race_no": 4,
-        "start_time": "17:17",
-        "url": "",
-        "tickets": [
-          {
-            "label": "1-5-4",
-            "cars": [
-              1,
-              5,
-              4
-            ],
-            "stake": 100,
-            "bet_type": "trifecta"
-          },
-          {
-            "label": "1-5-6",
-            "cars": [
-              1,
-              5,
-              6
-            ],
-            "stake": 100,
-            "bet_type": "trifecta"
-          },
-          {
-            "label": "1-5-2",
-            "cars": [
-              1,
-              5,
-              2
-            ],
-            "stake": 100,
-            "bet_type": "trifecta"
-          },
-          {
-            "label": "1-4-5",
-            "cars": [
-              1,
-              4,
-              5
-            ],
-            "stake": 100,
-            "bet_type": "trifecta"
-          }
-        ],
-        "total_stake": 400,
-        "status": "won",
-        "payout": 1970,
-        "note": null,
-        "created_at": "2026-08-20T18:03:33+09:00",
-        "settled_at": "2026-08-20T18:03:33+09:00"
-      }
-    ],
-    "target_progress": 0.01118,
-    "races_to_target": {
-      "expected": 99,
-      "fast": 54
-    }
-  },
+  "session": null,
+  "state": null,
   "proposal": null,
   "judged_races": [],
   "yesterday": {
@@ -729,14 +171,14 @@
   "daily_history": [
     {
       "date": "2026-08-20",
-      "total_profit": 1180,
+      "total_profit": 1540,
       "sessions": [
         {
           "id": 47,
           "style": "original",
           "style_label": "オリジナル",
-          "status": "active",
-          "stop_reason": null,
+          "status": "stopped",
+          "stop_reason": "10レース完了(収支確定 +1540円)",
           "config": {
             "start_amount": 10000,
             "target_amount": 1000000,
@@ -748,9 +190,9 @@
             "auto_buy": false,
             "role": "main"
           },
-          "balance": 11180,
-          "profit": 1180,
-          "wins": 5,
+          "balance": 11540,
+          "profit": 1540,
+          "wins": 6,
           "losses": 4,
           "skips": 0,
           "target_reached": false
@@ -760,8 +202,8 @@
         "id": 47,
         "style": "original",
         "style_label": "オリジナル",
-        "status": "active",
-        "stop_reason": null,
+        "status": "stopped",
+        "stop_reason": "10レース完了(収支確定 +1540円)",
         "config": {
           "start_amount": 10000,
           "target_amount": 1000000,
@@ -773,9 +215,9 @@
           "auto_buy": false,
           "role": "main"
         },
-        "balance": 11180,
-        "profit": 1180,
-        "wins": 5,
+        "balance": 11540,
+        "profit": 1540,
+        "wins": 6,
         "losses": 4,
         "skips": 0,
         "target_reached": false
@@ -1377,15 +819,15 @@
     }
   ],
   "finance": {
-    "current_balance": 11180,
-    "total_stake": 201800,
-    "total_payout": 150740,
-    "total_profit": -51060,
-    "roi": 0.747,
-    "wins": 81,
+    "current_balance": 11540,
+    "total_stake": 202300,
+    "total_payout": 151600,
+    "total_profit": -50700,
+    "roi": 0.7494,
+    "wins": 82,
     "losses": 171,
-    "hit_rate": 0.3214,
-    "today_profit": 1180,
+    "hit_rate": 0.3241,
+    "today_profit": 1540,
     "series": [
       {
         "date": "2026-07-22",
@@ -1509,116 +951,535 @@
       },
       {
         "date": "2026-08-20",
-        "cumulative_profit": -16490,
-        "day_profit": 1180
+        "cumulative_profit": -16130,
+        "day_profit": 1540
       }
     ]
   },
-  "plan": {
-    "locked_at": "2026-08-20T08:35:49+09:00",
-    "race_limit": 10,
-    "slots": [
-      {
-        "race_key": "winticket:2026082046:1:1",
-        "venue": "富山",
-        "race_no": 1,
-        "start_time": "10:45",
-        "original": null,
-        "changed_at": null,
-        "status": "lost",
-        "profit": -500
-      },
-      {
-        "race_key": "winticket:2026082053:1:2",
-        "venue": "奈良",
-        "race_no": 2,
-        "start_time": "11:25",
-        "original": null,
-        "changed_at": null,
-        "status": "won",
-        "profit": 850
-      },
-      {
-        "race_key": "winticket:2026082053:1:3",
-        "venue": "奈良",
-        "race_no": 3,
-        "start_time": "11:52",
-        "original": null,
-        "changed_at": null,
-        "status": "lost",
-        "profit": -500
-      },
-      {
-        "race_key": "winticket:2026082053:1:6",
-        "venue": "奈良",
-        "race_no": 6,
-        "start_time": "13:16",
-        "original": null,
-        "changed_at": null,
-        "status": "lost",
-        "profit": -400
-      },
-      {
-        "race_key": "winticket:2026082053:1:10",
-        "venue": "奈良",
-        "race_no": 10,
-        "start_time": "15:16",
-        "original": null,
-        "changed_at": null,
-        "status": "won",
-        "profit": -160
-      },
-      {
-        "race_key": "winticket:2026082046:1:11",
-        "venue": "富山",
-        "race_no": 11,
-        "start_time": "15:28",
-        "original": null,
-        "changed_at": null,
-        "status": "lost",
-        "profit": -400
-      },
-      {
-        "race_key": "winticket:2026082061:1:2",
-        "venue": "玉野",
-        "race_no": 2,
-        "start_time": "16:31",
-        "original": null,
-        "changed_at": null,
-        "status": "won",
-        "profit": 460
-      },
-      {
-        "race_key": "winticket:2026082061:1:3",
-        "venue": "玉野",
-        "race_no": 3,
-        "start_time": "16:53",
-        "original": null,
-        "changed_at": null,
-        "status": "won",
-        "profit": 260
-      },
-      {
-        "race_key": "winticket:2026082061:1:4",
-        "venue": "玉野",
-        "race_no": 4,
-        "start_time": "17:17",
-        "original": null,
-        "changed_at": null,
-        "status": "won",
-        "profit": 1570
-      },
-      {
-        "race_key": "winticket:2026082061:1:6",
-        "venue": "玉野",
-        "race_no": 6,
-        "start_time": "18:05",
-        "original": null,
-        "changed_at": null,
-        "status": "planned",
-        "is_next": true
+  "last_session": {
+    "stop_reason": "10レース完了(収支確定 +1540円)",
+    "config": {
+      "start_amount": 10000,
+      "target_amount": 1000000,
+      "style": "original",
+      "per_race_cap_pct": 5,
+      "daily_loss_limit_pct": 25,
+      "max_consecutive_losses": 4,
+      "min_ev": 1.25,
+      "auto_buy": false,
+      "role": "main"
+    },
+    "state": {
+      "balance": 11540,
+      "profit": 1540,
+      "day_loss": 0,
+      "day_loss_limit": 2500,
+      "consecutive_losses": 0,
+      "wins": 6,
+      "losses": 4,
+      "skips": 0,
+      "pending_bet": null,
+      "bets": [
+        {
+          "id": 244,
+          "race_key": "winticket:2026082046:1:1",
+          "venue": "富山",
+          "race_no": 1,
+          "start_time": "10:45",
+          "url": "",
+          "tickets": [
+            {
+              "label": "3-1-2",
+              "cars": [
+                3,
+                1,
+                2
+              ],
+              "stake": 200,
+              "bet_type": "trifecta"
+            },
+            {
+              "label": "3-1-4",
+              "cars": [
+                3,
+                1,
+                4
+              ],
+              "stake": 100,
+              "bet_type": "trifecta"
+            },
+            {
+              "label": "3-1-7",
+              "cars": [
+                3,
+                1,
+                7
+              ],
+              "stake": 100,
+              "bet_type": "trifecta"
+            },
+            {
+              "label": "3-2-1",
+              "cars": [
+                3,
+                2,
+                1
+              ],
+              "stake": 100,
+              "bet_type": "trifecta"
+            }
+          ],
+          "total_stake": 500,
+          "status": "lost",
+          "payout": 0,
+          "note": null,
+          "created_at": "2026-08-20T10:59:46+09:00",
+          "settled_at": "2026-08-20T10:59:46+09:00"
+        },
+        {
+          "id": 245,
+          "race_key": "winticket:2026082053:1:2",
+          "venue": "奈良",
+          "race_no": 2,
+          "start_time": "11:25",
+          "url": "",
+          "tickets": [
+            {
+              "label": "7-1",
+              "cars": [
+                7,
+                1
+              ],
+              "stake": 300,
+              "bet_type": "exacta"
+            },
+            {
+              "label": "7-5",
+              "cars": [
+                7,
+                5
+              ],
+              "stake": 100,
+              "bet_type": "exacta"
+            }
+          ],
+          "total_stake": 400,
+          "status": "won",
+          "payout": 1250,
+          "note": null,
+          "created_at": "2026-08-20T11:52:32+09:00",
+          "settled_at": "2026-08-20T11:52:32+09:00"
+        },
+        {
+          "id": 246,
+          "race_key": "winticket:2026082053:1:3",
+          "venue": "奈良",
+          "race_no": 3,
+          "start_time": "11:52",
+          "url": "",
+          "tickets": [
+            {
+              "label": "2-1-7",
+              "cars": [
+                2,
+                1,
+                7
+              ],
+              "stake": 200,
+              "bet_type": "trifecta"
+            },
+            {
+              "label": "2-1-4",
+              "cars": [
+                2,
+                1,
+                4
+              ],
+              "stake": 100,
+              "bet_type": "trifecta"
+            },
+            {
+              "label": "2-1-5",
+              "cars": [
+                2,
+                1,
+                5
+              ],
+              "stake": 100,
+              "bet_type": "trifecta"
+            },
+            {
+              "label": "2-7-1",
+              "cars": [
+                2,
+                7,
+                1
+              ],
+              "stake": 100,
+              "bet_type": "trifecta"
+            }
+          ],
+          "total_stake": 500,
+          "status": "lost",
+          "payout": 0,
+          "note": null,
+          "created_at": "2026-08-20T12:37:37+09:00",
+          "settled_at": "2026-08-20T12:37:37+09:00"
+        },
+        {
+          "id": 247,
+          "race_key": "winticket:2026082053:1:6",
+          "venue": "奈良",
+          "race_no": 6,
+          "start_time": "13:16",
+          "url": "",
+          "tickets": [
+            {
+              "label": "1-6-4",
+              "cars": [
+                1,
+                6,
+                4
+              ],
+              "stake": 100,
+              "bet_type": "trifecta"
+            },
+            {
+              "label": "1-6-7",
+              "cars": [
+                1,
+                6,
+                7
+              ],
+              "stake": 100,
+              "bet_type": "trifecta"
+            },
+            {
+              "label": "1-6-2",
+              "cars": [
+                1,
+                6,
+                2
+              ],
+              "stake": 100,
+              "bet_type": "trifecta"
+            },
+            {
+              "label": "1-4-6",
+              "cars": [
+                1,
+                4,
+                6
+              ],
+              "stake": 100,
+              "bet_type": "trifecta"
+            }
+          ],
+          "total_stake": 400,
+          "status": "lost",
+          "payout": 0,
+          "note": null,
+          "created_at": "2026-08-20T14:01:53+09:00",
+          "settled_at": "2026-08-20T14:01:53+09:00"
+        },
+        {
+          "id": 248,
+          "race_key": "winticket:2026082053:1:10",
+          "venue": "奈良",
+          "race_no": 10,
+          "start_time": "15:16",
+          "url": "",
+          "tickets": [
+            {
+              "label": "7-1-5",
+              "cars": [
+                7,
+                1,
+                5
+              ],
+              "stake": 100,
+              "bet_type": "trifecta"
+            },
+            {
+              "label": "7-1-3",
+              "cars": [
+                7,
+                1,
+                3
+              ],
+              "stake": 100,
+              "bet_type": "trifecta"
+            },
+            {
+              "label": "7-1-4",
+              "cars": [
+                7,
+                1,
+                4
+              ],
+              "stake": 100,
+              "bet_type": "trifecta"
+            },
+            {
+              "label": "7-5-1",
+              "cars": [
+                7,
+                5,
+                1
+              ],
+              "stake": 100,
+              "bet_type": "trifecta"
+            }
+          ],
+          "total_stake": 400,
+          "status": "won",
+          "payout": 240,
+          "note": null,
+          "created_at": "2026-08-20T15:27:05+09:00",
+          "settled_at": "2026-08-20T15:27:05+09:00"
+        },
+        {
+          "id": 249,
+          "race_key": "winticket:2026082046:1:11",
+          "venue": "富山",
+          "race_no": 11,
+          "start_time": "15:28",
+          "url": "",
+          "tickets": [
+            {
+              "label": "1-7",
+              "cars": [
+                1,
+                7
+              ],
+              "stake": 300,
+              "bet_type": "exacta"
+            },
+            {
+              "label": "1-5",
+              "cars": [
+                1,
+                5
+              ],
+              "stake": 100,
+              "bet_type": "exacta"
+            }
+          ],
+          "total_stake": 400,
+          "status": "lost",
+          "payout": 0,
+          "note": null,
+          "created_at": "2026-08-20T16:15:19+09:00",
+          "settled_at": "2026-08-20T16:15:19+09:00"
+        },
+        {
+          "id": 250,
+          "race_key": "winticket:2026082061:1:2",
+          "venue": "玉野",
+          "race_no": 2,
+          "start_time": "16:31",
+          "url": "",
+          "tickets": [
+            {
+              "label": "1-5-4",
+              "cars": [
+                1,
+                5,
+                4
+              ],
+              "stake": 100,
+              "bet_type": "trifecta"
+            },
+            {
+              "label": "1-5-7",
+              "cars": [
+                1,
+                5,
+                7
+              ],
+              "stake": 100,
+              "bet_type": "trifecta"
+            },
+            {
+              "label": "1-5-2",
+              "cars": [
+                1,
+                5,
+                2
+              ],
+              "stake": 100,
+              "bet_type": "trifecta"
+            },
+            {
+              "label": "1-4-5",
+              "cars": [
+                1,
+                4,
+                5
+              ],
+              "stake": 100,
+              "bet_type": "trifecta"
+            }
+          ],
+          "total_stake": 400,
+          "status": "won",
+          "payout": 860,
+          "note": null,
+          "created_at": "2026-08-20T16:57:21+09:00",
+          "settled_at": "2026-08-20T16:57:21+09:00"
+        },
+        {
+          "id": 251,
+          "race_key": "winticket:2026082061:1:3",
+          "venue": "玉野",
+          "race_no": 3,
+          "start_time": "16:53",
+          "url": "",
+          "tickets": [
+            {
+              "label": "3-5",
+              "cars": [
+                3,
+                5
+              ],
+              "stake": 300,
+              "bet_type": "exacta"
+            },
+            {
+              "label": "3-7",
+              "cars": [
+                3,
+                7
+              ],
+              "stake": 100,
+              "bet_type": "exacta"
+            }
+          ],
+          "total_stake": 400,
+          "status": "won",
+          "payout": 660,
+          "note": null,
+          "created_at": "2026-08-20T17:23:32+09:00",
+          "settled_at": "2026-08-20T17:23:32+09:00"
+        },
+        {
+          "id": 252,
+          "race_key": "winticket:2026082061:1:4",
+          "venue": "玉野",
+          "race_no": 4,
+          "start_time": "17:17",
+          "url": "",
+          "tickets": [
+            {
+              "label": "1-5-4",
+              "cars": [
+                1,
+                5,
+                4
+              ],
+              "stake": 100,
+              "bet_type": "trifecta"
+            },
+            {
+              "label": "1-5-6",
+              "cars": [
+                1,
+                5,
+                6
+              ],
+              "stake": 100,
+              "bet_type": "trifecta"
+            },
+            {
+              "label": "1-5-2",
+              "cars": [
+                1,
+                5,
+                2
+              ],
+              "stake": 100,
+              "bet_type": "trifecta"
+            },
+            {
+              "label": "1-4-5",
+              "cars": [
+                1,
+                4,
+                5
+              ],
+              "stake": 100,
+              "bet_type": "trifecta"
+            }
+          ],
+          "total_stake": 400,
+          "status": "won",
+          "payout": 1970,
+          "note": null,
+          "created_at": "2026-08-20T18:03:33+09:00",
+          "settled_at": "2026-08-20T18:03:33+09:00"
+        },
+        {
+          "id": 253,
+          "race_key": "winticket:2026082061:1:6",
+          "venue": "玉野",
+          "race_no": 6,
+          "start_time": "18:05",
+          "url": "",
+          "tickets": [
+            {
+              "label": "4-1-6",
+              "cars": [
+                4,
+                1,
+                6
+              ],
+              "stake": 200,
+              "bet_type": "trifecta"
+            },
+            {
+              "label": "4-1-2",
+              "cars": [
+                4,
+                1,
+                2
+              ],
+              "stake": 100,
+              "bet_type": "trifecta"
+            },
+            {
+              "label": "4-1-3",
+              "cars": [
+                4,
+                1,
+                3
+              ],
+              "stake": 100,
+              "bet_type": "trifecta"
+            },
+            {
+              "label": "4-6-1",
+              "cars": [
+                4,
+                6,
+                1
+              ],
+              "stake": 100,
+              "bet_type": "trifecta"
+            }
+          ],
+          "total_stake": 500,
+          "status": "won",
+          "payout": 860,
+          "note": null,
+          "created_at": "2026-08-20T18:49:31+09:00",
+          "settled_at": "2026-08-20T18:49:31+09:00"
+        }
+      ],
+      "target_progress": 0.01154,
+      "races_to_target": {
+        "expected": 99,
+        "fast": 54
       }
-    ]
-  },
-  "message": "予定レースを消化しました。差し替えるか停止してください。"
+    }
+  }
 }
