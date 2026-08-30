@@ -94,9 +94,30 @@ jobs:
             fi
           fi
           python scripts/build_static_api.py
+
+          # --- ここから先はDBの保守。転んでも公開だけは必ず届ける ---
+          #
+          # 2026-08-22〜30、compact_db が例外で落ちた結果 commit まで到達せず、
+          # 予想は毎回正しく作れていたのに一度もpushされずサイトが8日間凍結した。
+          # 保守は「あとで直せるもの」、公開は「止めてはいけないもの」なので、
+          # ここから下は全て || で受けてジョブを落とさない。
+          # 保守が効かずDBが膨らんだ場合は healthcheck が92MBで検知する。
+          #
           # DBが100MBを超えるとpushが拒否され自動更新が完全停止する(2026-08-04に発生)。
-          # 80MBを超えていたら毎回ここで圧縮しておく。閾値以下なら何もしない。
-          python scripts/compact_db.py --apply --threshold-mb 80
+          python scripts/compact_db.py --apply --threshold-mb 80 \
+            || echo "::warning::DB圧縮に失敗しました(公開は継続)"
+
+          # 圧縮だけでは回収が頭打ち(2026-08-30時点で0.1MB程度)。
+          # 85MBを超えたら、確定済みレースの2件目以降の予想も間引く。
+          # 各レースの最初の予想は必ず残るので実績評価と決済には影響しない。
+          DB_MB=$(du -m data/keirin_learning.sqlite3 | cut -f1)
+          echo "DB after compact: ${DB_MB}MB"
+          if [ "$DB_MB" -ge 85 ]; then
+            echo "::warning::DBが${DB_MB}MB。確定済みレースの再予想を間引きます"
+            python scripts/prune_predictions.py --apply \
+              && python scripts/compact_db.py --apply --threshold-mb 0 \
+              || echo "::warning::間引きに失敗しました(公開は継続)"
+          fi
 
       - name: Commit and push
         run: |
