@@ -30,6 +30,8 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from keirin_ai.features import decode_features, encode_features  # noqa: E402
+
 DUP_WHERE = """
 from predictions p
 join races r on r.race_key = p.race_key
@@ -97,23 +99,27 @@ def main() -> None:
                 slimmed += 1
         conn.commit()
 
-        # 3) features_json の冗長な浮動小数を4桁へ丸める
-        #    0.012999999999999545 のような値がそのまま入っており、
-        #    モデルには無意味な桁でDBだけが膨らむ
+        # 3) features_json を現行の保存形式(値だけの配列)へ揃える
+        #    2026-08-10 にキー付きdictから配列へ変えた(31.9MB→7.5MB)。
+        #    旧形式で残っている行があればここで詰め直す。既に配列の行は
+        #    encode_features の出力と一致するので書き込みは発生しない。
+        #
+        #    ここは以前 json.loads の結果を dict と決め打ちして丸めており、
+        #    配列形式になった後にDBが80MBを超えて初めてこの経路へ入った結果、
+        #    AttributeError で毎回ジョブが落ちていた(2026-08-22〜30、8日間停止)。
+        #    しかも仮に動いていればdictへ書き戻して圧縮を台無しにしていた。
         rounded = 0
         ent = conn.execute("select rowid, features_json from entries where features_json is not null").fetchall()
         for row in ent:
-            try:
-                feats = json.loads(row["features_json"])
-            except Exception:
+            feats = decode_features(row["features_json"])
+            if not feats:
                 continue
-            slim = {k: round(float(v), 4) for k, v in feats.items() if isinstance(v, (int, float))}
-            packed = json.dumps(slim, ensure_ascii=False, separators=(",", ":"))
+            packed = encode_features(feats)
             if packed != row["features_json"]:
                 conn.execute("update entries set features_json=? where rowid=?", (packed, row["rowid"]))
                 rounded += 1
         conn.commit()
-        report["rounded_features"] = rounded
+        report["repacked_features"] = rounded
 
         races_after = conn.execute("select count(distinct race_key) from predictions").fetchone()[0]
         if races_after != races_before:
