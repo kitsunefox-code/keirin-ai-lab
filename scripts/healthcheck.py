@@ -32,6 +32,7 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--file", default=str(ROOT / "app" / "static-api" / "today.json"))
     ap.add_argument("--max-age-hours", type=float, default=3.0)
+    ap.add_argument("--db-limit-mb", type=float, default=92.0)
     args = ap.parse_args()
 
     path = Path(args.file)
@@ -82,6 +83,17 @@ def main() -> int:
     if target_date and target_date != today:
         problems.append(f"対象日が {target_date} で今日({today})ではない。前日のまま止まっている")
 
+    # 4) DBが上限に迫っている。超えるとpushが拒否され自動更新が完全停止する
+    #    (2026-08-04に発生)。85MBで自動的に間引くようにしてあるので、
+    #    ここまで来ているのは間引きが効いていないということ。
+    db = ROOT / "data" / "keirin_learning.sqlite3"
+    db_mb = db.stat().st_size / 1048576 if db.exists() else 0.0
+    if db_mb >= args.db_limit_mb:
+        problems.append(
+            f"DBが{db_mb:.1f}MBで上限100MBに迫っている(警告線{args.db_limit_mb}MB)。"
+            "prune_predictions.py で間引くこと。超えるとpushが拒否され全停止する"
+        )
+
     print(
         json.dumps(
             {
@@ -91,6 +103,7 @@ def main() -> int:
                 "予想": len(forecasts),
                 "発走前": (data.get("summary") or {}).get("count"),
                 "生成時刻": raw,
+                "DB(MB)": round(db_mb, 1),
             },
             ensure_ascii=False,
             indent=1,
