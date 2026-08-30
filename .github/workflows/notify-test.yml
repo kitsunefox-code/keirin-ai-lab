@@ -1,0 +1,25 @@
+name: notify-test
+
+# 通知の配線だけを本番に触れず確かめるための使い捨て。確認後に削除する。
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Fail on purpose
+        run: |
+          echo "わざと失敗させる(通知の配線確認)"
+          exit 1
+      - name: Notify failure to LINE
+        if: failure()
+        env:
+          LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
+          LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: python scripts/notify_line.py "【配線テスト】競輪AIラボの自動更新が失敗しました"
