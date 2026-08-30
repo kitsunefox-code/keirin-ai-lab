@@ -129,3 +129,14 @@ jobs:
       # push の後に置くのは、集めた結果やDBの更新を捨てずに残すため。
       - name: Healthcheck
         run: python scripts/healthcheck.py
+
+      # 止まったことに気づけるのが最重要。GitHubの失敗通知メールは当てにならず、
+      # 2026-08-22〜30はヘルスチェックが8日間赤かったのに誰も気づけなかった。
+      # どのステップで落ちてもここでLINEへ飛ばす。
+      - name: Notify failure to LINE
+        if: failure()
+        env:
+          LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
+          LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: python scripts/notify_line.py "競輪AIラボの自動更新が失敗しました"
