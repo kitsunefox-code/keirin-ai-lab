@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at_jst": "2026-08-30T10:34:29+09:00",
+  "generated_at_jst": "2026-08-30T10:54:30+09:00",
   "rules": [
     "全額転がしは行いません(1レース投資は残高の上限%まで)",
     "負けた後の倍賭け(マーチンゲール)は行いません",
@@ -240,12 +240,12 @@
     }
   },
   "state": {
-    "balance": 9670,
-    "profit": -330,
-    "day_loss": 330,
+    "balance": 9930,
+    "profit": -70,
+    "day_loss": 70,
     "day_loss_limit": 2500,
     "consecutive_losses": 0,
-    "wins": 1,
+    "wins": 2,
     "losses": 0,
     "skips": 0,
     "pending_bet": null,
@@ -305,12 +305,68 @@
         "note": null,
         "created_at": "2026-08-30T10:15:36+09:00",
         "settled_at": "2026-08-30T10:15:36+09:00"
+      },
+      {
+        "id": 268,
+        "race_key": "winticket:2026083055:1:7",
+        "venue": "和歌山",
+        "race_no": 7,
+        "start_time": "10:35",
+        "url": "",
+        "tickets": [
+          {
+            "label": "4-1-6",
+            "cars": [
+              4,
+              1,
+              6
+            ],
+            "stake": 100,
+            "bet_type": "trifecta"
+          },
+          {
+            "label": "4-1-7",
+            "cars": [
+              4,
+              1,
+              7
+            ],
+            "stake": 100,
+            "bet_type": "trifecta"
+          },
+          {
+            "label": "4-1-5",
+            "cars": [
+              4,
+              1,
+              5
+            ],
+            "stake": 100,
+            "bet_type": "trifecta"
+          },
+          {
+            "label": "4-6-1",
+            "cars": [
+              4,
+              6,
+              1
+            ],
+            "stake": 100,
+            "bet_type": "trifecta"
+          }
+        ],
+        "total_stake": 400,
+        "status": "won",
+        "payout": 660,
+        "note": null,
+        "created_at": "2026-08-30T10:54:16+09:00",
+        "settled_at": "2026-08-30T10:54:16+09:00"
       }
     ],
-    "target_progress": 0.00967,
+    "target_progress": 0.00993,
     "races_to_target": {
       "expected": 99,
-      "fast": 56
+      "fast": 55
     }
   },
   "proposal": {
@@ -323,38 +379,38 @@
     "confidence": "本命",
     "budget": 400,
     "total_stake": 400,
-    "ev": 4.016,
-    "expected_return": 1610,
+    "ev": 3.884,
+    "expected_return": 1550,
     "tickets": [
       {
         "role": "本線",
         "label": "4-5-2",
         "stake": 200,
-        "odds": 4.8,
+        "odds": 4.9,
         "odds_source": "live",
         "popularity": 2,
         "hit_probability": 0.2878,
-        "projected_return": 960
+        "projected_return": 980
       },
       {
         "role": "抑え",
         "label": "4-2-5",
         "stake": 100,
-        "odds": 4.0,
+        "odds": 4.1,
         "odds_source": "live",
         "popularity": 1,
         "hit_probability": 0.2873,
-        "projected_return": 400
+        "projected_return": 410
       },
       {
         "role": "妙味",
         "label": "4-1-5",
         "stake": 100,
-        "odds": 45.6,
+        "odds": 43.3,
         "odds_source": "live",
         "popularity": 14,
         "hit_probability": 0.2665,
-        "projected_return": 4560
+        "projected_return": 4330
       }
     ],
     "live_odds_count": 3,
@@ -429,8 +485,8 @@
       "start_time": "13:32",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 4.02 / 3点分散 / ライブ3点",
-      "ev": 4.016,
+      "reason": "EV 3.88 / 3点分散 / ライブ3点",
+      "ev": 3.884,
       "is_next": true
     },
     {
@@ -440,8 +496,8 @@
       "start_time": "15:32",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 8.74 / 3点分散 / ライブ3点",
-      "ev": 8.742,
+      "reason": "EV 8.82 / 3点分散 / ライブ3点",
+      "ev": 8.823,
       "is_next": false
     },
     {
@@ -451,8 +507,8 @@
       "start_time": "18:06",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 3.61 / 3点分散 / ライブ3点",
-      "ev": 3.609,
+      "reason": "EV 3.67 / 3点分散 / ライブ3点",
+      "ev": 3.671,
       "is_next": false
     },
     {
@@ -462,8 +518,8 @@
       "start_time": "19:48",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 10.36 / 3点分散 / ライブ3点",
-      "ev": 10.36,
+      "reason": "EV 8.31 / 3点分散 / ライブ3点",
+      "ev": 8.307,
       "is_next": false
     },
     {
@@ -473,8 +529,8 @@
       "start_time": "21:13",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 19.59 / 3点分散 / ライブ3点",
-      "ev": 19.593,
+      "reason": "EV 20.43 / 3点分散 / ライブ3点",
+      "ev": 20.427,
       "is_next": false
     },
     {
@@ -484,8 +540,8 @@
       "start_time": "22:45",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 29.84 / 3点分散 / ライブ3点",
-      "ev": 29.839,
+      "reason": "EV 27.14 / 3点分散 / ライブ3点",
+      "ev": 27.145,
       "is_next": false
     },
     {
@@ -518,7 +574,7 @@
   "daily_history": [
     {
       "date": "2026-08-30",
-      "total_profit": -330,
+      "total_profit": -70,
       "sessions": [
         {
           "id": 50,
@@ -537,9 +593,9 @@
             "auto_buy": false,
             "role": "main"
           },
-          "balance": 9670,
-          "profit": -330,
-          "wins": 1,
+          "balance": 9930,
+          "profit": -70,
+          "wins": 2,
           "losses": 0,
           "skips": 0,
           "target_reached": false
@@ -562,9 +618,9 @@
           "auto_buy": false,
           "role": "main"
         },
-        "balance": 9670,
-        "profit": -330,
-        "wins": 1,
+        "balance": 9930,
+        "profit": -70,
+        "wins": 2,
         "losses": 0,
         "skips": 0,
         "target_reached": false
@@ -896,15 +952,15 @@
     }
   ],
   "finance": {
-    "current_balance": 9670,
-    "total_stake": 208500,
-    "total_payout": 154870,
-    "total_profit": -53630,
-    "roi": 0.7428,
-    "wins": 86,
+    "current_balance": 9930,
+    "total_stake": 208900,
+    "total_payout": 155530,
+    "total_profit": -53370,
+    "roi": 0.7445,
+    "wins": 87,
     "losses": 181,
-    "hit_rate": 0.3221,
-    "today_profit": -330,
+    "hit_rate": 0.3246,
+    "today_profit": -70,
     "series": [
       {
         "date": "2026-08-01",
@@ -998,8 +1054,8 @@
       },
       {
         "date": "2026-08-30",
-        "cumulative_profit": -2180,
-        "day_profit": -330
+        "cumulative_profit": -1920,
+        "day_profit": -70
       }
     ]
   },
@@ -1024,8 +1080,8 @@
         "start_time": "10:35",
         "original": null,
         "changed_at": null,
-        "status": "planned",
-        "is_next": true
+        "status": "won",
+        "profit": 260
       },
       {
         "race_key": "winticket:2026083034:1:7",
@@ -1034,7 +1090,8 @@
         "start_time": "13:32",
         "original": null,
         "changed_at": null,
-        "status": "planned"
+        "status": "planned",
+        "is_next": true
       },
       {
         "race_key": "winticket:2026083034:1:11",
