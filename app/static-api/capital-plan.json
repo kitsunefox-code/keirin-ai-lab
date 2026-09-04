@@ -1,7 +1,7 @@
 {
   "ok": true,
-  "generated_at": "2026-09-04T11:46:13+00:00",
-  "generated_at_jst": "2026-09-04T20:46:12+09:00",
+  "generated_at": "2026-09-04T15:10:43+00:00",
+  "generated_at_jst": "2026-09-05T00:10:41+09:00",
   "input": {
     "start_amount": 1000,
     "target_amount": 3000,
@@ -16,12 +16,12 @@
     "errors": []
   },
   "summary": {
-    "forecast_count": 83,
-    "active_forecast_count": 20,
-    "elapsed_forecast_count": 63,
-    "candidate_count": 80,
+    "forecast_count": 80,
+    "active_forecast_count": 80,
+    "elapsed_forecast_count": 0,
+    "candidate_count": 320,
     "plan_count": 8,
-    "next_race_time": "20:49",
+    "next_race_time": "08:30",
     "data_used": [
       "予想スコア",
       "前検コメント特徴",
@@ -34,400 +34,292 @@
   "plans": [
     {
       "kind": "single",
-      "title": "弥彦 7R 単発",
+      "title": "松阪 8R 単発",
       "start_amount": 1000,
       "target_amount": 3000,
-      "projected_return": 22100,
+      "projected_return": 15000,
       "shortfall": 0,
-      "multiplier": 22.1,
+      "multiplier": 15.0,
       "target_ratio": 3.0,
-      "hit_probability": 0.2835,
+      "hit_probability": 0.3772,
       "risk": "低",
       "live_odds_count": 0,
       "races": [
         {
-          "race_key": "winticket:2026090221:3:7",
-          "venue": "弥彦",
-          "race_no": 7,
-          "start_time": "23:21",
-          "ticket": "1-2-4",
+          "race_key": "winticket:2026090547:1:8",
+          "venue": "松阪",
+          "race_no": 8,
+          "start_time": "23:00",
+          "ticket": "1-2-7",
           "cars": [
             1,
             2,
-            4
+            7
           ],
           "stake": 1000,
-          "projected_return": 22100,
-          "odds": 22.1,
-          "odds_str": "22.1",
+          "projected_return": 15000,
+          "odds": 15.0,
+          "odds_str": "15.0",
           "odds_source": "estimated",
           "popularity": null,
           "confidence": "本命",
-          "hit_probability": 0.2835,
+          "hit_probability": 0.3772,
           "top_pick": {
             "car_no": 1,
-            "name": "沢田桂太郎",
-            "probability": 0.4739
+            "name": "一守大葵",
+            "probability": 0.6202
           },
           "rationale": [
             "信頼度: 本命",
-            "本命: 1沢田桂太郎 47.4%",
-            "買い目スコア: 31.0",
+            "本命: 1一守大葵 62.0%",
+            "買い目スコア: 41.2",
             "コメント/関係性あり",
             "崩れ筋も評価"
           ],
           "ex_signals": [],
-          "odds_url": "https://www.winticket.jp/keirin/yahiko/odds/2026090221/3/7",
-          "url": "https://www.winticket.jp/keirin/yahiko/racecard/2026090221/3/7"
+          "odds_url": "https://www.winticket.jp/keirin/matsusaka/odds/2026090547/1/8",
+          "url": "https://www.winticket.jp/keirin/matsusaka/racecard/2026090547/1/8"
         }
       ],
-      "score": 0.12374,
+      "score": 0.24844,
       "warnings": [
         "一部は推定倍率です"
       ]
     },
     {
       "kind": "single",
-      "title": "伊東 6R 単発",
+      "title": "武雄 11R 単発",
       "start_amount": 1000,
       "target_amount": 3000,
-      "projected_return": 22200,
+      "projected_return": 14700,
       "shortfall": 0,
-      "multiplier": 22.2,
+      "multiplier": 14.7,
       "target_ratio": 3.0,
-      "hit_probability": 0.2782,
-      "risk": "中",
-      "live_odds_count": 0,
-      "races": [
-        {
-          "race_key": "winticket:2026090237:3:6",
-          "venue": "伊東",
-          "race_no": 6,
-          "start_time": "22:45",
-          "ticket": "1-3-2",
-          "cars": [
-            1,
-            3,
-            2
-          ],
-          "stake": 1000,
-          "projected_return": 22200,
-          "odds": 22.2,
-          "odds_str": "22.2",
-          "odds_source": "estimated",
-          "popularity": null,
-          "confidence": "本命",
-          "hit_probability": 0.2782,
-          "top_pick": {
-            "car_no": 1,
-            "name": "角田吏",
-            "probability": 0.4765
-          },
-          "rationale": [
-            "信頼度: 本命",
-            "本命: 1角田吏 47.6%",
-            "買い目スコア: 30.4",
-            "コメント/関係性あり",
-            "崩れ筋も評価"
-          ],
-          "ex_signals": [],
-          "odds_url": "https://www.winticket.jp/keirin/ito/odds/2026090237/3/6",
-          "url": "https://www.winticket.jp/keirin/ito/racecard/2026090237/3/6"
-        }
-      ],
-      "score": 0.11808,
-      "warnings": [
-        "一部は推定倍率です"
-      ]
-    },
-    {
-      "kind": "single",
-      "title": "弥彦 2R 単発",
-      "start_amount": 1000,
-      "target_amount": 3000,
-      "projected_return": 24000,
-      "shortfall": 0,
-      "multiplier": 24.0,
-      "target_ratio": 3.0,
-      "hit_probability": 0.2843,
+      "hit_probability": 0.374,
       "risk": "低",
       "live_odds_count": 0,
       "races": [
         {
-          "race_key": "winticket:2026090221:3:2",
-          "venue": "弥彦",
-          "race_no": 2,
-          "start_time": "21:13",
-          "ticket": "1-2-5",
+          "race_key": "winticket:2026090384:3:11",
+          "venue": "武雄",
+          "race_no": 11,
+          "start_time": "20:04",
+          "ticket": "5-1-2",
           "cars": [
-            1,
-            2,
-            5
-          ],
-          "stake": 1000,
-          "projected_return": 24000,
-          "odds": 24.0,
-          "odds_str": "24.0",
-          "odds_source": "estimated",
-          "popularity": null,
-          "confidence": "本命",
-          "hit_probability": 0.2843,
-          "top_pick": {
-            "car_no": 1,
-            "name": "駒壽直人",
-            "probability": 0.4112
-          },
-          "rationale": [
-            "信頼度: 本命",
-            "本命: 1駒壽直人 41.1%",
-            "買い目スコア: 31.1",
-            "コメント/関係性あり",
-            "崩れ筋も評価"
-          ],
-          "ex_signals": [],
-          "odds_url": "https://www.winticket.jp/keirin/yahiko/odds/2026090221/3/2",
-          "url": "https://www.winticket.jp/keirin/yahiko/racecard/2026090221/3/2"
-        }
-      ],
-      "score": 0.11794,
-      "warnings": [
-        "一部は推定倍率です"
-      ]
-    },
-    {
-      "kind": "single",
-      "title": "弥彦 7R 単発",
-      "start_amount": 1000,
-      "target_amount": 3000,
-      "projected_return": 25800,
-      "shortfall": 0,
-      "multiplier": 25.8,
-      "target_ratio": 3.0,
-      "hit_probability": 0.2798,
-      "risk": "中",
-      "live_odds_count": 0,
-      "races": [
-        {
-          "race_key": "winticket:2026090221:3:7",
-          "venue": "弥彦",
-          "race_no": 7,
-          "start_time": "23:21",
-          "ticket": "1-2-3",
-          "cars": [
-            1,
-            2,
-            3
-          ],
-          "stake": 1000,
-          "projected_return": 25800,
-          "odds": 25.8,
-          "odds_str": "25.8",
-          "odds_source": "estimated",
-          "popularity": null,
-          "confidence": "本命",
-          "hit_probability": 0.2798,
-          "top_pick": {
-            "car_no": 1,
-            "name": "沢田桂太郎",
-            "probability": 0.4739
-          },
-          "rationale": [
-            "信頼度: 本命",
-            "本命: 1沢田桂太郎 47.4%",
-            "買い目スコア: 30.6",
-            "コメント/関係性あり",
-            "崩れ筋も評価"
-          ],
-          "ex_signals": [],
-          "odds_url": "https://www.winticket.jp/keirin/yahiko/odds/2026090221/3/7",
-          "url": "https://www.winticket.jp/keirin/yahiko/racecard/2026090221/3/7"
-        }
-      ],
-      "score": 0.10766,
-      "warnings": [
-        "一部は推定倍率です"
-      ]
-    },
-    {
-      "kind": "single",
-      "title": "弥彦 2R 単発",
-      "start_amount": 1000,
-      "target_amount": 3000,
-      "projected_return": 27600,
-      "shortfall": 0,
-      "multiplier": 27.6,
-      "target_ratio": 3.0,
-      "hit_probability": 0.2836,
-      "risk": "低",
-      "live_odds_count": 0,
-      "races": [
-        {
-          "race_key": "winticket:2026090221:3:2",
-          "venue": "弥彦",
-          "race_no": 2,
-          "start_time": "21:13",
-          "ticket": "1-2-3",
-          "cars": [
-            1,
-            2,
-            3
-          ],
-          "stake": 1000,
-          "projected_return": 27600,
-          "odds": 27.6,
-          "odds_str": "27.6",
-          "odds_source": "estimated",
-          "popularity": null,
-          "confidence": "本命",
-          "hit_probability": 0.2836,
-          "top_pick": {
-            "car_no": 1,
-            "name": "駒壽直人",
-            "probability": 0.4112
-          },
-          "rationale": [
-            "信頼度: 本命",
-            "本命: 1駒壽直人 41.1%",
-            "買い目スコア: 31.0",
-            "コメント/関係性あり",
-            "崩れ筋も評価"
-          ],
-          "ex_signals": [],
-          "odds_url": "https://www.winticket.jp/keirin/yahiko/odds/2026090221/3/2",
-          "url": "https://www.winticket.jp/keirin/yahiko/racecard/2026090221/3/2"
-        }
-      ],
-      "score": 0.10606,
-      "warnings": [
-        "一部は推定倍率です"
-      ]
-    },
-    {
-      "kind": "single",
-      "title": "伊東 6R 単発",
-      "start_amount": 1000,
-      "target_amount": 3000,
-      "projected_return": 25900,
-      "shortfall": 0,
-      "multiplier": 25.9,
-      "target_ratio": 3.0,
-      "hit_probability": 0.2755,
-      "risk": "中",
-      "live_odds_count": 0,
-      "races": [
-        {
-          "race_key": "winticket:2026090237:3:6",
-          "venue": "伊東",
-          "race_no": 6,
-          "start_time": "22:45",
-          "ticket": "1-2-3",
-          "cars": [
-            1,
-            2,
-            3
-          ],
-          "stake": 1000,
-          "projected_return": 25900,
-          "odds": 25.9,
-          "odds_str": "25.9",
-          "odds_source": "estimated",
-          "popularity": null,
-          "confidence": "本命",
-          "hit_probability": 0.2755,
-          "top_pick": {
-            "car_no": 1,
-            "name": "角田吏",
-            "probability": 0.4765
-          },
-          "rationale": [
-            "信頼度: 本命",
-            "本命: 1角田吏 47.6%",
-            "買い目スコア: 30.1",
-            "コメント/関係性あり",
-            "崩れ筋も評価"
-          ],
-          "ex_signals": [],
-          "odds_url": "https://www.winticket.jp/keirin/ito/odds/2026090237/3/6",
-          "url": "https://www.winticket.jp/keirin/ito/racecard/2026090237/3/6"
-        }
-      ],
-      "score": 0.10305,
-      "warnings": [
-        "一部は推定倍率です"
-      ]
-    },
-    {
-      "kind": "single",
-      "title": "弥彦 3R 単発",
-      "start_amount": 1000,
-      "target_amount": 3000,
-      "projected_return": 24100,
-      "shortfall": 0,
-      "multiplier": 24.1,
-      "target_ratio": 3.0,
-      "hit_probability": 0.2632,
-      "risk": "中",
-      "live_odds_count": 0,
-      "races": [
-        {
-          "race_key": "winticket:2026090221:3:3",
-          "venue": "弥彦",
-          "race_no": 3,
-          "start_time": "21:37",
-          "ticket": "1-5-2",
-          "cars": [
-            1,
             5,
+            1,
             2
           ],
           "stake": 1000,
-          "projected_return": 24100,
-          "odds": 24.1,
-          "odds_str": "24.1",
+          "projected_return": 14700,
+          "odds": 14.7,
+          "odds_str": "14.7",
           "odds_source": "estimated",
           "popularity": null,
           "confidence": "本命",
-          "hit_probability": 0.2632,
+          "hit_probability": 0.374,
           "top_pick": {
-            "car_no": 1,
-            "name": "吉松賢二",
-            "probability": 0.428
+            "car_no": 5,
+            "name": "一丸尚伍",
+            "probability": 0.6342
           },
           "rationale": [
             "信頼度: 本命",
-            "本命: 1吉松賢二 42.8%",
-            "買い目スコア: 28.8",
+            "本命: 5一丸尚伍 63.4%",
+            "買い目スコア: 40.9",
             "コメント/関係性あり",
             "崩れ筋も評価"
           ],
           "ex_signals": [],
-          "odds_url": "https://www.winticket.jp/keirin/yahiko/odds/2026090221/3/3",
-          "url": "https://www.winticket.jp/keirin/yahiko/racecard/2026090221/3/3"
+          "odds_url": "https://www.winticket.jp/keirin/takeo/odds/2026090384/3/11",
+          "url": "https://www.winticket.jp/keirin/takeo/racecard/2026090384/3/11"
         }
       ],
-      "score": 0.09651,
+      "score": 0.24686,
       "warnings": [
         "一部は推定倍率です"
       ]
     },
     {
       "kind": "single",
-      "title": "伊東 4R 単発",
+      "title": "松阪 4R 単発",
       "start_amount": 1000,
       "target_amount": 3000,
-      "projected_return": 24700,
+      "projected_return": 15000,
       "shortfall": 0,
-      "multiplier": 24.7,
+      "multiplier": 15.0,
       "target_ratio": 3.0,
-      "hit_probability": 0.2609,
-      "risk": "中",
+      "hit_probability": 0.3753,
+      "risk": "低",
       "live_odds_count": 0,
       "races": [
         {
-          "race_key": "winticket:2026090237:3:4",
-          "venue": "伊東",
+          "race_key": "winticket:2026090547:1:4",
+          "venue": "松阪",
           "race_no": 4,
-          "start_time": "21:53",
+          "start_time": "21:40",
+          "ticket": "1-4-3",
+          "cars": [
+            1,
+            4,
+            3
+          ],
+          "stake": 1000,
+          "projected_return": 15000,
+          "odds": 15.0,
+          "odds_str": "15.0",
+          "odds_source": "estimated",
+          "popularity": null,
+          "confidence": "本命",
+          "hit_probability": 0.3753,
+          "top_pick": {
+            "car_no": 1,
+            "name": "渡邉拓",
+            "probability": 0.6244
+          },
+          "rationale": [
+            "信頼度: 本命",
+            "本命: 1渡邉拓 62.4%",
+            "買い目スコア: 41.0",
+            "コメント/関係性あり",
+            "崩れ筋も評価"
+          ],
+          "ex_signals": [],
+          "odds_url": "https://www.winticket.jp/keirin/matsusaka/odds/2026090547/1/4",
+          "url": "https://www.winticket.jp/keirin/matsusaka/racecard/2026090547/1/4"
+        }
+      ],
+      "score": 0.24654,
+      "warnings": [
+        "一部は推定倍率です"
+      ]
+    },
+    {
+      "kind": "single",
+      "title": "松阪 8R 単発",
+      "start_amount": 1000,
+      "target_amount": 3000,
+      "projected_return": 18600,
+      "shortfall": 0,
+      "multiplier": 18.6,
+      "target_ratio": 3.0,
+      "hit_probability": 0.3768,
+      "risk": "低",
+      "live_odds_count": 0,
+      "races": [
+        {
+          "race_key": "winticket:2026090547:1:8",
+          "venue": "松阪",
+          "race_no": 8,
+          "start_time": "23:00",
+          "ticket": "1-2-3",
+          "cars": [
+            1,
+            2,
+            3
+          ],
+          "stake": 1000,
+          "projected_return": 18600,
+          "odds": 18.6,
+          "odds_str": "18.6",
+          "odds_source": "estimated",
+          "popularity": null,
+          "confidence": "本命",
+          "hit_probability": 0.3768,
+          "top_pick": {
+            "car_no": 1,
+            "name": "一守大葵",
+            "probability": 0.6202
+          },
+          "rationale": [
+            "信頼度: 本命",
+            "本命: 1一守大葵 62.0%",
+            "買い目スコア: 41.2",
+            "コメント/関係性あり",
+            "崩れ筋も評価"
+          ],
+          "ex_signals": [],
+          "odds_url": "https://www.winticket.jp/keirin/matsusaka/odds/2026090547/1/8",
+          "url": "https://www.winticket.jp/keirin/matsusaka/racecard/2026090547/1/8"
+        }
+      ],
+      "score": 0.23084,
+      "warnings": [
+        "一部は推定倍率です"
+      ]
+    },
+    {
+      "kind": "single",
+      "title": "武雄 11R 単発",
+      "start_amount": 1000,
+      "target_amount": 3000,
+      "projected_return": 18300,
+      "shortfall": 0,
+      "multiplier": 18.3,
+      "target_ratio": 3.0,
+      "hit_probability": 0.3737,
+      "risk": "低",
+      "live_odds_count": 0,
+      "races": [
+        {
+          "race_key": "winticket:2026090384:3:11",
+          "venue": "武雄",
+          "race_no": 11,
+          "start_time": "20:04",
+          "ticket": "5-1-4",
+          "cars": [
+            5,
+            1,
+            4
+          ],
+          "stake": 1000,
+          "projected_return": 18300,
+          "odds": 18.3,
+          "odds_str": "18.3",
+          "odds_source": "estimated",
+          "popularity": null,
+          "confidence": "本命",
+          "hit_probability": 0.3737,
+          "top_pick": {
+            "car_no": 5,
+            "name": "一丸尚伍",
+            "probability": 0.6342
+          },
+          "rationale": [
+            "信頼度: 本命",
+            "本命: 5一丸尚伍 63.4%",
+            "買い目スコア: 40.8",
+            "コメント/関係性あり",
+            "崩れ筋も評価"
+          ],
+          "ex_signals": [],
+          "odds_url": "https://www.winticket.jp/keirin/takeo/odds/2026090384/3/11",
+          "url": "https://www.winticket.jp/keirin/takeo/racecard/2026090384/3/11"
+        }
+      ],
+      "score": 0.22904,
+      "warnings": [
+        "一部は推定倍率です"
+      ]
+    },
+    {
+      "kind": "single",
+      "title": "久留米 7R 単発",
+      "start_amount": 1000,
+      "target_amount": 3000,
+      "projected_return": 16300,
+      "shortfall": 0,
+      "multiplier": 16.3,
+      "target_ratio": 3.0,
+      "hit_probability": 0.3635,
+      "risk": "低",
+      "live_odds_count": 0,
+      "races": [
+        {
+          "race_key": "winticket:2026090583:1:7",
+          "venue": "久留米",
+          "race_no": 7,
+          "start_time": "22:50",
           "ticket": "1-2-4",
           "cars": [
             1,
@@ -435,31 +327,139 @@
             4
           ],
           "stake": 1000,
-          "projected_return": 24700,
-          "odds": 24.7,
-          "odds_str": "24.7",
+          "projected_return": 16300,
+          "odds": 16.3,
+          "odds_str": "16.3",
           "odds_source": "estimated",
           "popularity": null,
           "confidence": "本命",
-          "hit_probability": 0.2609,
+          "hit_probability": 0.3635,
           "top_pick": {
             "car_no": 1,
-            "name": "森下龍之介",
-            "probability": 0.4086
+            "name": "真木寛斗",
+            "probability": 0.5911
           },
           "rationale": [
             "信頼度: 本命",
-            "本命: 1森下龍之介 40.9%",
-            "買い目スコア: 28.5",
+            "本命: 1真木寛斗 59.1%",
+            "買い目スコア: 39.7",
             "コメント/関係性あり",
             "崩れ筋も評価"
           ],
           "ex_signals": [],
-          "odds_url": "https://www.winticket.jp/keirin/ito/odds/2026090237/3/4",
-          "url": "https://www.winticket.jp/keirin/ito/racecard/2026090237/3/4"
+          "odds_url": "https://www.winticket.jp/keirin/kurume/odds/2026090583/1/7",
+          "url": "https://www.winticket.jp/keirin/kurume/racecard/2026090583/1/7"
         }
       ],
-      "score": 0.09224,
+      "score": 0.2281,
+      "warnings": [
+        "一部は推定倍率です"
+      ]
+    },
+    {
+      "kind": "single",
+      "title": "松阪 4R 単発",
+      "start_amount": 1000,
+      "target_amount": 3000,
+      "projected_return": 18600,
+      "shortfall": 0,
+      "multiplier": 18.6,
+      "target_ratio": 3.0,
+      "hit_probability": 0.3733,
+      "risk": "低",
+      "live_odds_count": 0,
+      "races": [
+        {
+          "race_key": "winticket:2026090547:1:4",
+          "venue": "松阪",
+          "race_no": 4,
+          "start_time": "21:40",
+          "ticket": "1-4-7",
+          "cars": [
+            1,
+            4,
+            7
+          ],
+          "stake": 1000,
+          "projected_return": 18600,
+          "odds": 18.6,
+          "odds_str": "18.6",
+          "odds_source": "estimated",
+          "popularity": null,
+          "confidence": "本命",
+          "hit_probability": 0.3733,
+          "top_pick": {
+            "car_no": 1,
+            "name": "渡邉拓",
+            "probability": 0.6244
+          },
+          "rationale": [
+            "信頼度: 本命",
+            "本命: 1渡邉拓 62.4%",
+            "買い目スコア: 40.8",
+            "コメント/関係性あり",
+            "崩れ筋も評価"
+          ],
+          "ex_signals": [],
+          "odds_url": "https://www.winticket.jp/keirin/matsusaka/odds/2026090547/1/4",
+          "url": "https://www.winticket.jp/keirin/matsusaka/racecard/2026090547/1/4"
+        }
+      ],
+      "score": 0.22734,
+      "warnings": [
+        "一部は推定倍率です"
+      ]
+    },
+    {
+      "kind": "single",
+      "title": "久留米 7R 単発",
+      "start_amount": 1000,
+      "target_amount": 3000,
+      "projected_return": 20000,
+      "shortfall": 0,
+      "multiplier": 20.0,
+      "target_ratio": 3.0,
+      "hit_probability": 0.3595,
+      "risk": "低",
+      "live_odds_count": 0,
+      "races": [
+        {
+          "race_key": "winticket:2026090583:1:7",
+          "venue": "久留米",
+          "race_no": 7,
+          "start_time": "22:50",
+          "ticket": "1-2-3",
+          "cars": [
+            1,
+            2,
+            3
+          ],
+          "stake": 1000,
+          "projected_return": 20000,
+          "odds": 20.0,
+          "odds_str": "20.0",
+          "odds_source": "estimated",
+          "popularity": null,
+          "confidence": "本命",
+          "hit_probability": 0.3595,
+          "top_pick": {
+            "car_no": 1,
+            "name": "真木寛斗",
+            "probability": 0.5911
+          },
+          "rationale": [
+            "信頼度: 本命",
+            "本命: 1真木寛斗 59.1%",
+            "買い目スコア: 39.3",
+            "コメント/関係性あり",
+            "崩れ筋も評価"
+          ],
+          "ex_signals": [],
+          "odds_url": "https://www.winticket.jp/keirin/kurume/odds/2026090583/1/7",
+          "url": "https://www.winticket.jp/keirin/kurume/racecard/2026090583/1/7"
+        }
+      ],
+      "score": 0.20773,
       "warnings": [
         "一部は推定倍率です"
       ]
