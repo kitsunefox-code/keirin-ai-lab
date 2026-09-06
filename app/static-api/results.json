@@ -19,14 +19,14 @@
   ],
   "summary": {
     "races": 60,
-    "settled": 5,
-    "pending": 55,
-    "honmei_hits": 2,
-    "honmei_rate": 0.4,
-    "in_top3_hits": 4,
-    "in_top3_rate": 0.8,
-    "trifecta_hits": 0,
-    "trifecta_rate": 0.0
+    "settled": 11,
+    "pending": 49,
+    "honmei_hits": 4,
+    "honmei_rate": 0.3636,
+    "in_top3_hits": 7,
+    "in_top3_rate": 0.6364,
+    "trifecta_hits": 1,
+    "trifecta_rate": 0.0909
   },
   "venues": [
     {
@@ -252,15 +252,25 @@
             "6-4-5",
             "6-5-7"
           ],
-          "result_order": [],
-          "status": "pending",
+          "result_order": [
+            5,
+            4,
+            1
+          ],
+          "status": "miss",
           "hits": {
-            "honmei": null,
-            "in_top3": null,
-            "trifecta": null,
+            "honmei": false,
+            "in_top3": false,
+            "trifecta": false,
             "trifecta_label": null
           },
-          "payout": null
+          "payout": {
+            "trifecta_odds": 33.7,
+            "trifecta_payout": null,
+            "exacta_odds": 6.7,
+            "exacta_hit_label": null,
+            "exacta_payout": null
+          }
         },
         {
           "race_key": "winticket:2026090463:3:7",
@@ -282,15 +292,25 @@
             "1-6-3",
             "1-3-6"
           ],
-          "result_order": [],
-          "status": "pending",
+          "result_order": [
+            6,
+            5,
+            3
+          ],
+          "status": "miss",
           "hits": {
-            "honmei": null,
-            "in_top3": null,
-            "trifecta": null,
+            "honmei": false,
+            "in_top3": false,
+            "trifecta": false,
             "trifecta_label": null
           },
-          "payout": null
+          "payout": {
+            "trifecta_odds": 1959.6,
+            "trifecta_payout": null,
+            "exacta_odds": 213.2,
+            "exacta_hit_label": null,
+            "exacta_payout": null
+          }
         }
       ]
     },
@@ -467,15 +487,25 @@
             "7-1-2",
             "7-1-9"
           ],
-          "result_order": [],
-          "status": "pending",
+          "result_order": [
+            5,
+            1,
+            4
+          ],
+          "status": "miss",
           "hits": {
-            "honmei": null,
-            "in_top3": null,
-            "trifecta": null,
+            "honmei": false,
+            "in_top3": false,
+            "trifecta": false,
             "trifecta_label": null
           },
-          "payout": null
+          "payout": {
+            "trifecta_odds": 160.5,
+            "trifecta_payout": null,
+            "exacta_odds": 12.1,
+            "exacta_hit_label": null,
+            "exacta_payout": null
+          }
         },
         {
           "race_key": "winticket:2026090312:4:7",
@@ -497,15 +527,25 @@
             "9-4-7",
             "9-4-2"
           ],
-          "result_order": [],
-          "status": "pending",
+          "result_order": [
+            9,
+            4,
+            2
+          ],
+          "status": "hit_trifecta",
           "hits": {
-            "honmei": null,
-            "in_top3": null,
-            "trifecta": null,
-            "trifecta_label": null
+            "honmei": true,
+            "in_top3": true,
+            "trifecta": true,
+            "trifecta_label": "9-4-2"
           },
-          "payout": null
+          "payout": {
+            "trifecta_odds": 325.6,
+            "trifecta_payout": 32560,
+            "exacta_odds": 53.7,
+            "exacta_hit_label": null,
+            "exacta_payout": null
+          }
         },
         {
           "race_key": "winticket:2026090312:4:8",
@@ -527,15 +567,25 @@
             "7-2-5",
             "7-5-2"
           ],
-          "result_order": [],
-          "status": "pending",
+          "result_order": [
+            1,
+            7,
+            2
+          ],
+          "status": "in_top3",
           "hits": {
-            "honmei": null,
-            "in_top3": null,
-            "trifecta": null,
+            "honmei": false,
+            "in_top3": true,
+            "trifecta": false,
             "trifecta_label": null
           },
-          "payout": null
+          "payout": {
+            "trifecta_odds": 18.7,
+            "trifecta_payout": null,
+            "exacta_odds": 3.0,
+            "exacta_hit_label": null,
+            "exacta_payout": null
+          }
         },
         {
           "race_key": "winticket:2026090312:4:9",
@@ -557,15 +607,25 @@
             "5-2-4",
             "1-5-2"
           ],
-          "result_order": [],
-          "status": "pending",
+          "result_order": [
+            5,
+            8,
+            7
+          ],
+          "status": "hit_honmei",
           "hits": {
-            "honmei": null,
-            "in_top3": null,
-            "trifecta": null,
+            "honmei": true,
+            "in_top3": true,
+            "trifecta": false,
             "trifecta_label": null
           },
-          "payout": null
+          "payout": {
+            "trifecta_odds": 290.1,
+            "trifecta_payout": null,
+            "exacta_odds": 73.7,
+            "exacta_hit_label": null,
+            "exacta_payout": null
+          }
         },
         {
           "race_key": "winticket:2026090312:4:10",
@@ -1914,32 +1974,32 @@
     "as_of": "2026-09-06",
     "today": {
       "label": "今日",
-      "settled": 5,
-      "honmei_hits": 2,
-      "honmei_rate": 0.4,
-      "in_top3_rate": 0.8,
-      "trifecta_hits": 0,
-      "trifecta_rate": 0.0,
-      "exacta_roi": 0.38,
-      "exacta_priced": 5,
+      "settled": 11,
+      "honmei_hits": 4,
+      "honmei_rate": 0.3636,
+      "in_top3_rate": 0.6364,
+      "trifecta_hits": 1,
+      "trifecta_rate": 0.0909,
+      "exacta_roi": 0.1727,
+      "exacta_priced": 11,
       "exacta_hits": 1,
-      "exacta_hit_rate": 0.2,
-      "trifecta_roi": 0.0,
+      "exacta_hit_rate": 0.0909,
+      "trifecta_roi": 4.9333,
       "form": "cold"
     },
     "week": {
       "label": "今週",
-      "settled": 503,
-      "honmei_hits": 205,
-      "honmei_rate": 0.4076,
-      "in_top3_rate": 0.7475,
-      "trifecta_hits": 102,
-      "trifecta_rate": 0.2028,
-      "exacta_roi": 0.7877,
-      "exacta_priced": 503,
+      "settled": 509,
+      "honmei_hits": 207,
+      "honmei_rate": 0.4067,
+      "in_top3_rate": 0.7446,
+      "trifecta_hits": 103,
+      "trifecta_rate": 0.2024,
+      "exacta_roi": 0.7784,
+      "exacta_priced": 509,
       "exacta_hits": 140,
-      "exacta_hit_rate": 0.2783,
-      "trifecta_roi": 0.6413,
+      "exacta_hit_rate": 0.275,
+      "trifecta_roi": 0.7403,
       "form": "even"
     },
     "last_week": {
@@ -1959,17 +2019,17 @@
     },
     "total": {
       "label": "通算",
-      "settled": 3952,
-      "honmei_hits": 1606,
-      "honmei_rate": 0.4064,
-      "in_top3_rate": 0.7318,
-      "trifecta_hits": 726,
+      "settled": 3958,
+      "honmei_hits": 1608,
+      "honmei_rate": 0.4063,
+      "in_top3_rate": 0.7314,
+      "trifecta_hits": 727,
       "trifecta_rate": 0.1837,
-      "exacta_roi": 0.724,
-      "exacta_priced": 3950,
+      "exacta_roi": 0.7229,
+      "exacta_priced": 3956,
       "exacta_hits": 1000,
-      "exacta_hit_rate": 0.2532,
-      "trifecta_roi": 0.742,
+      "exacta_hit_rate": 0.2528,
+      "trifecta_roi": 0.7546,
       "form": null
     }
   },
@@ -2026,16 +2086,9 @@
     {
       "category": "車立て",
       "label": "9車",
-      "races": 253,
-      "roi": 0.9213,
-      "hit_rate": 0.1462
-    },
-    {
-      "category": "会場",
-      "label": "青森",
-      "races": 102,
-      "roi": 0.8922,
-      "hit_rate": 0.2451
+      "races": 257,
+      "roi": 0.907,
+      "hit_rate": 0.144
     },
     {
       "category": "会場",
@@ -2043,6 +2096,13 @@
       "races": 155,
       "roi": 0.8626,
       "hit_rate": 0.3032
+    },
+    {
+      "category": "会場",
+      "label": "青森",
+      "races": 106,
+      "roi": 0.8585,
+      "hit_rate": 0.2358
     },
     {
       "category": "会場",
@@ -2059,13 +2119,6 @@
       "hit_rate": 0.3072
     },
     {
-      "category": "級班",
-      "label": "その他",
-      "races": 366,
-      "roi": 0.7993,
-      "hit_rate": 0.4754
-    },
-    {
       "category": "会場",
       "label": "富山",
       "races": 104,
@@ -2074,10 +2127,10 @@
     },
     {
       "category": "級班",
-      "label": "S級",
-      "races": 1021,
-      "roi": 0.786,
-      "hit_rate": 0.1734
+      "label": "その他",
+      "races": 368,
+      "roi": 0.795,
+      "hit_rate": 0.4728
     },
     {
       "category": "会場",
@@ -2094,11 +2147,18 @@
       "hit_rate": 0.3402
     },
     {
+      "category": "級班",
+      "label": "S級",
+      "races": 1025,
+      "roi": 0.783,
+      "hit_rate": 0.1727
+    },
+    {
       "category": "時間帯",
       "label": "デイ",
-      "races": 1608,
-      "roi": 0.7777,
-      "hit_rate": 0.2419
+      "races": 1612,
+      "roi": 0.7758,
+      "hit_rate": 0.2413
     },
     {
       "category": "会場",
@@ -2131,9 +2191,9 @@
     {
       "category": "車立て",
       "label": "7車",
-      "races": 3404,
-      "roi": 0.7256,
-      "hit_rate": 0.2629
+      "races": 3406,
+      "roi": 0.7252,
+      "hit_rate": 0.2628
     },
     {
       "category": "会場",
@@ -2180,9 +2240,9 @@
     {
       "category": "時間帯",
       "label": "モーニング",
-      "races": 597,
-      "roi": 0.6692,
-      "hit_rate": 0.2948
+      "races": 599,
+      "roi": 0.6669,
+      "hit_rate": 0.2938
     },
     {
       "category": "会場",
@@ -2270,17 +2330,17 @@
     },
     {
       "category": "会場",
-      "label": "防府",
-      "races": 114,
-      "roi": 0.4921,
-      "hit_rate": 0.2544
-    },
-    {
-      "category": "会場",
       "label": "別府",
       "races": 97,
       "roi": 0.4897,
       "hit_rate": 0.3093
+    },
+    {
+      "category": "会場",
+      "label": "防府",
+      "races": 116,
+      "roi": 0.4836,
+      "hit_rate": 0.25
     },
     {
       "category": "会場",
@@ -2334,15 +2394,15 @@
     },
     {
       "bin": "20-30%",
-      "predicted": 0.2556,
-      "actual": 0.3147,
-      "races": 1576
+      "predicted": 0.2555,
+      "actual": 0.3152,
+      "races": 1580
     },
     {
       "bin": "30-40%",
-      "predicted": 0.344,
-      "actual": 0.4042,
-      "races": 1289
+      "predicted": 0.3439,
+      "actual": 0.4036,
+      "races": 1291
     },
     {
       "bin": "40-50%",
