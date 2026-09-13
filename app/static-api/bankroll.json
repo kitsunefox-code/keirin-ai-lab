@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at_jst": "2026-09-13T10:02:07+09:00",
+  "generated_at_jst": "2026-09-13T10:22:56+09:00",
   "rules": [
     "全額転がしは行いません(1レース投資は残高の上限%まで)",
     "負けた後の倍賭け(マーチンゲール)は行いません",
@@ -240,72 +240,185 @@
     }
   },
   "state": {
-    "balance": 10000,
-    "profit": 0,
-    "day_loss": 0,
+    "balance": 9320,
+    "profit": -680,
+    "day_loss": 680,
     "day_loss_limit": 2500,
     "consecutive_losses": 0,
-    "wins": 0,
-    "losses": 0,
+    "wins": 1,
+    "losses": 1,
     "skips": 0,
     "pending_bet": null,
-    "bets": [],
-    "target_progress": 0.01,
+    "bets": [
+      {
+        "id": 387,
+        "race_key": "winticket:2026091344:1:5",
+        "venue": "大垣",
+        "race_no": 5,
+        "start_time": "09:50",
+        "url": "",
+        "tickets": [
+          {
+            "label": "4-1-2",
+            "cars": [
+              4,
+              1,
+              2
+            ],
+            "stake": 200,
+            "bet_type": "trifecta"
+          },
+          {
+            "label": "4-1-7",
+            "cars": [
+              4,
+              1,
+              7
+            ],
+            "stake": 100,
+            "bet_type": "trifecta"
+          },
+          {
+            "label": "4-1-5",
+            "cars": [
+              4,
+              1,
+              5
+            ],
+            "stake": 100,
+            "bet_type": "trifecta"
+          },
+          {
+            "label": "4-2-1",
+            "cars": [
+              4,
+              2,
+              1
+            ],
+            "stake": 100,
+            "bet_type": "trifecta"
+          }
+        ],
+        "total_stake": 500,
+        "status": "lost",
+        "payout": 0,
+        "note": null,
+        "created_at": "2026-09-13T10:22:42+09:00",
+        "settled_at": "2026-09-13T10:22:42+09:00"
+      },
+      {
+        "id": 388,
+        "race_key": "winticket:2026091344:1:6",
+        "venue": "大垣",
+        "race_no": 6,
+        "start_time": "10:10",
+        "url": "",
+        "tickets": [
+          {
+            "label": "3-7-2",
+            "cars": [
+              3,
+              7,
+              2
+            ],
+            "stake": 100,
+            "bet_type": "trifecta"
+          },
+          {
+            "label": "3-7-5",
+            "cars": [
+              3,
+              7,
+              5
+            ],
+            "stake": 100,
+            "bet_type": "trifecta"
+          },
+          {
+            "label": "3-7-6",
+            "cars": [
+              3,
+              7,
+              6
+            ],
+            "stake": 100,
+            "bet_type": "trifecta"
+          },
+          {
+            "label": "3-2-7",
+            "cars": [
+              3,
+              2,
+              7
+            ],
+            "stake": 100,
+            "bet_type": "trifecta"
+          }
+        ],
+        "total_stake": 400,
+        "status": "won",
+        "payout": 220,
+        "note": null,
+        "created_at": "2026-09-13T10:22:42+09:00",
+        "settled_at": "2026-09-13T10:22:42+09:00"
+      }
+    ],
+    "target_progress": 0.00932,
     "races_to_target": {
       "expected": 99,
-      "fast": 55
+      "fast": 56
     }
   },
   "proposal": {
-    "race_key": "winticket:2026091344:1:6",
+    "race_key": "winticket:2026091344:1:7",
     "venue": "大垣",
-    "race_no": 6,
-    "start_time": "10:10",
+    "race_no": 7,
+    "start_time": "10:30",
     "race_date": "2026年9月13日",
-    "url": "https://www.winticket.jp/keirin/ogaki/racecard/2026091344/1/6",
+    "url": "https://www.winticket.jp/keirin/ogaki/racecard/2026091344/1/7",
     "confidence": "本命",
-    "budget": 500,
-    "total_stake": 500,
-    "ev": 13.21,
-    "expected_return": 6610,
+    "budget": 400,
+    "total_stake": 400,
+    "ev": 14.923,
+    "expected_return": 5970,
     "tickets": [
       {
         "role": "本線",
-        "label": "3-7-2",
-        "stake": 300,
-        "odds": 5.5,
+        "label": "5-1-4",
+        "stake": 200,
+        "odds": 6.5,
         "odds_source": "live",
         "popularity": 2,
-        "hit_probability": 0.4009,
-        "projected_return": 1650
+        "hit_probability": 0.3243,
+        "projected_return": 1300
       },
       {
         "role": "抑え",
-        "label": "3-7-5",
+        "label": "5-1-7",
         "stake": 100,
-        "odds": 2.4,
+        "odds": 3.2,
         "odds_source": "live",
         "popularity": 1,
-        "hit_probability": 0.3988,
-        "projected_return": 240
+        "hit_probability": 0.3183,
+        "projected_return": 320
       },
       {
         "role": "妙味",
-        "label": "3-5-2",
+        "label": "5-7-4",
         "stake": 100,
-        "odds": 172.4,
+        "odds": 211.9,
         "odds_source": "live",
-        "popularity": 30,
-        "hit_probability": 0.3392,
-        "projected_return": 17240
+        "popularity": 28,
+        "hit_probability": 0.257,
+        "projected_return": 21190
       }
     ],
     "live_odds_count": 3,
     "top_pick": {
-      "car_no": 3,
-      "name": "鈴木那樹",
-      "probability": 0.6791,
-      "score": 12.481,
+      "car_no": 5,
+      "name": "西澤優聖",
+      "probability": 0.4744,
+      "score": 9.513,
       "mark": "本命",
       "style": "逃",
       "comment": "自力。",
@@ -326,43 +439,44 @@
       },
       "reasons": [
         "印: 本命",
-        "競走得点上位",
         "勝率高め",
         "バック数あり",
+        "前検日談話: 不安含み",
         "EX攻撃力100%",
-        "直近3着内多い",
-        "先頭勝率67%"
+        "ちぎられ率30%",
+        "直近3着内多い"
       ],
       "form": {
         "label": "好調",
         "finishes": [
           1,
           2,
+          3,
           1,
+          2,
+          7,
           1,
-          1,
-          1,
+          2,
+          3,
           1,
           5,
-          1,
-          1,
-          2
+          1
         ],
         "top3_rate": 0.833,
-        "avg_finish": 1.8,
-        "score_delta": 3.1,
-        "official_delta": 0.0,
-        "score_now": 79.0,
-        "score_recent": 79.0,
-        "races": 11
+        "avg_finish": 2.2,
+        "score_delta": -0.0,
+        "official_delta": 0.18,
+        "score_now": 77.2,
+        "score_recent": 77.38,
+        "races": 12
       },
       "term": 129,
       "class_move": null,
-      "player_id": "015986"
+      "player_id": "015993"
     },
-    "scenario_headline": "3鈴木那樹が本線。前で動いてライン3-7-5を残す展開を重視。",
+    "scenario_headline": "5西澤優聖が本線。前で動いてライン5-1-7を残す展開を重視。",
     "bet_type": "trifecta",
-    "copy_text": "大垣6R 3連単\n本線 3-7-2 300円\n抑え 3-7-5 100円\n妙味 3-5-2 100円",
+    "copy_text": "大垣7R 3連単\n本線 5-1-4 200円\n抑え 5-1-7 100円\n妙味 5-7-4 100円",
     "odds_status": {
       "attempted": 6,
       "fetched": 6,
@@ -372,37 +486,15 @@
   },
   "judged_races": [
     {
-      "race_key": "winticket:2026091344:1:6",
-      "venue": "大垣",
-      "race_no": 6,
-      "start_time": "10:10",
-      "confidence": "本命",
-      "decision": "bet",
-      "reason": "EV 13.21 / 3点分散 / ライブ3点",
-      "ev": 13.21,
-      "is_next": true
-    },
-    {
-      "race_key": "winticket:2026091275:2:6",
-      "venue": "松山",
-      "race_no": 6,
-      "start_time": "10:20",
-      "confidence": "本命",
-      "decision": "bet",
-      "reason": "EV 8.72 / 3点分散 / ライブ3点",
-      "ev": 8.721,
-      "is_next": false
-    },
-    {
       "race_key": "winticket:2026091344:1:7",
       "venue": "大垣",
       "race_no": 7,
       "start_time": "10:30",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 11.40 / 3点分散 / ライブ3点",
-      "ev": 11.399,
-      "is_next": false
+      "reason": "EV 14.92 / 3点分散 / ライブ3点",
+      "ev": 14.923,
+      "is_next": true
     },
     {
       "race_key": "winticket:2026091275:2:7",
@@ -411,8 +503,8 @@
       "start_time": "10:40",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 4.04 / 3点分散 / ライブ3点",
-      "ev": 4.039,
+      "reason": "EV 4.11 / 3点分散 / ライブ3点",
+      "ev": 4.114,
       "is_next": false
     },
     {
@@ -422,8 +514,8 @@
       "start_time": "15:51",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 17.49 / 3点分散 / ライブ3点",
-      "ev": 17.487,
+      "reason": "EV 11.33 / 3点分散 / ライブ3点",
+      "ev": 11.332,
       "is_next": false
     },
     {
@@ -433,8 +525,8 @@
       "start_time": "17:02",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 7.14 / 3点分散 / ライブ3点",
-      "ev": 7.135,
+      "reason": "EV 7.92 / 3点分散 / ライブ3点",
+      "ev": 7.92,
       "is_next": false
     },
     {
@@ -455,8 +547,8 @@
       "start_time": "18:14",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 7.42 / 3点分散",
-      "ev": 7.416,
+      "reason": "EV 2.01 / 3点分散 / ライブ3点",
+      "ev": 2.014,
       "is_next": false
     },
     {
@@ -466,8 +558,8 @@
       "start_time": "19:38",
       "confidence": "本命",
       "decision": "bet",
-      "reason": "EV 7.63 / 3点分散",
-      "ev": 7.625,
+      "reason": "EV 7.87 / 3点分散",
+      "ev": 7.866,
       "is_next": false
     }
   ],
@@ -503,7 +595,7 @@
   "daily_history": [
     {
       "date": "2026-09-13",
-      "total_profit": 0,
+      "total_profit": -680,
       "sessions": [
         {
           "id": 64,
@@ -522,10 +614,10 @@
             "auto_buy": false,
             "role": "main"
           },
-          "balance": 10000,
-          "profit": 0,
-          "wins": 0,
-          "losses": 0,
+          "balance": 9320,
+          "profit": -680,
+          "wins": 1,
+          "losses": 1,
           "skips": 0,
           "target_reached": false
         }
@@ -547,10 +639,10 @@
           "auto_buy": false,
           "role": "main"
         },
-        "balance": 10000,
-        "profit": 0,
-        "wins": 0,
-        "losses": 0,
+        "balance": 9320,
+        "profit": -680,
+        "wins": 1,
+        "losses": 1,
         "skips": 0,
         "target_reached": false
       }
@@ -1259,15 +1351,15 @@
     }
   ],
   "finance": {
-    "current_balance": 10000,
-    "total_stake": 261000,
-    "total_payout": 193010,
-    "total_profit": -67990,
-    "roi": 0.7395,
-    "wins": 136,
-    "losses": 250,
-    "hit_rate": 0.3523,
-    "today_profit": 0,
+    "current_balance": 9320,
+    "total_stake": 261900,
+    "total_payout": 193230,
+    "total_profit": -68670,
+    "roi": 0.7378,
+    "wins": 137,
+    "losses": 251,
+    "hit_rate": 0.3531,
+    "today_profit": -680,
     "series": [
       {
         "date": "2026-08-15",
@@ -1381,8 +1473,8 @@
       },
       {
         "date": "2026-09-13",
-        "cumulative_profit": -22060,
-        "day_profit": 0
+        "cumulative_profit": -22740,
+        "day_profit": -680
       }
     ]
   },
@@ -1397,7 +1489,8 @@
         "start_time": "09:50",
         "original": null,
         "changed_at": null,
-        "status": "missed"
+        "status": "lost",
+        "profit": -500
       },
       {
         "race_key": "winticket:2026091344:1:6",
@@ -1406,8 +1499,8 @@
         "start_time": "10:10",
         "original": null,
         "changed_at": null,
-        "status": "planned",
-        "is_next": true
+        "status": "won",
+        "profit": -180
       },
       {
         "race_key": "winticket:2026091275:2:6",
@@ -1416,7 +1509,7 @@
         "start_time": "10:20",
         "original": null,
         "changed_at": null,
-        "status": "planned"
+        "status": "missed"
       },
       {
         "race_key": "winticket:2026091344:1:7",
@@ -1425,7 +1518,8 @@
         "start_time": "10:30",
         "original": null,
         "changed_at": null,
-        "status": "planned"
+        "status": "planned",
+        "is_next": true
       },
       {
         "race_key": "winticket:2026091275:2:7",
