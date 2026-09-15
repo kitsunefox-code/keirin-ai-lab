@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at": "2026-09-15T01:29:56.400864+00:00",
+  "generated_at": "2026-09-15T01:49:36.076778+00:00",
   "forecast_file": "/home/runner/work/keirin-ai-lab/keirin-ai-lab/data/forecast_20260915_after_0000.json",
   "source": {
     "target_date": "2026-09-15",
@@ -60,8 +60,8 @@
     ]
   },
   "summary": {
-    "count": 68,
-    "elapsed_count": 15,
+    "count": 66,
+    "elapsed_count": 17,
     "after": "00:00",
     "target_date": "2026-09-15",
     "high_confidence": 0,
@@ -88,8 +88,8 @@
         {
           "car_no": 3,
           "name": "樋口有樹郎",
-          "probability": 0.2844,
-          "score": 4.483,
+          "probability": 0.3228,
+          "score": 5.035,
           "mark": "本命",
           "style": "両",
           "comment": "自力基本。",
@@ -110,8 +110,10 @@
           },
           "reasons": [
             "印: 本命",
+            "前走後談話: 上向き",
             "EX攻撃力100%",
             "当所3着内50%",
+            "雨で先行有利",
             "対坂本佳憲 0勝3敗",
             "学習: 追い風"
           ],
@@ -146,8 +148,8 @@
         {
           "car_no": 4,
           "name": "大沼孝行",
-          "probability": 0.2104,
-          "score": 3.278,
+          "probability": 0.2014,
+          "score": 3.148,
           "mark": "対抗",
           "style": "逃",
           "comment": "自力。",
@@ -170,8 +172,8 @@
             "印: 対抗",
             "EX攻撃力100%",
             "バック数最強ライン(穴目)",
-            "連携実績 須藤雄太と2戦1回3着内",
-            "対伊藤嘉浩 1勝0敗",
+            "雨で先行有利",
+            "対須藤雄太 1勝0敗",
             "学習: 追い風"
           ],
           "form": {
@@ -205,8 +207,8 @@
         {
           "car_no": 2,
           "name": "須藤雄太",
-          "probability": 0.1742,
-          "score": 2.522,
+          "probability": 0.1501,
+          "score": 1.971,
           "mark": "単穴",
           "style": "追",
           "comment": "大沼さん。",
@@ -221,8 +223,7 @@
             "印: 単穴",
             "バック数最強ライン(穴目)",
             "差し有利バンク",
-            "連携実績 大沼孝行と2戦1回3着内",
-            "対大沼孝行 0勝1敗",
+            "対伊藤嘉浩 1勝0敗",
             "学習: 追い風"
           ],
           "form": {
@@ -249,7 +250,7 @@
       "tickets": [
         {
           "label": "4-2-3",
-          "score": 0.2738,
+          "score": 0.2655,
           "cars": [
             4,
             2,
@@ -258,28 +259,8 @@
           "suji": true
         },
         {
-          "label": "4-2-6",
-          "score": 0.2419,
-          "cars": [
-            4,
-            2,
-            6
-          ],
-          "suji": true
-        },
-        {
-          "label": "3-6-4",
-          "score": 0.2359,
-          "cars": [
-            3,
-            6,
-            4
-          ],
-          "suji": true
-        },
-        {
           "label": "3-4-2",
-          "score": 0.2309,
+          "score": 0.2448,
           "cars": [
             3,
             4,
@@ -288,18 +269,18 @@
           "suji": false
         },
         {
-          "label": "3-6-2",
-          "score": 0.2302,
+          "label": "3-4-1",
+          "score": 0.2403,
           "cars": [
             3,
-            6,
-            2
+            4,
+            1
           ],
-          "suji": true
+          "suji": false
         },
         {
           "label": "3-2-4",
-          "score": 0.2258,
+          "score": 0.2376,
           "cars": [
             3,
             2,
@@ -308,22 +289,42 @@
           "suji": false
         },
         {
-          "label": "3-4-6",
-          "score": 0.2233,
+          "label": "3-1-4",
+          "score": 0.2286,
           "cars": [
             3,
-            4,
-            6
+            1,
+            4
           ],
           "suji": false
         },
         {
-          "label": "3-2-6",
-          "score": 0.2131,
+          "label": "3-2-1",
+          "score": 0.2259,
           "cars": [
             3,
             2,
-            6
+            1
+          ],
+          "suji": false
+        },
+        {
+          "label": "4-2-1",
+          "score": 0.2256,
+          "cars": [
+            4,
+            2,
+            1
+          ],
+          "suji": true
+        },
+        {
+          "label": "3-1-2",
+          "score": 0.2214,
+          "cars": [
+            3,
+            1,
+            2
           ],
           "suji": false
         }
@@ -334,7 +335,7 @@
             3,
             4
           ],
-          "score": 0.2104,
+          "score": 0.2014,
           "label": "3-4",
           "suji": false,
           "bet_type": "exacta"
@@ -344,7 +345,7 @@
             3,
             2
           ],
-          "score": 0.1742,
+          "score": 0.1501,
           "label": "3-2",
           "suji": false,
           "bet_type": "exacta"
@@ -354,7 +355,7 @@
             3,
             6
           ],
-          "score": 0.1348,
+          "score": 0.1319,
           "label": "3-6",
           "suji": true,
           "bet_type": "exacta"
@@ -364,7 +365,7 @@
             3,
             1
           ],
-          "score": 0.1123,
+          "score": 0.1181,
           "label": "3-1",
           "suji": false,
           "bet_type": "exacta"
@@ -372,18 +373,18 @@
       ],
       "value": null,
       "hit_estimate": {
-        "exacta": 0.1529,
-        "trifecta": 0.0911
+        "exacta": 0.1675,
+        "trifecta": 0.0975
       },
       "confidence": {
-        "label": "混戦",
-        "rank": 1,
-        "reason": "本命確率28.4%で割れ気味。"
+        "label": "順当",
+        "rank": 2,
+        "reason": "本命確率32.3%。本命中心で相手を絞る。"
       },
       "scenario": {
         "headline": "3樋口有樹郎が本線。前で動いてライン3-6-1-4-2を残す展開を重視。",
         "flow": "細切れ戦(4分戦以上)。短いラインの主導権争いで展開が乱れやすい一戦です。 3樋口有樹郎が前で動き、6坂本佳憲、1伊藤嘉浩、4大沼孝行、2須藤雄太が追走する形。 後ろのコメント: 6「樋口君。」 / 1「補充出走」 / 4「自力。」 / 2「大沼さん。」 先行争いが長引かなければ、番手以降も車券圏に残る想定です。",
-        "watch": "対抗は4大沼孝行。1着確率差は約7.4ポイントです。",
+        "watch": "対抗は4大沼孝行。1着確率差は約12.1ポイントです。",
         "upset": "崩れるなら4大沼孝行の主導権取り、またはライン分断で番手が離れるケース。",
         "pattern": "細切れ戦",
         "sequence": [
@@ -435,7 +436,7 @@
               "name": "大沼孝行",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.2104,
+              "probability": 0.2014,
               "player_id": "012883"
             },
             {
@@ -443,7 +444,7 @@
               "name": "須藤雄太",
               "style": "追",
               "comment": "大沼さん。",
-              "probability": 0.1742,
+              "probability": 0.1501,
               "player_id": "014014"
             }
           ],
@@ -459,7 +460,7 @@
               "name": "伊藤嘉浩",
               "style": "両",
               "comment": "補充出走",
-              "probability": 0.1123,
+              "probability": 0.1181,
               "player_id": "013266"
             }
           ],
@@ -475,7 +476,7 @@
               "name": "古閑良介",
               "style": "追",
               "comment": "決めず。",
-              "probability": 0.0984,
+              "probability": 0.0898,
               "player_id": "012847"
             }
           ],
@@ -491,7 +492,7 @@
               "name": "樋口有樹郎",
               "style": "両",
               "comment": "自力基本。",
-              "probability": 0.2844,
+              "probability": 0.3228,
               "player_id": "014678"
             },
             {
@@ -499,7 +500,7 @@
               "name": "坂本佳憲",
               "style": "追",
               "comment": "樋口君。",
-              "probability": 0.1204,
+              "probability": 0.1178,
               "player_id": "014099"
             },
             {
@@ -507,7 +508,7 @@
               "name": "伊藤嘉浩",
               "style": "両",
               "comment": "補充出走",
-              "probability": 0.1123,
+              "probability": 0.1181,
               "player_id": "013266"
             },
             {
@@ -515,7 +516,7 @@
               "name": "大沼孝行",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.2104,
+              "probability": 0.2014,
               "player_id": "012883"
             },
             {
@@ -523,7 +524,7 @@
               "name": "須藤雄太",
               "style": "追",
               "comment": "大沼さん。",
-              "probability": 0.1742,
+              "probability": 0.1501,
               "player_id": "014014"
             }
           ],
@@ -539,7 +540,7 @@
               "name": "樋口有樹郎",
               "style": "両",
               "comment": "自力基本。",
-              "probability": 0.2844,
+              "probability": 0.3228,
               "player_id": "014678"
             },
             {
@@ -547,7 +548,7 @@
               "name": "坂本佳憲",
               "style": "追",
               "comment": "樋口君。",
-              "probability": 0.1204,
+              "probability": 0.1178,
               "player_id": "014099"
             }
           ],
@@ -681,12 +682,13 @@
             "two_rate": 20.0,
             "three_rate": 30.0
           },
-          "win_probability": 0.1123,
-          "model_score": 0.767,
+          "win_probability": 0.1181,
+          "model_score": 1.012,
           "reasons": [
             "印: 連下",
             "EX攻撃力100%",
-            "対坂本佳憲 0勝2敗",
+            "雨で先行有利",
+            "対樋口有樹郎 1勝1敗",
             "学習: 割引"
           ],
           "player_id": "013266",
@@ -860,14 +862,13 @@
             "two_rate": 11.1,
             "three_rate": 11.1
           },
-          "win_probability": 0.1742,
-          "model_score": 2.522,
+          "win_probability": 0.1501,
+          "model_score": 1.971,
           "reasons": [
             "印: 単穴",
             "バック数最強ライン(穴目)",
             "差し有利バンク",
-            "連携実績 大沼孝行と2戦1回3着内",
-            "対大沼孝行 0勝1敗",
+            "対伊藤嘉浩 1勝0敗",
             "学習: 追い風"
           ],
           "player_id": "014014",
@@ -1041,12 +1042,14 @@
             "two_rate": 25.0,
             "three_rate": 37.5
           },
-          "win_probability": 0.2844,
-          "model_score": 4.483,
+          "win_probability": 0.3228,
+          "model_score": 5.035,
           "reasons": [
             "印: 本命",
+            "前走後談話: 上向き",
             "EX攻撃力100%",
             "当所3着内50%",
+            "雨で先行有利",
             "対坂本佳憲 0勝3敗",
             "学習: 追い風"
           ],
@@ -1229,14 +1232,14 @@
             "two_rate": 25.0,
             "three_rate": 29.1
           },
-          "win_probability": 0.2104,
-          "model_score": 3.278,
+          "win_probability": 0.2014,
+          "model_score": 3.148,
           "reasons": [
             "印: 対抗",
             "EX攻撃力100%",
             "バック数最強ライン(穴目)",
-            "連携実績 須藤雄太と2戦1回3着内",
-            "対伊藤嘉浩 1勝0敗",
+            "雨で先行有利",
+            "対須藤雄太 1勝0敗",
             "学習: 追い風"
           ],
           "player_id": "012883",
@@ -1410,9 +1413,10 @@
             "two_rate": 21.0,
             "three_rate": 31.5
           },
-          "win_probability": 0.0984,
-          "model_score": 0.238,
+          "win_probability": 0.0898,
+          "model_score": -0.083,
           "reasons": [
+            "前走後談話: 不安含み",
             "差し有利バンク",
             "対樋口有樹郎 1勝1敗",
             "学習: 割引"
@@ -1587,8 +1591,8 @@
             "two_rate": 13.6,
             "three_rate": 31.8
           },
-          "win_probability": 0.1204,
-          "model_score": 1.045,
+          "win_probability": 0.1178,
+          "model_score": 1.003,
           "reasons": [
             "EX攻撃力100%",
             "差し有利バンク",
@@ -1698,8 +1702,8 @@
         {
           "car_no": 2,
           "name": "橋本大祐",
-          "probability": 0.2665,
-          "score": 3.88,
+          "probability": 0.2602,
+          "score": 3.736,
           "mark": "本命",
           "style": "追",
           "comment": "補充出走",
@@ -1745,60 +1749,10 @@
           "player_id": "013331"
         },
         {
-          "car_no": 1,
-          "name": "市川博章",
-          "probability": 0.2106,
-          "score": 2.938,
-          "mark": "対抗",
-          "style": "追",
-          "comment": "大澤君。",
-          "emotion": {
-            "tone": "中立",
-            "score": 0.0,
-            "buckets": {},
-            "hits": [],
-            "summary": "コメントだけでは強弱を決めにくいです。"
-          },
-          "reasons": [
-            "印: 対抗",
-            "番手3着内48%",
-            "差し有利バンク",
-            "対大澤哉太 1勝1敗",
-            "学習: 追い風"
-          ],
-          "form": {
-            "label": "好調",
-            "finishes": [
-              5,
-              4,
-              7,
-              4,
-              1,
-              5,
-              5,
-              1,
-              3,
-              6,
-              4,
-              3
-            ],
-            "top3_rate": 0.5,
-            "avg_finish": 3.7,
-            "score_delta": -0.3,
-            "official_delta": -0.44,
-            "score_now": 69.53,
-            "score_recent": 69.09,
-            "races": 12
-          },
-          "term": 80,
-          "class_move": null,
-          "player_id": "013324"
-        },
-        {
           "car_no": 4,
           "name": "大澤哉太",
-          "probability": 0.1819,
-          "score": 2.353,
+          "probability": 0.2,
+          "score": 2.683,
           "mark": "連下",
           "style": "両",
           "comment": "自力自在。",
@@ -1819,8 +1773,10 @@
           },
           "reasons": [
             "印: 連下",
+            "前走後談話: 上向き",
             "EX攻撃力100%",
-            "対浜田翔平 2勝0敗",
+            "雨で先行有利",
+            "対市川博章 1勝1敗",
             "学習: 追い風"
           ],
           "form": {
@@ -1850,86 +1806,135 @@
           "term": 95,
           "class_move": null,
           "player_id": "014424"
+        },
+        {
+          "car_no": 1,
+          "name": "市川博章",
+          "probability": 0.1939,
+          "score": 2.559,
+          "mark": "対抗",
+          "style": "追",
+          "comment": "大澤君。",
+          "emotion": {
+            "tone": "中立",
+            "score": 0.0,
+            "buckets": {},
+            "hits": [],
+            "summary": "コメントだけでは強弱を決めにくいです。"
+          },
+          "reasons": [
+            "印: 対抗",
+            "番手3着内48%",
+            "差し有利バンク",
+            "対大澤哉太 1勝1敗"
+          ],
+          "form": {
+            "label": "好調",
+            "finishes": [
+              5,
+              4,
+              7,
+              4,
+              1,
+              5,
+              5,
+              1,
+              3,
+              6,
+              4,
+              3
+            ],
+            "top3_rate": 0.5,
+            "avg_finish": 3.7,
+            "score_delta": -0.3,
+            "official_delta": -0.44,
+            "score_now": 69.53,
+            "score_recent": 69.09,
+            "races": 12
+          },
+          "term": 80,
+          "class_move": null,
+          "player_id": "013324"
         }
       ],
       "tickets": [
         {
-          "label": "5-2-1",
-          "score": 0.2265,
+          "label": "5-2-4",
+          "score": 0.2326,
           "cars": [
             5,
             2,
-            1
+            4
           ],
           "suji": true
         },
         {
-          "label": "2-1-4",
-          "score": 0.2228,
+          "label": "4-1-2",
+          "score": 0.2321,
           "cars": [
-            2,
+            4,
             1,
-            4
+            2
           ],
-          "suji": false
+          "suji": true
         },
         {
-          "label": "5-2-4",
-          "score": 0.2215,
+          "label": "5-2-1",
+          "score": 0.2315,
           "cars": [
             5,
             2,
-            4
+            1
           ],
           "suji": true
         },
         {
           "label": "2-4-1",
-          "score": 0.2188,
+          "score": 0.2183,
           "cars": [
             2,
             4,
             1
+          ],
+          "suji": false
+        },
+        {
+          "label": "2-1-4",
+          "score": 0.2174,
+          "cars": [
+            2,
+            1,
+            4
+          ],
+          "suji": false
+        },
+        {
+          "label": "4-1-5",
+          "score": 0.2161,
+          "cars": [
+            4,
+            1,
+            5
+          ],
+          "suji": true
+        },
+        {
+          "label": "2-4-5",
+          "score": 0.2142,
+          "cars": [
+            2,
+            4,
+            5
           ],
           "suji": false
         },
         {
           "label": "2-1-5",
-          "score": 0.2182,
+          "score": 0.2125,
           "cars": [
             2,
             1,
             5
-          ],
-          "suji": false
-        },
-        {
-          "label": "1-4-2",
-          "score": 0.2104,
-          "cars": [
-            1,
-            4,
-            2
-          ],
-          "suji": false
-        },
-        {
-          "label": "2-4-5",
-          "score": 0.2101,
-          "cars": [
-            2,
-            4,
-            5
-          ],
-          "suji": false
-        },
-        {
-          "label": "2-5-1",
-          "score": 0.2095,
-          "cars": [
-            2,
-            5,
-            1
           ],
           "suji": false
         }
@@ -1938,20 +1943,20 @@
         {
           "cars": [
             2,
-            1
+            4
           ],
-          "score": 0.2106,
-          "label": "2-1",
+          "score": 0.2,
+          "label": "2-4",
           "suji": false,
           "bet_type": "exacta"
         },
         {
           "cars": [
             2,
-            4
+            1
           ],
-          "score": 0.1819,
-          "label": "2-4",
+          "score": 0.1939,
+          "label": "2-1",
           "suji": false,
           "bet_type": "exacta"
         },
@@ -1960,7 +1965,7 @@
             2,
             5
           ],
-          "score": 0.1492,
+          "score": 0.165,
           "label": "2-5",
           "suji": false,
           "bet_type": "exacta"
@@ -1970,7 +1975,7 @@
             2,
             3
           ],
-          "score": 0.1475,
+          "score": 0.1367,
           "label": "2-3",
           "suji": true,
           "bet_type": "exacta"
@@ -1978,18 +1983,18 @@
       ],
       "value": null,
       "hit_estimate": {
-        "exacta": 0.1426,
-        "trifecta": 0.0916
+        "exacta": 0.1385,
+        "trifecta": 0.0924
       },
       "confidence": {
         "label": "混戦",
         "rank": 1,
-        "reason": "本命確率26.7%で割れ気味。"
+        "reason": "本命確率26.0%で割れ気味。"
       },
       "scenario": {
         "headline": "2橋本大祐は番手/追走からの差しが中心。5浜田翔平が形を作れるかが鍵。",
         "flow": "2分戦。 ライン5-2-3の前が主導権を取れば、2橋本大祐の差し込みが見えます。早めに踏み合うと外のまくりを受けるリスク。",
-        "watch": "対抗は1市川博章。1着確率差は約5.6ポイントです。",
+        "watch": "対抗は4大澤哉太。1着確率差は約6.0ポイントです。",
         "upset": "崩れるなら4大澤哉太の主導権取り、またはライン分断で番手が離れるケース。",
         "pattern": "2分戦",
         "sequence": [
@@ -2001,8 +2006,8 @@
       },
       "comment_signals": [
         "2橋本大祐: 「補充出走」 コメントだけでは強弱を決めにくいです。",
-        "1市川博章: 「大澤君。」 コメントだけでは強弱を決めにくいです。",
         "4大澤哉太: 「自力自在。」 戦法意図は見えますが、状態評価は控えめです。",
+        "1市川博章: 「大澤君。」 コメントだけでは強弱を決めにくいです。",
         "ライン4-1-6: 4大澤哉太が前で動き、1市川博章、6高瀬卓が追走する形。 後ろのコメント: 1「大澤君。」 / 6「市川さん。」",
         "ライン5-2-3: 5浜田翔平が前で動き、2橋本大祐、3上原直樹が追走する形。 後ろのコメント: 2「補充出走」 / 3「中近勢へ。」"
       ],
@@ -2028,7 +2033,7 @@
               "name": "大澤哉太",
               "style": "両",
               "comment": "自力自在。",
-              "probability": 0.1819,
+              "probability": 0.2,
               "player_id": "014424"
             },
             {
@@ -2036,7 +2041,7 @@
               "name": "市川博章",
               "style": "追",
               "comment": "大澤君。",
-              "probability": 0.2106,
+              "probability": 0.1939,
               "player_id": "013324"
             },
             {
@@ -2044,7 +2049,7 @@
               "name": "高瀬卓",
               "style": "追",
               "comment": "市川さん。",
-              "probability": 0.0584,
+              "probability": 0.0573,
               "player_id": "013840"
             }
           ],
@@ -2060,7 +2065,7 @@
               "name": "浜田翔平",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.1492,
+              "probability": 0.165,
               "player_id": "015188"
             },
             {
@@ -2068,7 +2073,7 @@
               "name": "橋本大祐",
               "style": "追",
               "comment": "補充出走",
-              "probability": 0.2665,
+              "probability": 0.2602,
               "player_id": "013331"
             },
             {
@@ -2076,7 +2081,7 @@
               "name": "上原直樹",
               "style": "追",
               "comment": "中近勢へ。",
-              "probability": 0.1335,
+              "probability": 0.1237,
               "player_id": "012982"
             }
           ],
@@ -2210,14 +2215,13 @@
             "two_rate": 13.6,
             "three_rate": 22.7
           },
-          "win_probability": 0.2106,
-          "model_score": 2.938,
+          "win_probability": 0.1939,
+          "model_score": 2.559,
           "reasons": [
             "印: 対抗",
             "番手3着内48%",
             "差し有利バンク",
-            "対大澤哉太 1勝1敗",
-            "学習: 追い風"
+            "対大澤哉太 1勝1敗"
           ],
           "player_id": "013324",
           "profile": {
@@ -2390,8 +2394,8 @@
             "two_rate": 18.5,
             "three_rate": 44.4
           },
-          "win_probability": 0.2665,
-          "model_score": 3.88,
+          "win_probability": 0.2602,
+          "model_score": 3.736,
           "reasons": [
             "印: 本命",
             "差し有利バンク",
@@ -2569,12 +2573,13 @@
             "two_rate": 23.7,
             "three_rate": 33.3
           },
-          "win_probability": 0.1335,
-          "model_score": 1.116,
+          "win_probability": 0.1237,
+          "model_score": 0.761,
           "reasons": [
             "前検日談話: 上向き",
             "差し有利バンク",
-            "対橋本大祐 1勝1敗"
+            "対浜田翔平 0勝2敗",
+            "学習: 割引"
           ],
           "player_id": "012982",
           "profile": {
@@ -2755,12 +2760,14 @@
             "two_rate": 18.0,
             "three_rate": 36.3
           },
-          "win_probability": 0.1819,
-          "model_score": 2.353,
+          "win_probability": 0.2,
+          "model_score": 2.683,
           "reasons": [
             "印: 連下",
+            "前走後談話: 上向き",
             "EX攻撃力100%",
-            "対浜田翔平 2勝0敗",
+            "雨で先行有利",
+            "対市川博章 1勝1敗",
             "学習: 追い風"
           ],
           "player_id": "014424",
@@ -2942,15 +2949,16 @@
             "two_rate": 11.1,
             "three_rate": 22.2
           },
-          "win_probability": 0.1492,
-          "model_score": 1.559,
+          "win_probability": 0.165,
+          "model_score": 1.915,
           "reasons": [
             "印: 単穴",
             "バック数あり",
             "EX攻撃力100%",
             "当所3着内53%",
             "バック数最強ライン(穴目)",
-            "対高瀬卓 1勝1敗"
+            "雨で先行有利",
+            "対上原直樹 2勝0敗"
           ],
           "player_id": "015188",
           "profile": {
@@ -3123,12 +3131,12 @@
             "two_rate": 0.0,
             "three_rate": 7.1
           },
-          "win_probability": 0.0584,
-          "model_score": -2.195,
+          "win_probability": 0.0573,
+          "model_score": -2.315,
           "reasons": [
             "当所3着内50%",
             "差し有利バンク",
-            "対浜田翔平 1勝1敗",
+            "対市川博章 0勝2敗",
             "学習: 割引",
             "総合材料は弱め"
           ],
@@ -3235,8 +3243,8 @@
         {
           "car_no": 2,
           "name": "花田雄飛",
-          "probability": 0.4245,
-          "score": 6.707,
+          "probability": 0.4305,
+          "score": 6.784,
           "mark": "本命",
           "style": "逃",
           "comment": "補充出走",
@@ -3254,7 +3262,7 @@
             "直近3着内多い",
             "先頭勝率29%",
             "当所3着内67%",
-            "対黒木誠一 2勝0敗"
+            "雨で先行有利"
           ],
           "form": {
             "label": "好調",
@@ -3287,8 +3295,8 @@
         {
           "car_no": 4,
           "name": "黒木誠一",
-          "probability": 0.1788,
-          "score": 3.248,
+          "probability": 0.185,
+          "score": 3.405,
           "mark": "対抗",
           "style": "両",
           "comment": "花田君。",
@@ -3301,7 +3309,9 @@
           },
           "reasons": [
             "印: 対抗",
+            "前走後談話: 不安含み",
             "EX攻撃力100%",
+            "雨で先行有利",
             "対花田雄飛 0勝2敗",
             "学習: 追い風"
           ],
@@ -3336,8 +3346,8 @@
         {
           "car_no": 3,
           "name": "荒木真慈",
-          "probability": 0.1773,
-          "score": 3.215,
+          "probability": 0.1794,
+          "score": 3.282,
           "mark": "単穴",
           "style": "追",
           "comment": "中近勢へ。",
@@ -3350,6 +3360,7 @@
           },
           "reasons": [
             "印: 単穴",
+            "前走後談話: 上向き",
             "EX攻撃力50%",
             "差し有利バンク",
             "対武智尚之 2勝0敗",
@@ -3387,7 +3398,7 @@
       "tickets": [
         {
           "label": "2-4-3",
-          "score": 0.3303,
+          "score": 0.336,
           "cars": [
             2,
             4,
@@ -3397,7 +3408,7 @@
         },
         {
           "label": "2-4-5",
-          "score": 0.3199,
+          "score": 0.3236,
           "cars": [
             2,
             4,
@@ -3407,7 +3418,7 @@
         },
         {
           "label": "2-3-4",
-          "score": 0.2947,
+          "score": 0.2992,
           "cars": [
             2,
             3,
@@ -3417,7 +3428,7 @@
         },
         {
           "label": "2-3-5",
-          "score": 0.2852,
+          "score": 0.2873,
           "cars": [
             2,
             3,
@@ -3427,7 +3438,7 @@
         },
         {
           "label": "2-5-4",
-          "score": 0.2761,
+          "score": 0.277,
           "cars": [
             2,
             5,
@@ -3437,7 +3448,7 @@
         },
         {
           "label": "2-5-3",
-          "score": 0.2759,
+          "score": 0.2762,
           "cars": [
             2,
             5,
@@ -3447,7 +3458,7 @@
         },
         {
           "label": "4-2-3",
-          "score": 0.2271,
+          "score": 0.232,
           "cars": [
             4,
             2,
@@ -3457,7 +3468,7 @@
         },
         {
           "label": "3-2-4",
-          "score": 0.2265,
+          "score": 0.23,
           "cars": [
             3,
             2,
@@ -3472,7 +3483,7 @@
             2,
             4
           ],
-          "score": 0.2003,
+          "score": 0.2072,
           "label": "2-4",
           "suji": true,
           "bet_type": "exacta"
@@ -3482,7 +3493,7 @@
             2,
             3
           ],
-          "score": 0.1773,
+          "score": 0.1794,
           "label": "2-3",
           "suji": false,
           "bet_type": "exacta"
@@ -3492,7 +3503,7 @@
             2,
             5
           ],
-          "score": 0.1116,
+          "score": 0.1006,
           "label": "2-5",
           "suji": false,
           "bet_type": "exacta"
@@ -3502,7 +3513,7 @@
             2,
             1
           ],
-          "score": 0.0718,
+          "score": 0.0683,
           "label": "2-1",
           "suji": false,
           "bet_type": "exacta"
@@ -3510,13 +3521,13 @@
       ],
       "value": null,
       "hit_estimate": {
-        "exacta": 0.2627,
-        "trifecta": 0.1914
+        "exacta": 0.2755,
+        "trifecta": 0.2011
       },
       "confidence": {
         "label": "本命",
         "rank": 3,
-        "reason": "本命確率42.4%、2番手との差24.6pt。本命が抜けている。"
+        "reason": "本命確率43.0%、2番手との差24.6pt。本命が抜けている。"
       },
       "scenario": {
         "headline": "2花田雄飛が本線。前で動いてライン2-4-3を残す展開を重視。",
@@ -3560,7 +3571,7 @@
               "name": "花田雄飛",
               "style": "逃",
               "comment": "補充出走",
-              "probability": 0.4245,
+              "probability": 0.4305,
               "player_id": "015900"
             },
             {
@@ -3568,7 +3579,7 @@
               "name": "黒木誠一",
               "style": "両",
               "comment": "花田君。",
-              "probability": 0.1788,
+              "probability": 0.185,
               "player_id": "011715"
             },
             {
@@ -3576,7 +3587,7 @@
               "name": "荒木真慈",
               "style": "追",
               "comment": "中近勢へ。",
-              "probability": 0.1773,
+              "probability": 0.1794,
               "player_id": "012550"
             }
           ],
@@ -3592,7 +3603,7 @@
               "name": "水木裕聡",
               "style": "追",
               "comment": "前で何か。",
-              "probability": 0.1116,
+              "probability": 0.1006,
               "player_id": "014555"
             },
             {
@@ -3600,7 +3611,7 @@
               "name": "武智尚之",
               "style": "追",
               "comment": "水木君。",
-              "probability": 0.0718,
+              "probability": 0.0683,
               "player_id": "012618"
             },
             {
@@ -3608,7 +3619,7 @@
               "name": "梶應弘樹",
               "style": "追",
               "comment": "武智君。",
-              "probability": 0.0359,
+              "probability": 0.0362,
               "player_id": "011431"
             }
           ],
@@ -3742,11 +3753,11 @@
             "two_rate": 0.0,
             "three_rate": 18.7
           },
-          "win_probability": 0.0718,
-          "model_score": -0.402,
+          "win_probability": 0.0683,
+          "model_score": -0.578,
           "reasons": [
+            "前走後談話: 不安大",
             "差し有利バンク",
-            "連携実績 梶應弘樹と2戦0回3着内",
             "対梶應弘樹 3勝0敗",
             "学習: 割引",
             "総合材料は弱め"
@@ -3922,8 +3933,8 @@
             "two_rate": 31.0,
             "three_rate": 48.2
           },
-          "win_probability": 0.4245,
-          "model_score": 6.707,
+          "win_probability": 0.4305,
+          "model_score": 6.784,
           "reasons": [
             "印: 本命",
             "バック数あり",
@@ -3931,7 +3942,7 @@
             "直近3着内多い",
             "先頭勝率29%",
             "当所3着内67%",
-            "対黒木誠一 2勝0敗"
+            "雨で先行有利"
           ],
           "player_id": "015900",
           "profile": {
@@ -4096,10 +4107,11 @@
             "two_rate": 23.3,
             "three_rate": 33.3
           },
-          "win_probability": 0.1773,
-          "model_score": 3.215,
+          "win_probability": 0.1794,
+          "model_score": 3.282,
           "reasons": [
             "印: 単穴",
+            "前走後談話: 上向き",
             "EX攻撃力50%",
             "差し有利バンク",
             "対武智尚之 2勝0敗",
@@ -4276,11 +4288,13 @@
             "two_rate": 23.7,
             "three_rate": 47.6
           },
-          "win_probability": 0.1788,
-          "model_score": 3.248,
+          "win_probability": 0.185,
+          "model_score": 3.405,
           "reasons": [
             "印: 対抗",
+            "前走後談話: 不安含み",
             "EX攻撃力100%",
+            "雨で先行有利",
             "対花田雄飛 0勝2敗",
             "学習: 追い風"
           ],
@@ -4455,8 +4469,8 @@
             "two_rate": 23.7,
             "three_rate": 38.0
           },
-          "win_probability": 0.1116,
-          "model_score": 1.364,
+          "win_probability": 0.1006,
+          "model_score": 0.969,
           "reasons": [
             "印: 連下",
             "ちぎられ率100%",
@@ -4634,13 +4648,12 @@
             "two_rate": 0.0,
             "three_rate": 0.0
           },
-          "win_probability": 0.0359,
-          "model_score": -3.175,
+          "win_probability": 0.0362,
+          "model_score": -3.115,
           "reasons": [
             "EX攻撃力100%",
             "差し有利バンク",
-            "連携実績 武智尚之と2戦0回3着内",
-            "対水木裕聡 0勝3敗",
+            "対武智尚之 0勝3敗",
             "学習: 割引",
             "総合材料は弱め"
           ],
@@ -4747,8 +4760,8 @@
         {
           "car_no": 3,
           "name": "松本一志",
-          "probability": 0.367,
-          "score": 8.621,
+          "probability": 0.3713,
+          "score": 8.688,
           "mark": "本命",
           "style": "逃",
           "comment": "自力。",
@@ -4807,8 +4820,8 @@
         {
           "car_no": 5,
           "name": "永田吏玖",
-          "probability": 0.1955,
-          "score": 6.103,
+          "probability": 0.1957,
+          "score": 6.126,
           "mark": "対抗",
           "style": "逃",
           "comment": "自力。",
@@ -4834,7 +4847,7 @@
             "ちぎられ率42%",
             "直近3着内多い",
             "先頭勝率21%",
-            "対松本一志 0勝1敗"
+            "雨で先行有利"
           ],
           "form": {
             "label": "好調",
@@ -4863,8 +4876,8 @@
         {
           "car_no": 4,
           "name": "古川大輔",
-          "probability": 0.1304,
-          "score": 4.483,
+          "probability": 0.1279,
+          "score": 4.425,
           "mark": "連下",
           "style": "両",
           "comment": "自力。",
@@ -4889,6 +4902,7 @@
             "前検日談話: 不安含み",
             "EX攻撃力100%",
             "当所3着内52%",
+            "雨で先行有利",
             "対五反田豊和 3勝1敗"
           ],
           "form": {
@@ -4923,7 +4937,7 @@
       "tickets": [
         {
           "label": "3-7-5",
-          "score": 0.2783,
+          "score": 0.2824,
           "cars": [
             3,
             7,
@@ -4933,7 +4947,7 @@
         },
         {
           "label": "3-7-4",
-          "score": 0.268,
+          "score": 0.2717,
           "cars": [
             3,
             7,
@@ -4943,7 +4957,7 @@
         },
         {
           "label": "3-5-4",
-          "score": 0.2633,
+          "score": 0.2652,
           "cars": [
             3,
             5,
@@ -4953,7 +4967,7 @@
         },
         {
           "label": "3-5-7",
-          "score": 0.2605,
+          "score": 0.2634,
           "cars": [
             3,
             5,
@@ -4963,7 +4977,7 @@
         },
         {
           "label": "3-4-5",
-          "score": 0.2541,
+          "score": 0.2556,
           "cars": [
             3,
             4,
@@ -4973,7 +4987,7 @@
         },
         {
           "label": "3-4-7",
-          "score": 0.2421,
+          "score": 0.2443,
           "cars": [
             3,
             4,
@@ -4983,7 +4997,7 @@
         },
         {
           "label": "5-3-4",
-          "score": 0.2135,
+          "score": 0.2144,
           "cars": [
             5,
             3,
@@ -4993,7 +5007,7 @@
         },
         {
           "label": "5-3-7",
-          "score": 0.2108,
+          "score": 0.2127,
           "cars": [
             5,
             3,
@@ -5008,18 +5022,8 @@
             3,
             5
           ],
-          "score": 0.1955,
+          "score": 0.1957,
           "label": "3-5",
-          "suji": false,
-          "bet_type": "exacta"
-        },
-        {
-          "cars": [
-            3,
-            4
-          ],
-          "score": 0.1304,
-          "label": "3-4",
           "suji": false,
           "bet_type": "exacta"
         },
@@ -5028,7 +5032,7 @@
             3,
             7
           ],
-          "score": 0.1238,
+          "score": 0.1295,
           "label": "3-7",
           "suji": true,
           "bet_type": "exacta"
@@ -5036,9 +5040,19 @@
         {
           "cars": [
             3,
+            4
+          ],
+          "score": 0.1279,
+          "label": "3-4",
+          "suji": false,
+          "bet_type": "exacta"
+        },
+        {
+          "cars": [
+            3,
             6
           ],
-          "score": 0.0742,
+          "score": 0.071,
           "label": "3-6",
           "suji": false,
           "bet_type": "exacta"
@@ -5046,18 +5060,18 @@
       ],
       "value": null,
       "hit_estimate": {
-        "exacta": 0.1889,
-        "trifecta": 0.1084
+        "exacta": 0.1911,
+        "trifecta": 0.1119
       },
       "confidence": {
         "label": "本命",
         "rank": 3,
-        "reason": "本命確率36.7%、2番手との差17.1pt。本命が抜けている。"
+        "reason": "本命確率37.1%、2番手との差17.6pt。本命が抜けている。"
       },
       "scenario": {
         "headline": "3松本一志が本線。前で動いてライン3-7-4-5-6-1を残す展開を重視。",
         "flow": "細切れ戦(4分戦以上)。短いラインの主導権争いで展開が乱れやすい一戦です。 3松本一志が前で動き、7五反田豊和、4古川大輔、5永田吏玖、6塚本貴雄、1吉野猛が追走する形。 後ろのコメント: 7「松本君。」 / 4「自力。」 / 5「自力。」 / 6「永田君。」 / 1「岐阜勢へ。」 先行争いが長引かなければ、番手以降も車券圏に残る想定です。",
-        "watch": "対抗は5永田吏玖。1着確率差は約17.1ポイントです。",
+        "watch": "対抗は5永田吏玖。1着確率差は約17.6ポイントです。",
         "upset": "崩れるなら3松本一志の主導権取り、またはライン分断で番手が離れるケース。",
         "pattern": "細切れ戦",
         "sequence": [
@@ -5109,7 +5123,7 @@
               "name": "永田吏玖",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.1955,
+              "probability": 0.1957,
               "player_id": "015992"
             },
             {
@@ -5117,7 +5131,7 @@
               "name": "塚本貴雄",
               "style": "追",
               "comment": "永田君。",
-              "probability": 0.0742,
+              "probability": 0.071,
               "player_id": "012597"
             },
             {
@@ -5125,7 +5139,7 @@
               "name": "吉野猛",
               "style": "追",
               "comment": "岐阜勢へ。",
-              "probability": 0.0548,
+              "probability": 0.0534,
               "player_id": "012893"
             }
           ],
@@ -5141,7 +5155,7 @@
               "name": "古川大輔",
               "style": "両",
               "comment": "自力。",
-              "probability": 0.1304,
+              "probability": 0.1279,
               "player_id": "014780"
             },
             {
@@ -5149,7 +5163,7 @@
               "name": "榊枝輝文",
               "style": "追",
               "comment": "古川君。",
-              "probability": 0.0676,
+              "probability": 0.0651,
               "player_id": "013235"
             }
           ],
@@ -5165,7 +5179,7 @@
               "name": "松本一志",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.367,
+              "probability": 0.3713,
               "player_id": "015482"
             },
             {
@@ -5173,7 +5187,7 @@
               "name": "五反田豊和",
               "style": "両",
               "comment": "松本君。",
-              "probability": 0.1105,
+              "probability": 0.1156,
               "player_id": "013375"
             },
             {
@@ -5181,7 +5195,7 @@
               "name": "古川大輔",
               "style": "両",
               "comment": "自力。",
-              "probability": 0.1304,
+              "probability": 0.1279,
               "player_id": "014780"
             },
             {
@@ -5189,7 +5203,7 @@
               "name": "永田吏玖",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.1955,
+              "probability": 0.1957,
               "player_id": "015992"
             },
             {
@@ -5197,7 +5211,7 @@
               "name": "塚本貴雄",
               "style": "追",
               "comment": "永田君。",
-              "probability": 0.0742,
+              "probability": 0.071,
               "player_id": "012597"
             },
             {
@@ -5205,7 +5219,7 @@
               "name": "吉野猛",
               "style": "追",
               "comment": "岐阜勢へ。",
-              "probability": 0.0548,
+              "probability": 0.0534,
               "player_id": "012893"
             }
           ],
@@ -5221,7 +5235,7 @@
               "name": "松本一志",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.367,
+              "probability": 0.3713,
               "player_id": "015482"
             },
             {
@@ -5229,7 +5243,7 @@
               "name": "五反田豊和",
               "style": "両",
               "comment": "松本君。",
-              "probability": 0.1105,
+              "probability": 0.1156,
               "player_id": "013375"
             }
           ],
@@ -5363,8 +5377,8 @@
             "two_rate": 28.4,
             "three_rate": 47.6
           },
-          "win_probability": 0.0548,
-          "model_score": 1.015,
+          "win_probability": 0.0534,
+          "model_score": 0.93,
           "reasons": [
             "3番手3着内52%",
             "当所3着内61%",
@@ -5543,8 +5557,8 @@
             "two_rate": 26.6,
             "three_rate": 53.3
           },
-          "win_probability": 0.0676,
-          "model_score": 1.853,
+          "win_probability": 0.0651,
+          "model_score": 1.722,
           "reasons": [
             "EX攻撃力100%",
             "ちぎられ率25%",
@@ -5733,8 +5747,8 @@
             "two_rate": 48.3,
             "three_rate": 54.8
           },
-          "win_probability": 0.367,
-          "model_score": 8.621,
+          "win_probability": 0.3713,
+          "model_score": 8.688,
           "reasons": [
             "印: 本命",
             "勝率高め",
@@ -5923,14 +5937,15 @@
             "two_rate": 37.5,
             "three_rate": 54.1
           },
-          "win_probability": 0.1304,
-          "model_score": 4.483,
+          "win_probability": 0.1279,
+          "model_score": 4.425,
           "reasons": [
             "印: 連下",
             "バック数あり",
             "前検日談話: 不安含み",
             "EX攻撃力100%",
             "当所3着内52%",
+            "雨で先行有利",
             "対五反田豊和 3勝1敗"
           ],
           "player_id": "014780",
@@ -6112,8 +6127,8 @@
             "two_rate": 33.3,
             "three_rate": 60.0
           },
-          "win_probability": 0.1955,
-          "model_score": 6.103,
+          "win_probability": 0.1957,
+          "model_score": 6.126,
           "reasons": [
             "印: 対抗",
             "バック数あり",
@@ -6121,7 +6136,7 @@
             "ちぎられ率42%",
             "直近3着内多い",
             "先頭勝率21%",
-            "対松本一志 0勝1敗"
+            "雨で先行有利"
           ],
           "player_id": "015992",
           "profile": {
@@ -6282,13 +6297,13 @@
             "two_rate": 25.0,
             "three_rate": 40.0
           },
-          "win_probability": 0.0742,
-          "model_score": 2.226,
+          "win_probability": 0.071,
+          "model_score": 2.071,
           "reasons": [
             "印: 単穴",
             "番手3着内50%",
             "差し有利バンク",
-            "対榊枝輝文 2勝0敗",
+            "対吉野猛 1勝1敗",
             "学習: 割引"
           ],
           "player_id": "012597",
@@ -6462,11 +6477,13 @@
             "two_rate": 29.5,
             "three_rate": 40.7
           },
-          "win_probability": 0.1105,
-          "model_score": 3.819,
+          "win_probability": 0.1156,
+          "model_score": 4.019,
           "reasons": [
             "バック数あり",
+            "前走後談話: 不安含み",
             "EX攻撃力100%",
+            "雨で先行有利",
             "対古川大輔 1勝3敗",
             "学習: 追い風"
           ],
@@ -6573,8 +6590,8 @@
         {
           "car_no": 1,
           "name": "半田莉都",
-          "probability": 0.2649,
-          "score": 7.543,
+          "probability": 0.2729,
+          "score": 7.648,
           "mark": "本命",
           "style": "逃",
           "comment": "自力。",
@@ -6598,7 +6615,8 @@
             "EX攻撃力100%",
             "直近3着内多い",
             "先頭勝率20%",
-            "対中川博文 1勝0敗",
+            "雨で先行有利",
+            "対山田圭二 1勝0敗",
             "学習: 追い風"
           ],
           "form": {
@@ -6630,8 +6648,8 @@
         {
           "car_no": 7,
           "name": "十文字悠真",
-          "probability": 0.2592,
-          "score": 7.456,
+          "probability": 0.2588,
+          "score": 7.436,
           "mark": "連下",
           "style": "逃",
           "comment": "自力。",
@@ -6690,8 +6708,8 @@
         {
           "car_no": 4,
           "name": "安部龍文",
-          "probability": 0.1765,
-          "score": 5.918,
+          "probability": 0.1795,
+          "score": 5.971,
           "mark": "対抗",
           "style": "追",
           "comment": "半田君。",
@@ -6704,6 +6722,7 @@
           },
           "reasons": [
             "印: 対抗",
+            "前走後談話: 上向き",
             "EX攻撃力100%",
             "直近3着内多い",
             "差し有利バンク",
@@ -6742,7 +6761,7 @@
       "tickets": [
         {
           "label": "7-2-1",
-          "score": 0.3049,
+          "score": 0.3041,
           "cars": [
             7,
             2,
@@ -6752,7 +6771,7 @@
         },
         {
           "label": "7-2-4",
-          "score": 0.2876,
+          "score": 0.2859,
           "cars": [
             7,
             2,
@@ -6762,7 +6781,7 @@
         },
         {
           "label": "1-4-7",
-          "score": 0.2501,
+          "score": 0.2556,
           "cars": [
             1,
             4,
@@ -6772,7 +6791,7 @@
         },
         {
           "label": "7-1-4",
-          "score": 0.2485,
+          "score": 0.2511,
           "cars": [
             7,
             1,
@@ -6782,7 +6801,7 @@
         },
         {
           "label": "7-1-2",
-          "score": 0.2481,
+          "score": 0.2495,
           "cars": [
             7,
             1,
@@ -6792,7 +6811,7 @@
         },
         {
           "label": "1-4-2",
-          "score": 0.2366,
+          "score": 0.2414,
           "cars": [
             1,
             4,
@@ -6801,22 +6820,22 @@
           "suji": true
         },
         {
-          "label": "7-4-1",
-          "score": 0.2352,
-          "cars": [
-            7,
-            4,
-            1
-          ],
-          "suji": false
-        },
-        {
           "label": "1-7-4",
-          "score": 0.2349,
+          "score": 0.2394,
           "cars": [
             1,
             7,
             4
+          ],
+          "suji": false
+        },
+        {
+          "label": "1-7-2",
+          "score": 0.2379,
+          "cars": [
+            1,
+            7,
+            2
           ],
           "suji": false
         }
@@ -6827,7 +6846,7 @@
             1,
             7
           ],
-          "score": 0.2592,
+          "score": 0.2588,
           "label": "1-7",
           "suji": false,
           "bet_type": "exacta"
@@ -6837,7 +6856,7 @@
             1,
             4
           ],
-          "score": 0.1977,
+          "score": 0.201,
           "label": "1-4",
           "suji": true,
           "bet_type": "exacta"
@@ -6847,7 +6866,7 @@
             1,
             2
           ],
-          "score": 0.1741,
+          "score": 0.1689,
           "label": "1-2",
           "suji": false,
           "bet_type": "exacta"
@@ -6857,7 +6876,7 @@
             1,
             3
           ],
-          "score": 0.0523,
+          "score": 0.0506,
           "label": "1-3",
           "suji": false,
           "bet_type": "exacta"
@@ -6865,18 +6884,18 @@
       ],
       "value": null,
       "hit_estimate": {
-        "exacta": 0.157,
-        "trifecta": 0.1181
+        "exacta": 0.1645,
+        "trifecta": 0.1249
       },
       "confidence": {
         "label": "混戦",
         "rank": 1,
-        "reason": "本命確率26.5%で割れ気味。"
+        "reason": "本命確率27.3%で割れ気味。"
       },
       "scenario": {
         "headline": "1半田莉都が本線。前で動いてライン1-4-3を残す展開を重視。",
         "flow": "細切れ戦(4分戦以上)。短いラインの主導権争いで展開が乱れやすい一戦です。 1半田莉都が前で動き、4安部龍文、3山田圭二が追走する形。 後ろのコメント: 4「半田君。」 / 3「九州勢へ。」 先行争いが長引かなければ、番手以降も車券圏に残る想定です。",
-        "watch": "対抗は7十文字悠真。1着確率差は約0.6ポイントです。",
+        "watch": "対抗は7十文字悠真。1着確率差は約1.4ポイントです。",
         "upset": "崩れるなら7十文字悠真の主導権取り、またはライン分断で番手が離れるケース。",
         "pattern": "細切れ戦",
         "sequence": [
@@ -6928,7 +6947,7 @@
               "name": "半田莉都",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.2649,
+              "probability": 0.2729,
               "player_id": "016022"
             },
             {
@@ -6936,7 +6955,7 @@
               "name": "安部龍文",
               "style": "追",
               "comment": "半田君。",
-              "probability": 0.1765,
+              "probability": 0.1795,
               "player_id": "014418"
             },
             {
@@ -6944,7 +6963,7 @@
               "name": "山田圭二",
               "style": "追",
               "comment": "九州勢へ。",
-              "probability": 0.0523,
+              "probability": 0.0506,
               "player_id": "012593"
             }
           ],
@@ -6960,7 +6979,7 @@
               "name": "中川博文",
               "style": "追",
               "comment": "先手ラインへ。",
-              "probability": 0.0324,
+              "probability": 0.0309,
               "player_id": "011821"
             }
           ],
@@ -6976,7 +6995,7 @@
               "name": "十文字悠真",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.2592,
+              "probability": 0.2588,
               "player_id": "015873"
             },
             {
@@ -6984,7 +7003,7 @@
               "name": "大越啓介",
               "style": "追",
               "comment": "十文字君。",
-              "probability": 0.1741,
+              "probability": 0.1689,
               "player_id": "014578"
             },
             {
@@ -6992,7 +7011,7 @@
               "name": "藤田和彦",
               "style": "追",
               "comment": "大越君。",
-              "probability": 0.0405,
+              "probability": 0.0384,
               "player_id": "012005"
             },
             {
@@ -7000,7 +7019,7 @@
               "name": "半田莉都",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.2649,
+              "probability": 0.2729,
               "player_id": "016022"
             },
             {
@@ -7008,7 +7027,7 @@
               "name": "安部龍文",
               "style": "追",
               "comment": "半田君。",
-              "probability": 0.1765,
+              "probability": 0.1795,
               "player_id": "014418"
             },
             {
@@ -7016,7 +7035,7 @@
               "name": "山田圭二",
               "style": "追",
               "comment": "九州勢へ。",
-              "probability": 0.0523,
+              "probability": 0.0506,
               "player_id": "012593"
             }
           ],
@@ -7032,7 +7051,7 @@
               "name": "十文字悠真",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.2592,
+              "probability": 0.2588,
               "player_id": "015873"
             },
             {
@@ -7040,7 +7059,7 @@
               "name": "大越啓介",
               "style": "追",
               "comment": "十文字君。",
-              "probability": 0.1741,
+              "probability": 0.1689,
               "player_id": "014578"
             },
             {
@@ -7048,7 +7067,7 @@
               "name": "藤田和彦",
               "style": "追",
               "comment": "大越君。",
-              "probability": 0.0405,
+              "probability": 0.0384,
               "player_id": "012005"
             }
           ],
@@ -7190,14 +7209,15 @@
             "two_rate": 33.3,
             "three_rate": 75.0
           },
-          "win_probability": 0.2649,
-          "model_score": 7.543,
+          "win_probability": 0.2729,
+          "model_score": 7.648,
           "reasons": [
             "印: 本命",
             "EX攻撃力100%",
             "直近3着内多い",
             "先頭勝率20%",
-            "対中川博文 1勝0敗",
+            "雨で先行有利",
+            "対山田圭二 1勝0敗",
             "学習: 追い風"
           ],
           "player_id": "016022",
@@ -7361,8 +7381,8 @@
             "two_rate": 37.1,
             "three_rate": 57.1
           },
-          "win_probability": 0.1741,
-          "model_score": 5.864,
+          "win_probability": 0.1689,
+          "model_score": 5.729,
           "reasons": [
             "印: 単穴",
             "EX攻撃力100%",
@@ -7370,7 +7390,7 @@
             "当所3着内56%",
             "バック数最強ライン(穴目)",
             "差し有利バンク",
-            "連携実績 藤田和彦と2戦1回3着内"
+            "対藤田和彦 1勝1敗"
           ],
           "player_id": "014578",
           "profile": {
@@ -7543,8 +7563,8 @@
             "two_rate": 18.5,
             "three_rate": 40.7
           },
-          "win_probability": 0.0523,
-          "model_score": 1.057,
+          "win_probability": 0.0506,
+          "model_score": 0.908,
           "reasons": [
             "前検日談話: 不安含み",
             "3番手3着内55%",
@@ -7723,10 +7743,11 @@
             "two_rate": 40.0,
             "three_rate": 53.3
           },
-          "win_probability": 0.1765,
-          "model_score": 5.918,
+          "win_probability": 0.1795,
+          "model_score": 5.971,
           "reasons": [
             "印: 対抗",
+            "前走後談話: 上向き",
             "EX攻撃力100%",
             "直近3着内多い",
             "差し有利バンク",
@@ -7904,12 +7925,12 @@
             "two_rate": 10.2,
             "three_rate": 31.0
           },
-          "win_probability": 0.0405,
-          "model_score": 0.034,
+          "win_probability": 0.0384,
+          "model_score": -0.194,
           "reasons": [
+            "前走後談話: 不安大",
             "3番手3着内46%",
             "差し有利バンク",
-            "連携実績 大越啓介と2戦1回3着内",
             "対中川博文 1勝2敗",
             "学習: 割引"
           ],
@@ -8084,8 +8105,8 @@
             "two_rate": 16.6,
             "three_rate": 20.8
           },
-          "win_probability": 0.0324,
-          "model_score": -0.865,
+          "win_probability": 0.0309,
+          "model_score": -1.071,
           "reasons": [
             "差し有利バンク",
             "対山田圭二 3勝1敗",
@@ -8270,8 +8291,8 @@
             "two_rate": 48.0,
             "three_rate": 68.0
           },
-          "win_probability": 0.2592,
-          "model_score": 7.456,
+          "win_probability": 0.2588,
+          "model_score": 7.436,
           "reasons": [
             "印: 連下",
             "勝率高め",
@@ -8376,8 +8397,8 @@
         {
           "car_no": 2,
           "name": "久保田智之",
-          "probability": 0.4443,
-          "score": 9.478,
+          "probability": 0.4507,
+          "score": 9.598,
           "mark": "本命",
           "style": "逃",
           "comment": "自力。",
@@ -8436,8 +8457,8 @@
         {
           "car_no": 3,
           "name": "川本琢也",
-          "probability": 0.17,
-          "score": 5.636,
+          "probability": 0.173,
+          "score": 5.769,
           "mark": "連下",
           "style": "両",
           "comment": "自力。",
@@ -8463,7 +8484,7 @@
             "直近3着内多い",
             "先頭勝率20%",
             "バック数最強ライン(穴目)",
-            "対星野京旺 0勝2敗"
+            "雨で先行有利"
           ],
           "form": {
             "label": "好調",
@@ -8496,8 +8517,8 @@
         {
           "car_no": 7,
           "name": "松田直也",
-          "probability": 0.1319,
-          "score": 4.62,
+          "probability": 0.1258,
+          "score": 4.494,
           "mark": "対抗",
           "style": "追",
           "comment": "久保田君。",
@@ -8513,7 +8534,7 @@
             "EX攻撃力100%",
             "番手勝率20%",
             "差し有利バンク",
-            "対樫村伸平 1勝0敗",
+            "対西巻秀太 0勝1敗",
             "学習: 追い風"
           ],
           "form": {
@@ -8548,7 +8569,7 @@
       "tickets": [
         {
           "label": "2-7-3",
-          "score": 0.3258,
+          "score": 0.328,
           "cars": [
             2,
             7,
@@ -8558,7 +8579,7 @@
         },
         {
           "label": "2-7-5",
-          "score": 0.3138,
+          "score": 0.3163,
           "cars": [
             2,
             7,
@@ -8568,7 +8589,7 @@
         },
         {
           "label": "2-3-7",
-          "score": 0.2962,
+          "score": 0.2995,
           "cars": [
             2,
             3,
@@ -8578,7 +8599,7 @@
         },
         {
           "label": "2-3-5",
-          "score": 0.2909,
+          "score": 0.2957,
           "cars": [
             2,
             3,
@@ -8588,7 +8609,7 @@
         },
         {
           "label": "2-5-3",
-          "score": 0.2802,
+          "score": 0.2853,
           "cars": [
             2,
             5,
@@ -8598,7 +8619,7 @@
         },
         {
           "label": "2-5-7",
-          "score": 0.2748,
+          "score": 0.2786,
           "cars": [
             2,
             5,
@@ -8608,7 +8629,7 @@
         },
         {
           "label": "3-2-7",
-          "score": 0.2219,
+          "score": 0.2243,
           "cars": [
             3,
             2,
@@ -8618,7 +8639,7 @@
         },
         {
           "label": "3-2-5",
-          "score": 0.2168,
+          "score": 0.2207,
           "cars": [
             3,
             2,
@@ -8633,7 +8654,7 @@
             2,
             3
           ],
-          "score": 0.17,
+          "score": 0.173,
           "label": "2-3",
           "suji": false,
           "bet_type": "exacta"
@@ -8643,7 +8664,7 @@
             2,
             7
           ],
-          "score": 0.1477,
+          "score": 0.1409,
           "label": "2-7",
           "suji": true,
           "bet_type": "exacta"
@@ -8653,7 +8674,7 @@
             2,
             5
           ],
-          "score": 0.0941,
+          "score": 0.0989,
           "label": "2-5",
           "suji": false,
           "bet_type": "exacta"
@@ -8661,28 +8682,28 @@
         {
           "cars": [
             2,
-            4
+            1
           ],
-          "score": 0.0601,
-          "label": "2-4",
+          "score": 0.0578,
+          "label": "2-1",
           "suji": false,
           "bet_type": "exacta"
         }
       ],
       "value": null,
       "hit_estimate": {
-        "exacta": 0.2414,
-        "trifecta": 0.1454
+        "exacta": 0.2452,
+        "trifecta": 0.151
       },
       "confidence": {
         "label": "本命",
         "rank": 3,
-        "reason": "本命確率44.4%、2番手との差27.4pt。本命が抜けている。"
+        "reason": "本命確率45.1%、2番手との差27.8pt。本命が抜けている。"
       },
       "scenario": {
         "headline": "2久保田智之が本線。前で動いてライン2-7を残す展開を重視。",
         "flow": "細切れ戦(4分戦以上)。短いラインの主導権争いで展開が乱れやすい一戦です。 2久保田智之が前で動き、7松田直也が追走する形。 後ろのコメント: 7「久保田君。」 先行争いが長引かなければ、番手以降も車券圏に残る想定です。",
-        "watch": "対抗は3川本琢也。1着確率差は約27.4ポイントです。",
+        "watch": "対抗は3川本琢也。1着確率差は約27.8ポイントです。",
         "upset": "崩れるなら3川本琢也の主導権取り、またはライン分断で番手が離れるケース。",
         "pattern": "細切れ戦",
         "sequence": [
@@ -8733,7 +8754,7 @@
               "name": "星野京旺",
               "style": "逃",
               "comment": "自力自在。",
-              "probability": 0.0941,
+              "probability": 0.0989,
               "player_id": "015887"
             },
             {
@@ -8741,7 +8762,7 @@
               "name": "西巻秀太",
               "style": "追",
               "comment": "星野君。",
-              "probability": 0.0599,
+              "probability": 0.0578,
               "player_id": "014589"
             },
             {
@@ -8749,7 +8770,7 @@
               "name": "浦崎貴史",
               "style": "追",
               "comment": "新潟の後ろ。",
-              "probability": 0.0396,
+              "probability": 0.0364,
               "player_id": "012930"
             }
           ],
@@ -8765,7 +8786,7 @@
               "name": "久保田智之",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.4443,
+              "probability": 0.4507,
               "player_id": "016008"
             },
             {
@@ -8773,7 +8794,7 @@
               "name": "松田直也",
               "style": "追",
               "comment": "久保田君。",
-              "probability": 0.1319,
+              "probability": 0.1258,
               "player_id": "014272"
             }
           ],
@@ -8789,7 +8810,7 @@
               "name": "川本琢也",
               "style": "両",
               "comment": "自力。",
-              "probability": 0.17,
+              "probability": 0.173,
               "player_id": "014842"
             },
             {
@@ -8797,7 +8818,7 @@
               "name": "樫村伸平",
               "style": "追",
               "comment": "川本君。",
-              "probability": 0.0601,
+              "probability": 0.0573,
               "player_id": "014765"
             },
             {
@@ -8805,7 +8826,7 @@
               "name": "浦崎貴史",
               "style": "追",
               "comment": "新潟の後ろ。",
-              "probability": 0.0396,
+              "probability": 0.0364,
               "player_id": "012930"
             },
             {
@@ -8813,7 +8834,7 @@
               "name": "星野京旺",
               "style": "逃",
               "comment": "自力自在。",
-              "probability": 0.0941,
+              "probability": 0.0989,
               "player_id": "015887"
             },
             {
@@ -8821,7 +8842,7 @@
               "name": "西巻秀太",
               "style": "追",
               "comment": "星野君。",
-              "probability": 0.0599,
+              "probability": 0.0578,
               "player_id": "014589"
             }
           ],
@@ -8837,7 +8858,7 @@
               "name": "川本琢也",
               "style": "両",
               "comment": "自力。",
-              "probability": 0.17,
+              "probability": 0.173,
               "player_id": "014842"
             },
             {
@@ -8845,7 +8866,7 @@
               "name": "樫村伸平",
               "style": "追",
               "comment": "川本君。",
-              "probability": 0.0601,
+              "probability": 0.0573,
               "player_id": "014765"
             }
           ],
@@ -8979,8 +9000,8 @@
             "two_rate": 4.5,
             "three_rate": 31.8
           },
-          "win_probability": 0.0599,
-          "model_score": 1.465,
+          "win_probability": 0.0578,
+          "model_score": 1.384,
           "reasons": [
             "印: 単穴",
             "直近3着内多い",
@@ -9167,8 +9188,8 @@
             "two_rate": 53.8,
             "three_rate": 61.5
           },
-          "win_probability": 0.4443,
-          "model_score": 9.478,
+          "win_probability": 0.4507,
+          "model_score": 9.598,
           "reasons": [
             "印: 本命",
             "勝率高め",
@@ -9349,8 +9370,8 @@
             "two_rate": 33.3,
             "three_rate": 62.9
           },
-          "win_probability": 0.17,
-          "model_score": 5.636,
+          "win_probability": 0.173,
+          "model_score": 5.769,
           "reasons": [
             "印: 連下",
             "バック数あり",
@@ -9358,7 +9379,7 @@
             "直近3着内多い",
             "先頭勝率20%",
             "バック数最強ライン(穴目)",
-            "対星野京旺 0勝2敗"
+            "雨で先行有利"
           ],
           "player_id": "014842",
           "profile": {
@@ -9531,13 +9552,13 @@
             "two_rate": 10.0,
             "three_rate": 15.0
           },
-          "win_probability": 0.0601,
-          "model_score": 1.476,
+          "win_probability": 0.0573,
+          "model_score": 1.345,
           "reasons": [
             "前検日談話: 不安大",
             "バック数最強ライン(穴目)",
             "差し有利バンク",
-            "対浦崎貴史 0勝1敗",
+            "対久保田智之 0勝1敗",
             "学習: 割引"
           ],
           "player_id": "014765",
@@ -9718,15 +9739,16 @@
             "two_rate": 38.0,
             "three_rate": 57.1
           },
-          "win_probability": 0.0941,
-          "model_score": 3.269,
+          "win_probability": 0.0989,
+          "model_score": 3.533,
           "reasons": [
             "バック数あり",
             "前走後談話: 不安大",
             "EX攻撃力76%",
             "当所3着内50%",
+            "雨で先行有利",
             "連携実績 西巻秀太と2戦0回3着内",
-            "対西巻秀太 0勝2敗"
+            "対川本琢也 2勝0敗"
           ],
           "player_id": "015887",
           "profile": {
@@ -9891,8 +9913,8 @@
             "two_rate": 12.5,
             "three_rate": 37.5
           },
-          "win_probability": 0.0396,
-          "model_score": -0.193,
+          "win_probability": 0.0364,
+          "model_score": -0.463,
           "reasons": [
             "3番手3着内50%",
             "差し有利バンク",
@@ -10069,14 +10091,14 @@
             "two_rate": 28.4,
             "three_rate": 28.5
           },
-          "win_probability": 0.1319,
-          "model_score": 4.62,
+          "win_probability": 0.1258,
+          "model_score": 4.494,
           "reasons": [
             "印: 対抗",
             "EX攻撃力100%",
             "番手勝率20%",
             "差し有利バンク",
-            "対樫村伸平 1勝0敗",
+            "対西巻秀太 0勝1敗",
             "学習: 追い風"
           ],
           "player_id": "014272",
@@ -10182,7 +10204,7 @@
         {
           "car_no": 4,
           "name": "鈴木那樹",
-          "probability": 0.4577,
+          "probability": 0.4628,
           "score": 12.452,
           "mark": "本命",
           "style": "逃",
@@ -10214,7 +10236,6 @@
           "form": {
             "label": "好調",
             "finishes": [
-              2,
               1,
               1,
               1,
@@ -10225,10 +10246,11 @@
               1,
               2,
               1,
+              2,
               2
             ],
-            "top3_rate": 0.833,
-            "avg_finish": 2.0,
+            "top3_rate": 1.0,
+            "avg_finish": 1.5,
             "score_delta": 3.1,
             "official_delta": 0.0,
             "score_now": 79.0,
@@ -10242,8 +10264,8 @@
         {
           "car_no": 5,
           "name": "西澤優聖",
-          "probability": 0.1557,
-          "score": 8.138,
+          "probability": 0.1482,
+          "score": 7.898,
           "mark": "単穴",
           "style": "逃",
           "comment": "自力。",
@@ -10274,7 +10296,6 @@
           "form": {
             "label": "好調",
             "finishes": [
-              3,
               1,
               2,
               7,
@@ -10285,10 +10306,11 @@
               5,
               1,
               3,
+              1,
               1
             ],
             "top3_rate": 0.833,
-            "avg_finish": 2.3,
+            "avg_finish": 2.0,
             "score_delta": -0.0,
             "official_delta": 0.19,
             "score_now": 77.0,
@@ -10302,8 +10324,8 @@
         {
           "car_no": 2,
           "name": "森田瑞基",
-          "probability": 0.1232,
-          "score": 7.202,
+          "probability": 0.1247,
+          "score": 7.208,
           "mark": "連下",
           "style": "逃",
           "comment": "自力。",
@@ -10334,7 +10356,6 @@
           "form": {
             "label": "好調",
             "finishes": [
-              1,
               3,
               3,
               1,
@@ -10345,10 +10366,11 @@
               2,
               3,
               2,
-              1
+              1,
+              7
             ],
             "top3_rate": 0.833,
-            "avg_finish": 2.7,
+            "avg_finish": 2.8,
             "score_delta": 3.7,
             "official_delta": 0.0,
             "score_now": 76.8,
@@ -10363,7 +10385,7 @@
       "tickets": [
         {
           "label": "4-5-2",
-          "score": 0.2979,
+          "score": 0.2986,
           "cars": [
             4,
             5,
@@ -10373,7 +10395,7 @@
         },
         {
           "label": "4-5-7",
-          "score": 0.295,
+          "score": 0.2958,
           "cars": [
             4,
             5,
@@ -10383,7 +10405,7 @@
         },
         {
           "label": "4-2-5",
-          "score": 0.2933,
+          "score": 0.2953,
           "cars": [
             4,
             2,
@@ -10393,7 +10415,7 @@
         },
         {
           "label": "4-7-5",
-          "score": 0.2876,
+          "score": 0.2896,
           "cars": [
             4,
             7,
@@ -10403,7 +10425,7 @@
         },
         {
           "label": "4-2-7",
-          "score": 0.2859,
+          "score": 0.2891,
           "cars": [
             4,
             2,
@@ -10413,7 +10435,7 @@
         },
         {
           "label": "4-7-2",
-          "score": 0.283,
+          "score": 0.2863,
           "cars": [
             4,
             7,
@@ -10423,7 +10445,7 @@
         },
         {
           "label": "5-4-2",
-          "score": 0.2173,
+          "score": 0.2151,
           "cars": [
             5,
             4,
@@ -10433,7 +10455,7 @@
         },
         {
           "label": "5-4-7",
-          "score": 0.2145,
+          "score": 0.2124,
           "cars": [
             5,
             4,
@@ -10448,7 +10470,7 @@
             4,
             5
           ],
-          "score": 0.1557,
+          "score": 0.1482,
           "label": "4-5",
           "suji": false,
           "bet_type": "exacta"
@@ -10458,7 +10480,7 @@
             4,
             2
           ],
-          "score": 0.1232,
+          "score": 0.1247,
           "label": "4-2",
           "suji": false,
           "bet_type": "exacta"
@@ -10468,7 +10490,7 @@
             4,
             7
           ],
-          "score": 0.1029,
+          "score": 0.1043,
           "label": "4-7",
           "suji": false,
           "bet_type": "exacta"
@@ -10478,7 +10500,7 @@
             4,
             6
           ],
-          "score": 0.0725,
+          "score": 0.0734,
           "label": "4-6",
           "suji": false,
           "bet_type": "exacta"
@@ -10486,18 +10508,18 @@
       ],
       "value": null,
       "hit_estimate": {
-        "exacta": 0.2354,
-        "trifecta": 0.141
+        "exacta": 0.2351,
+        "trifecta": 0.1409
       },
       "confidence": {
         "label": "本命",
         "rank": 3,
-        "reason": "本命確率45.8%、2番手との差30.2pt。本命が抜けている。"
+        "reason": "本命確率46.3%、2番手との差31.5pt。本命が抜けている。"
       },
       "scenario": {
         "headline": "4鈴木那樹が本線。前で動いてライン4-3を残す展開を重視。",
         "flow": "細切れ戦(4分戦以上)。短いラインの主導権争いで展開が乱れやすい一戦です。 4鈴木那樹が前で動き、3鶴岡與之が追走する形。 後ろのコメント: 3「鈴木君。」 先行争いが長引かなければ、番手以降も車券圏に残る想定です。",
-        "watch": "対抗は5西澤優聖。1着確率差は約30.2ポイントです。",
+        "watch": "対抗は5西澤優聖。1着確率差は約31.5ポイントです。",
         "upset": "崩れるなら2森田瑞基の主導権取り、またはライン分断で番手が離れるケース。",
         "pattern": "細切れ戦",
         "sequence": [
@@ -10550,7 +10572,7 @@
               "name": "西澤優聖",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.1557,
+              "probability": 0.1482,
               "player_id": "015993"
             },
             {
@@ -10558,7 +10580,7 @@
               "name": "北村篤",
               "style": "追",
               "comment": "西澤君。",
-              "probability": 0.0449,
+              "probability": 0.0428,
               "player_id": "014392"
             }
           ],
@@ -10574,7 +10596,7 @@
               "name": "森田瑞基",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.1232,
+              "probability": 0.1247,
               "player_id": "016014"
             },
             {
@@ -10582,7 +10604,7 @@
               "name": "松永真太",
               "style": "追",
               "comment": "森田君。",
-              "probability": 0.1029,
+              "probability": 0.1043,
               "player_id": "014265"
             }
           ],
@@ -10598,7 +10620,7 @@
               "name": "鈴木那樹",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.4577,
+              "probability": 0.4628,
               "player_id": "015986"
             },
             {
@@ -10606,7 +10628,7 @@
               "name": "鶴岡與之",
               "style": "追",
               "comment": "鈴木君。",
-              "probability": 0.0431,
+              "probability": 0.0437,
               "player_id": "013413"
             }
           ],
@@ -10622,7 +10644,7 @@
               "name": "田沼龍弥",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.0725,
+              "probability": 0.0734,
               "player_id": "015970"
             },
             {
@@ -10630,7 +10652,7 @@
               "name": "松永真太",
               "style": "追",
               "comment": "森田君。",
-              "probability": 0.1029,
+              "probability": 0.1043,
               "player_id": "014265"
             },
             {
@@ -10638,7 +10660,7 @@
               "name": "西澤優聖",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.1557,
+              "probability": 0.1482,
               "player_id": "015993"
             },
             {
@@ -10646,7 +10668,7 @@
               "name": "北村篤",
               "style": "追",
               "comment": "西澤君。",
-              "probability": 0.0449,
+              "probability": 0.0428,
               "player_id": "014392"
             }
           ],
@@ -10662,7 +10684,7 @@
               "name": "田沼龍弥",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.0725,
+              "probability": 0.0734,
               "player_id": "015970"
             }
           ],
@@ -10746,7 +10768,7 @@
             0.0,
             0.6667,
             0.7917,
-            1.0,
+            0.45,
             0.5,
             0.235,
             0.588,
@@ -10796,14 +10818,13 @@
             "two_rate": 33.3,
             "three_rate": 40.7
           },
-          "win_probability": 0.0449,
-          "model_score": 3.168,
+          "win_probability": 0.0428,
+          "model_score": 2.932,
           "reasons": [
             "前検日談話: 不安含み",
             "直近3着内多い",
             "番手勝率24%",
             "差し有利バンク",
-            "連携実績 西澤優聖と2戦2回3着内",
             "対西澤優聖 1勝1敗",
             "学習: 割引"
           ],
@@ -10831,7 +10852,6 @@
           "form": {
             "label": "好調",
             "finishes": [
-              1,
               5,
               1,
               2,
@@ -10842,10 +10862,11 @@
               4,
               7,
               1,
-              2
+              2,
+              3
             ],
-            "top3_rate": 0.5,
-            "avg_finish": 3.5,
+            "top3_rate": 0.667,
+            "avg_finish": 3.0,
             "score_delta": -3.0,
             "official_delta": 2.44,
             "score_now": 74.11,
@@ -10986,8 +11007,8 @@
             "two_rate": 53.3,
             "three_rate": 86.6
           },
-          "win_probability": 0.1232,
-          "model_score": 7.202,
+          "win_probability": 0.1247,
+          "model_score": 7.208,
           "reasons": [
             "印: 連下",
             "バック数あり",
@@ -11013,7 +11034,6 @@
           "form": {
             "label": "好調",
             "finishes": [
-              1,
               3,
               3,
               1,
@@ -11024,10 +11044,11 @@
               2,
               3,
               2,
-              1
+              1,
+              7
             ],
             "top3_rate": 0.833,
-            "avg_finish": 2.7,
+            "avg_finish": 2.8,
             "score_delta": 3.7,
             "official_delta": 0.0,
             "score_now": 76.8,
@@ -11160,8 +11181,8 @@
             "two_rate": 21.0,
             "three_rate": 36.8
           },
-          "win_probability": 0.0431,
-          "model_score": 3.002,
+          "win_probability": 0.0437,
+          "model_score": 3.011,
           "reasons": [
             "直近3着内多い",
             "差し有利バンク",
@@ -11192,7 +11213,6 @@
           "form": {
             "label": "好調",
             "finishes": [
-              1,
               4,
               3,
               4,
@@ -11203,10 +11223,11 @@
               2,
               2,
               2,
-              2
+              2,
+              4
             ],
             "top3_rate": 0.833,
-            "avg_finish": 2.8,
+            "avg_finish": 2.5,
             "score_delta": -5.3,
             "official_delta": 3.2,
             "score_now": 73.16,
@@ -11347,7 +11368,7 @@
             "two_rate": 80.0,
             "three_rate": 80.0
           },
-          "win_probability": 0.4577,
+          "win_probability": 0.4628,
           "model_score": 12.452,
           "reasons": [
             "印: 本命",
@@ -11374,7 +11395,6 @@
           "form": {
             "label": "好調",
             "finishes": [
-              2,
               1,
               1,
               1,
@@ -11385,10 +11405,11 @@
               1,
               2,
               1,
+              2,
               2
             ],
-            "top3_rate": 0.833,
-            "avg_finish": 2.0,
+            "top3_rate": 1.0,
+            "avg_finish": 1.5,
             "score_delta": 3.1,
             "official_delta": 0.0,
             "score_now": 79.0,
@@ -11479,7 +11500,7 @@
             0.0,
             0.8333,
             0.875,
-            1.0,
+            0.45,
             0.5,
             0.533,
             0.8,
@@ -11529,8 +11550,8 @@
             "two_rate": 57.0,
             "three_rate": 71.4
           },
-          "win_probability": 0.1557,
-          "model_score": 8.138,
+          "win_probability": 0.1482,
+          "model_score": 7.898,
           "reasons": [
             "印: 単穴",
             "勝率高め",
@@ -11556,7 +11577,6 @@
           "form": {
             "label": "好調",
             "finishes": [
-              3,
               1,
               2,
               7,
@@ -11567,10 +11587,11 @@
               5,
               1,
               3,
+              1,
               1
             ],
             "top3_rate": 0.833,
-            "avg_finish": 2.3,
+            "avg_finish": 2.0,
             "score_delta": -0.0,
             "official_delta": 0.19,
             "score_now": 77.0,
@@ -11711,8 +11732,8 @@
             "two_rate": 47.3,
             "three_rate": 68.4
           },
-          "win_probability": 0.0725,
-          "model_score": 5.08,
+          "win_probability": 0.0734,
+          "model_score": 5.089,
           "reasons": [
             "バック数あり",
             "EX攻撃力80%",
@@ -11737,7 +11758,6 @@
           "form": {
             "label": "好調",
             "finishes": [
-              7,
               2,
               2,
               3,
@@ -11748,10 +11768,11 @@
               1,
               2,
               1,
-              1
+              1,
+              5
             ],
             "top3_rate": 0.833,
-            "avg_finish": 1.7,
+            "avg_finish": 1.8,
             "score_delta": 2.6,
             "official_delta": -0.41,
             "score_now": 75.88,
@@ -11884,8 +11905,8 @@
             "two_rate": 45.8,
             "three_rate": 70.8
           },
-          "win_probability": 0.1029,
-          "model_score": 6.484,
+          "win_probability": 0.1043,
+          "model_score": 6.492,
           "reasons": [
             "印: 対抗",
             "競走得点上位",
@@ -11919,7 +11940,6 @@
           "form": {
             "label": "好調",
             "finishes": [
-              1,
               2,
               3,
               1,
@@ -11930,10 +11950,11 @@
               4,
               3,
               1,
-              3
+              3,
+              6
             ],
             "top3_rate": 0.667,
-            "avg_finish": 3.0,
+            "avg_finish": 3.2,
             "score_delta": -1.9,
             "official_delta": 0.92,
             "score_now": 77.33,
@@ -11976,7 +11997,7 @@
         "前走レース後の談話を評価に反映しました。",
         "EXデータ(スパート・ちぎられ率等)を評価に反映しました。"
       ],
-      "elapsed": false,
+      "elapsed": true,
       "recommended": false
     },
     {
@@ -13739,7 +13760,7 @@
         "EXデータ(スパート・ちぎられ率等)を評価に反映しました。",
         "ライン相方との過去の連携成績を評価に反映しました。"
       ],
-      "elapsed": false,
+      "elapsed": true,
       "recommended": false
     },
     {
@@ -13997,7 +14018,10 @@
           "score": 0.1542,
           "label": "4-1",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 18.8,
+          "hit_prob": 0.0557,
+          "ev": 1.05
         },
         {
           "cars": [
@@ -14007,7 +14031,10 @@
           "score": 0.1488,
           "label": "4-5",
           "suji": true,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 6.6,
+          "hit_prob": 0.0487,
+          "ev": 0.32
         },
         {
           "cars": [
@@ -14017,7 +14044,10 @@
           "score": 0.1461,
           "label": "4-2",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 20.5,
+          "hit_prob": 0.0528,
+          "ev": 1.08
         },
         {
           "cars": [
@@ -14027,10 +14057,19 @@
           "score": 0.1203,
           "label": "4-3",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 10.3,
+          "hit_prob": 0.0435,
+          "ev": 0.45
         }
       ],
-      "value": null,
+      "value": {
+        "label": "4-2",
+        "odds": 20.5,
+        "prob": 0.0528,
+        "ev": 1.08,
+        "taken_at": "2026-09-15T10:49:26+09:00"
+      },
       "hit_estimate": {
         "exacta": 0.1085,
         "trifecta": 0.0529
@@ -15791,7 +15830,10 @@
           "score": 0.285,
           "label": "5-1",
           "suji": true,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 6.6,
+          "hit_prob": 0.1093,
+          "ev": 0.72
         },
         {
           "cars": [
@@ -15801,7 +15843,10 @@
           "score": 0.1209,
           "label": "5-2",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 55.6,
+          "hit_prob": 0.0519,
+          "ev": 2.89
         },
         {
           "cars": [
@@ -15811,7 +15856,10 @@
           "score": 0.1206,
           "label": "5-3",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 48.3,
+          "hit_prob": 0.0518,
+          "ev": 2.5
         },
         {
           "cars": [
@@ -15821,10 +15869,19 @@
           "score": 0.1157,
           "label": "5-7",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 58.5,
+          "hit_prob": 0.0497,
+          "ev": 2.91
         }
       ],
-      "value": null,
+      "value": {
+        "label": "5-7",
+        "odds": 58.5,
+        "prob": 0.0497,
+        "ev": 2.91,
+        "taken_at": "2026-09-15T10:49:26+09:00"
+      },
       "hit_estimate": {
         "exacta": 0.1613,
         "trifecta": 0.093
@@ -17514,7 +17571,10 @@
           "score": 0.209,
           "label": "5-2",
           "suji": true,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 1.5,
+          "hit_prob": 0.2,
+          "ev": 0.3
         },
         {
           "cars": [
@@ -17524,7 +17584,10 @@
           "score": 0.1039,
           "label": "5-7",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 16.3,
+          "hit_prob": 0.1113,
+          "ev": 1.81
         },
         {
           "cars": [
@@ -17534,7 +17597,10 @@
           "score": 0.077,
           "label": "5-1",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 15.4,
+          "hit_prob": 0.0825,
+          "ev": 1.27
         },
         {
           "cars": [
@@ -17544,10 +17610,19 @@
           "score": 0.0619,
           "label": "5-3",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 26.9,
+          "hit_prob": 0.0663,
+          "ev": 1.78
         }
       ],
-      "value": null,
+      "value": {
+        "label": "5-7",
+        "odds": 16.3,
+        "prob": 0.1113,
+        "ev": 1.81,
+        "taken_at": "2026-09-15T10:49:27+09:00"
+      },
       "hit_estimate": {
         "exacta": 0.3113,
         "trifecta": 0.1997
@@ -19255,7 +19330,10 @@
           "score": 0.2151,
           "label": "7-2",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 9.9,
+          "hit_prob": 0.109,
+          "ev": 1.08
         },
         {
           "cars": [
@@ -19265,7 +19343,10 @@
           "score": 0.1802,
           "label": "7-1",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 5.0,
+          "hit_prob": 0.0913,
+          "ev": 0.46
         },
         {
           "cars": [
@@ -19275,7 +19356,10 @@
           "score": 0.0779,
           "label": "7-4",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 10.2,
+          "hit_prob": 0.0415,
+          "ev": 0.42
         },
         {
           "cars": [
@@ -19285,10 +19369,19 @@
           "score": 0.069,
           "label": "7-5",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 35.8,
+          "hit_prob": 0.035,
+          "ev": 1.25
         }
       ],
-      "value": null,
+      "value": {
+        "label": "7-5",
+        "odds": 35.8,
+        "prob": 0.035,
+        "ev": 1.25,
+        "taken_at": "2026-09-15T10:49:28+09:00"
+      },
       "hit_estimate": {
         "exacta": 0.2004,
         "trifecta": 0.1198
@@ -21056,7 +21149,10 @@
           "score": 0.2011,
           "label": "4-2",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 7.8,
+          "hit_prob": 0.0753,
+          "ev": 0.59
         },
         {
           "cars": [
@@ -21066,7 +21162,10 @@
           "score": 0.16,
           "label": "4-1",
           "suji": true,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 5.1,
+          "hit_prob": 0.0461,
+          "ev": 0.23
         },
         {
           "cars": [
@@ -21076,7 +21175,10 @@
           "score": 0.1595,
           "label": "4-7",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 7.5,
+          "hit_prob": 0.0597,
+          "ev": 0.45
         },
         {
           "cars": [
@@ -21086,10 +21188,19 @@
           "score": 0.1084,
           "label": "4-3",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 9.2,
+          "hit_prob": 0.0406,
+          "ev": 0.37
         }
       ],
-      "value": null,
+      "value": {
+        "label": "4-2",
+        "odds": 7.8,
+        "prob": 0.0753,
+        "ev": 0.59,
+        "taken_at": "2026-09-15T10:49:29+09:00"
+      },
       "hit_estimate": {
         "exacta": 0.1349,
         "trifecta": 0.0744
@@ -22789,7 +22900,10 @@
           "score": 0.2021,
           "label": "5-1",
           "suji": true,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 3.2,
+          "hit_prob": 0.1024,
+          "ev": 0.33
         },
         {
           "cars": [
@@ -22799,7 +22913,10 @@
           "score": 0.141,
           "label": "5-2",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 9.2,
+          "hit_prob": 0.0928,
+          "ev": 0.85
         },
         {
           "cars": [
@@ -22809,7 +22926,10 @@
           "score": 0.116,
           "label": "5-3",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 9.4,
+          "hit_prob": 0.0764,
+          "ev": 0.72
         },
         {
           "cars": [
@@ -22819,10 +22939,19 @@
           "score": 0.0843,
           "label": "5-7",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 16.9,
+          "hit_prob": 0.0555,
+          "ev": 0.94
         }
       ],
-      "value": null,
+      "value": {
+        "label": "5-7",
+        "odds": 16.9,
+        "prob": 0.0555,
+        "ev": 0.94,
+        "taken_at": "2026-09-15T10:49:30+09:00"
+      },
       "hit_estimate": {
         "exacta": 0.1952,
         "trifecta": 0.1133
@@ -24552,7 +24681,10 @@
           "score": 0.2517,
           "label": "3-1",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 13.3,
+          "hit_prob": 0.0969,
+          "ev": 1.29
         },
         {
           "cars": [
@@ -24562,7 +24694,10 @@
           "score": 0.1947,
           "label": "3-5",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 11.0,
+          "hit_prob": 0.075,
+          "ev": 0.82
         },
         {
           "cars": [
@@ -24572,7 +24707,10 @@
           "score": 0.1121,
           "label": "3-2",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 37.0,
+          "hit_prob": 0.0432,
+          "ev": 1.6
         },
         {
           "cars": [
@@ -24582,10 +24720,19 @@
           "score": 0.0621,
           "label": "3-7",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 38.7,
+          "hit_prob": 0.0239,
+          "ev": 0.93
         }
       ],
-      "value": null,
+      "value": {
+        "label": "3-2",
+        "odds": 37.0,
+        "prob": 0.0432,
+        "ev": 1.6,
+        "taken_at": "2026-09-15T10:49:32+09:00"
+      },
       "hit_estimate": {
         "exacta": 0.1719,
         "trifecta": 0.1149
@@ -26361,7 +26508,10 @@
           "score": 0.2299,
           "label": "4-2",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 9.1,
+          "hit_prob": 0.0853,
+          "ev": 0.78
         },
         {
           "cars": [
@@ -26371,7 +26521,10 @@
           "score": 0.178,
           "label": "4-1",
           "suji": true,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 9.1,
+          "hit_prob": 0.059,
+          "ev": 0.54
         },
         {
           "cars": [
@@ -26381,7 +26534,10 @@
           "score": 0.117,
           "label": "4-7",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 64.1,
+          "hit_prob": 0.0434,
+          "ev": 2.78
         },
         {
           "cars": [
@@ -26391,10 +26547,19 @@
           "score": 0.0979,
           "label": "4-5",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 21.3,
+          "hit_prob": 0.0363,
+          "ev": 0.77
         }
       ],
-      "value": null,
+      "value": {
+        "label": "4-7",
+        "odds": 64.1,
+        "prob": 0.0434,
+        "ev": 2.78,
+        "taken_at": "2026-09-15T10:49:33+09:00"
+      },
       "hit_estimate": {
         "exacta": 0.1443,
         "trifecta": 0.083
@@ -28100,7 +28265,10 @@
           "score": 0.1421,
           "label": "3-5",
           "suji": true,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 1.6,
+          "hit_prob": 0.1798,
+          "ev": 0.29
         },
         {
           "cars": [
@@ -28110,7 +28278,10 @@
           "score": 0.0801,
           "label": "3-1",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 7.6,
+          "hit_prob": 0.1135,
+          "ev": 0.86
         },
         {
           "cars": [
@@ -28120,7 +28291,10 @@
           "score": 0.0693,
           "label": "3-4",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 12.5,
+          "hit_prob": 0.0982,
+          "ev": 1.23
         },
         {
           "cars": [
@@ -28130,10 +28304,19 @@
           "score": 0.0604,
           "label": "3-7",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 33.0,
+          "hit_prob": 0.0856,
+          "ev": 2.82
         }
       ],
-      "value": null,
+      "value": {
+        "label": "3-7",
+        "odds": 33.0,
+        "prob": 0.0856,
+        "ev": 2.82,
+        "taken_at": "2026-09-15T10:49:33+09:00"
+      },
       "hit_estimate": {
         "exacta": 0.2934,
         "trifecta": 0.1604
@@ -116241,7 +116424,7 @@
         {
           "car_no": 2,
           "name": "半田水晶",
-          "probability": 0.4304,
+          "probability": 0.431,
           "score": 4.388,
           "mark": "本命",
           "style": "逃",
@@ -116301,8 +116484,8 @@
         {
           "car_no": 1,
           "name": "太田瑛美",
-          "probability": 0.263,
-          "score": 2.418,
+          "probability": 0.2598,
+          "score": 2.363,
           "mark": "対抗",
           "style": "両",
           "comment": "流れ見て。",
@@ -116351,8 +116534,8 @@
         {
           "car_no": 3,
           "name": "川路遥香",
-          "probability": 0.0793,
-          "score": -2.378,
+          "probability": 0.0797,
+          "score": -2.364,
           "mark": "単穴",
           "style": "両",
           "comment": "自在。",
@@ -116401,7 +116584,7 @@
       "tickets": [
         {
           "label": "2-1-3",
-          "score": 0.3079,
+          "score": 0.3073,
           "cars": [
             2,
             1,
@@ -116411,7 +116594,7 @@
         },
         {
           "label": "2-1-4",
-          "score": 0.3069,
+          "score": 0.3066,
           "cars": [
             2,
             1,
@@ -116421,7 +116604,7 @@
         },
         {
           "label": "2-3-1",
-          "score": 0.282,
+          "score": 0.2819,
           "cars": [
             2,
             3,
@@ -116431,7 +116614,7 @@
         },
         {
           "label": "2-4-1",
-          "score": 0.28,
+          "score": 0.2806,
           "cars": [
             2,
             4,
@@ -116440,28 +116623,8 @@
           "suji": false
         },
         {
-          "label": "1-2-3",
-          "score": 0.2571,
-          "cars": [
-            1,
-            2,
-            3
-          ],
-          "suji": false
-        },
-        {
-          "label": "1-2-4",
-          "score": 0.2562,
-          "cars": [
-            1,
-            2,
-            4
-          ],
-          "suji": false
-        },
-        {
           "label": "2-3-4",
-          "score": 0.2551,
+          "score": 0.2558,
           "cars": [
             2,
             3,
@@ -116470,12 +116633,32 @@
           "suji": false
         },
         {
+          "label": "1-2-3",
+          "score": 0.2557,
+          "cars": [
+            1,
+            2,
+            3
+          ],
+          "suji": false
+        },
+        {
           "label": "2-4-3",
-          "score": 0.2541,
+          "score": 0.2552,
           "cars": [
             2,
             4,
             3
+          ],
+          "suji": false
+        },
+        {
+          "label": "1-2-4",
+          "score": 0.2551,
+          "cars": [
+            1,
+            2,
+            4
           ],
           "suji": false
         }
@@ -116486,7 +116669,7 @@
             2,
             1
           ],
-          "score": 0.263,
+          "score": 0.2598,
           "label": "2-1",
           "suji": false,
           "bet_type": "exacta"
@@ -116496,7 +116679,7 @@
             2,
             3
           ],
-          "score": 0.0793,
+          "score": 0.0797,
           "label": "2-3",
           "suji": false,
           "bet_type": "exacta"
@@ -116506,7 +116689,7 @@
             2,
             4
           ],
-          "score": 0.0724,
+          "score": 0.0748,
           "label": "2-4",
           "suji": false,
           "bet_type": "exacta"
@@ -116524,18 +116707,18 @@
       ],
       "value": null,
       "hit_estimate": {
-        "exacta": 0.2586,
-        "trifecta": 0.1393
+        "exacta": 0.2572,
+        "trifecta": 0.1396
       },
       "confidence": {
         "label": "本命",
         "rank": 3,
-        "reason": "本命確率43.0%、2番手との差16.7pt。本命が抜けている。"
+        "reason": "本命確率43.1%、2番手との差17.1pt。本命が抜けている。"
       },
       "scenario": {
         "headline": "2半田水晶は単騎でも総合評価上位。混戦の好位取りを評価。",
         "flow": "細切れ戦(4分戦以上)。短いラインの主導権争いで展開が乱れやすい一戦です。 固定の援護は薄いので、隊列が緩んだ瞬間に仕掛ける形が理想です。",
-        "watch": "対抗は1太田瑛美。1着確率差は約16.7ポイントです。",
+        "watch": "対抗は1太田瑛美。1着確率差は約17.1ポイントです。",
         "upset": "崩れるなら5高本美穂の主導権取り、またはライン分断で番手が離れるケース。",
         "pattern": "細切れ戦",
         "sequence": [
@@ -116588,7 +116771,7 @@
               "name": "太田瑛美",
               "style": "両",
               "comment": "流れ見て。",
-              "probability": 0.263,
+              "probability": 0.2598,
               "player_id": "015586"
             }
           ],
@@ -116604,7 +116787,7 @@
               "name": "半田水晶",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.4304,
+              "probability": 0.431,
               "player_id": "015939"
             }
           ],
@@ -116620,7 +116803,7 @@
               "name": "浦部郁里",
               "style": "追",
               "comment": "前々。",
-              "probability": 0.0533,
+              "probability": 0.0528,
               "player_id": "014909"
             }
           ],
@@ -116636,7 +116819,7 @@
               "name": "青木美優",
               "style": "追",
               "comment": "前々。",
-              "probability": 0.0724,
+              "probability": 0.0748,
               "player_id": "015017"
             }
           ],
@@ -116652,7 +116835,7 @@
               "name": "川路遥香",
               "style": "両",
               "comment": "自在。",
-              "probability": 0.0793,
+              "probability": 0.0797,
               "player_id": "015579"
             }
           ],
@@ -116684,7 +116867,7 @@
               "name": "中原恭恵",
               "style": "両",
               "comment": "取れた位置から。",
-              "probability": 0.042,
+              "probability": 0.0423,
               "player_id": "015862"
             }
           ],
@@ -116818,8 +117001,8 @@
             "two_rate": 51.8,
             "three_rate": 62.9
           },
-          "win_probability": 0.263,
-          "model_score": 2.418,
+          "win_probability": 0.2598,
+          "model_score": 2.363,
           "reasons": [
             "印: 対抗",
             "勝率高め",
@@ -116998,7 +117181,7 @@
             "two_rate": 45.8,
             "three_rate": 62.5
           },
-          "win_probability": 0.4304,
+          "win_probability": 0.431,
           "model_score": 4.388,
           "reasons": [
             "印: 本命",
@@ -117172,8 +117355,8 @@
             "two_rate": 11.1,
             "three_rate": 33.3
           },
-          "win_probability": 0.0793,
-          "model_score": -2.378,
+          "win_probability": 0.0797,
+          "model_score": -2.364,
           "reasons": [
             "印: 単穴",
             "逃げ有利バンク(333m)",
@@ -117343,12 +117526,11 @@
             "two_rate": 9.5,
             "three_rate": 33.3
           },
-          "win_probability": 0.0724,
-          "model_score": -2.744,
+          "win_probability": 0.0748,
+          "model_score": -2.619,
           "reasons": [
             "印: 連下",
             "対浦部郁里 4勝1敗",
-            "学習: 割引",
             "総合材料は弱め"
           ],
           "player_id": "015017",
@@ -117519,7 +117701,7 @@
             "three_rate": 20.0
           },
           "win_probability": 0.0597,
-          "model_score": -3.514,
+          "model_score": -3.518,
           "reasons": [
             "バック数あり",
             "前検日談話: 不安含み",
@@ -117690,10 +117872,9 @@
             "two_rate": 2.7,
             "three_rate": 19.4
           },
-          "win_probability": 0.0533,
-          "model_score": -3.97,
+          "win_probability": 0.0528,
+          "model_score": -4.012,
           "reasons": [
-            "前走後談話: 不安含み",
             "対中原恭恵 4勝3敗",
             "学習: 割引",
             "総合材料は弱め"
@@ -117865,8 +118046,8 @@
             "two_rate": 0.0,
             "three_rate": 0.0
           },
-          "win_probability": 0.042,
-          "model_score": -4.918,
+          "win_probability": 0.0423,
+          "model_score": -4.894,
           "reasons": [
             "逃げ有利バンク(333m)",
             "対浦部郁里 3勝4敗",
@@ -119721,8 +119902,8 @@
         {
           "car_no": 1,
           "name": "久米詩",
-          "probability": 0.3635,
-          "score": 4.078,
+          "probability": 0.3613,
+          "score": 4.045,
           "mark": "本命",
           "style": "両",
           "comment": "自力自在。",
@@ -119781,8 +119962,8 @@
         {
           "car_no": 2,
           "name": "岩元杏奈",
-          "probability": 0.3218,
-          "score": 3.59,
+          "probability": 0.3217,
+          "score": 3.581,
           "mark": "対抗",
           "style": "両",
           "comment": "自力自在。",
@@ -119838,8 +120019,8 @@
         {
           "car_no": 4,
           "name": "加藤恵",
-          "probability": 0.0957,
-          "score": -1.259,
+          "probability": 0.0951,
+          "score": -1.295,
           "mark": "連下",
           "style": "両",
           "comment": "やれる事を。",
@@ -119891,7 +120072,7 @@
       "tickets": [
         {
           "label": "1-2-4",
-          "score": 0.2922,
+          "score": 0.2909,
           "cars": [
             1,
             2,
@@ -119901,7 +120082,7 @@
         },
         {
           "label": "1-2-3",
-          "score": 0.2892,
+          "score": 0.2881,
           "cars": [
             1,
             2,
@@ -119911,7 +120092,7 @@
         },
         {
           "label": "2-1-4",
-          "score": 0.2704,
+          "score": 0.2696,
           "cars": [
             2,
             1,
@@ -119921,7 +120102,7 @@
         },
         {
           "label": "2-1-3",
-          "score": 0.2675,
+          "score": 0.2669,
           "cars": [
             2,
             1,
@@ -119930,18 +120111,8 @@
           "suji": false
         },
         {
-          "label": "1-4-2",
-          "score": 0.2603,
-          "cars": [
-            1,
-            4,
-            2
-          ],
-          "suji": false
-        },
-        {
           "label": "2-4-1",
-          "score": 0.2602,
+          "score": 0.2597,
           "cars": [
             2,
             4,
@@ -119950,22 +120121,32 @@
           "suji": false
         },
         {
-          "label": "1-3-2",
-          "score": 0.2544,
+          "label": "1-4-2",
+          "score": 0.259,
           "cars": [
             1,
-            3,
+            4,
             2
           ],
           "suji": false
         },
         {
           "label": "2-3-1",
-          "score": 0.2539,
+          "score": 0.2536,
           "cars": [
             2,
             3,
             1
+          ],
+          "suji": false
+        },
+        {
+          "label": "1-3-2",
+          "score": 0.2533,
+          "cars": [
+            1,
+            3,
+            2
           ],
           "suji": false
         }
@@ -119976,7 +120157,7 @@
             1,
             2
           ],
-          "score": 0.3218,
+          "score": 0.3217,
           "label": "1-2",
           "suji": false,
           "bet_type": "exacta"
@@ -119986,7 +120167,7 @@
             1,
             4
           ],
-          "score": 0.0957,
+          "score": 0.0951,
           "label": "1-4",
           "suji": false,
           "bet_type": "exacta"
@@ -119996,7 +120177,7 @@
             1,
             3
           ],
-          "score": 0.0747,
+          "score": 0.0749,
           "label": "1-3",
           "suji": false,
           "bet_type": "exacta"
@@ -120006,7 +120187,7 @@
             1,
             5
           ],
-          "score": 0.0644,
+          "score": 0.0668,
           "label": "1-5",
           "suji": false,
           "bet_type": "exacta"
@@ -120014,18 +120195,18 @@
       ],
       "value": null,
       "hit_estimate": {
-        "exacta": 0.2384,
-        "trifecta": 0.1396
+        "exacta": 0.2358,
+        "trifecta": 0.1368
       },
       "confidence": {
         "label": "順当",
         "rank": 2,
-        "reason": "本命確率36.4%。本命中心で相手を絞る。"
+        "reason": "本命確率36.1%。本命中心で相手を絞る。"
       },
       "scenario": {
         "headline": "1久米詩は単騎でも総合評価上位。混戦の好位取りを評価。",
         "flow": "細切れ戦(4分戦以上)。短いラインの主導権争いで展開が乱れやすい一戦です。 固定の援護は薄いので、隊列が緩んだ瞬間に仕掛ける形が理想です。",
-        "watch": "対抗は2岩元杏奈。1着確率差は約4.2ポイントです。",
+        "watch": "対抗は2岩元杏奈。1着確率差は約4.0ポイントです。",
         "upset": "崩れるなら4加藤恵の主導権取り、またはライン分断で番手が離れるケース。",
         "pattern": "細切れ戦",
         "sequence": [
@@ -120078,7 +120259,7 @@
               "name": "久米詩",
               "style": "両",
               "comment": "自力自在。",
-              "probability": 0.3635,
+              "probability": 0.3613,
               "player_id": "015400"
             }
           ],
@@ -120094,7 +120275,7 @@
               "name": "岩元杏奈",
               "style": "両",
               "comment": "自力自在。",
-              "probability": 0.3218,
+              "probability": 0.3217,
               "player_id": "015955"
             }
           ],
@@ -120110,7 +120291,7 @@
               "name": "加藤恵",
               "style": "両",
               "comment": "やれる事を。",
-              "probability": 0.0957,
+              "probability": 0.0951,
               "player_id": "015216"
             }
           ],
@@ -120126,7 +120307,7 @@
               "name": "中村由香里",
               "style": "追",
               "comment": "自在。",
-              "probability": 0.0747,
+              "probability": 0.0749,
               "player_id": "014902"
             }
           ],
@@ -120142,7 +120323,7 @@
               "name": "齊藤由莉",
               "style": "両",
               "comment": "自力自在。",
-              "probability": 0.0644,
+              "probability": 0.0668,
               "player_id": "015942"
             }
           ],
@@ -120158,7 +120339,7 @@
               "name": "片岡美奈",
               "style": "両",
               "comment": "自在。",
-              "probability": 0.0475,
+              "probability": 0.0481,
               "player_id": "015851"
             }
           ],
@@ -120316,8 +120497,8 @@
             "two_rate": 57.0,
             "three_rate": 71.4
           },
-          "win_probability": 0.3635,
-          "model_score": 4.078,
+          "win_probability": 0.3613,
+          "model_score": 4.045,
           "reasons": [
             "印: 本命",
             "勝率高め",
@@ -120498,8 +120679,8 @@
             "two_rate": 50.0,
             "three_rate": 77.7
           },
-          "win_probability": 0.3218,
-          "model_score": 3.59,
+          "win_probability": 0.3217,
+          "model_score": 3.581,
           "reasons": [
             "印: 対抗",
             "勝率高め",
@@ -120669,8 +120850,8 @@
             "two_rate": 20.0,
             "three_rate": 40.0
           },
-          "win_probability": 0.0747,
-          "model_score": -2.251,
+          "win_probability": 0.0749,
+          "model_score": -2.25,
           "reasons": [
             "印: 単穴",
             "対久米詩 0勝8敗",
@@ -120833,8 +121014,8 @@
             "two_rate": 16.6,
             "three_rate": 36.1
           },
-          "win_probability": 0.0957,
-          "model_score": -1.259,
+          "win_probability": 0.0951,
+          "model_score": -1.295,
           "reasons": [
             "印: 連下",
             "バック数あり",
@@ -121019,13 +121200,12 @@
             "two_rate": 15.0,
             "three_rate": 30.0
           },
-          "win_probability": 0.0644,
-          "model_score": -2.843,
+          "win_probability": 0.0668,
+          "model_score": -2.708,
           "reasons": [
             "逃げ有利バンク(333m)",
             "ミッドナイト先行",
             "対加藤恵 3勝5敗",
-            "学習: 割引",
             "総合材料は弱め"
           ],
           "player_id": "015942",
@@ -121190,8 +121370,8 @@
             "two_rate": 7.3,
             "three_rate": 18.5
           },
-          "win_probability": 0.0475,
-          "model_score": -4.059,
+          "win_probability": 0.0481,
+          "model_score": -4.024,
           "reasons": [
             "前検日談話: 不安含み",
             "逃げ有利バンク(333m)",
@@ -121364,9 +121544,8 @@
             "three_rate": 5.5
           },
           "win_probability": 0.0322,
-          "model_score": -5.614,
+          "model_score": -5.629,
           "reasons": [
-            "前走後談話: 不安含み",
             "逃げ有利バンク(333m)",
             "ミッドナイト先行",
             "対加藤恵 0勝5敗",
@@ -123226,8 +123405,8 @@
         {
           "car_no": 2,
           "name": "青木瑞樹",
-          "probability": 0.3447,
-          "score": 12.66,
+          "probability": 0.3224,
+          "score": 12.336,
           "mark": "",
           "style": "逃",
           "comment": "自力。",
@@ -123250,10 +123429,10 @@
             "競走得点上位",
             "勝率高め",
             "バック数あり",
-            "前走後談話: 上向き",
             "EX攻撃力100%",
             "直近3着内多い",
-            "先頭勝率23%"
+            "先頭勝率23%",
+            "バック数最強ライン(穴目)"
           ],
           "form": {
             "label": "平常",
@@ -123286,8 +123465,8 @@
         {
           "car_no": 1,
           "name": "橋本壮史",
-          "probability": 0.1833,
-          "score": 10.134,
+          "probability": 0.1955,
+          "score": 10.335,
           "mark": "",
           "style": "逃",
           "comment": "自力。",
@@ -123310,10 +123489,10 @@
             "競走得点上位",
             "バック数あり",
             "前検日談話: 不安大",
+            "前走後談話: 不安大",
             "EX攻撃力100%",
             "先頭3着内48%",
-            "当所3着内67%",
-            "逃げ有利バンク(333m)"
+            "当所3着内67%"
           ],
           "form": {
             "label": "好調",
@@ -123342,8 +123521,8 @@
         {
           "car_no": 3,
           "name": "小林令",
-          "probability": 0.1412,
-          "score": 9.091,
+          "probability": 0.1519,
+          "score": 9.325,
           "mark": "",
           "style": "追",
           "comment": "橋本さん。",
@@ -123356,11 +123535,10 @@
           },
           "reasons": [
             "競走得点上位",
-            "前走後談話: 不安大",
             "EX攻撃力100%",
             "番手3着内61%",
             "当所3着内57%",
-            "対坂本周輝 2勝2敗",
+            "対北村信明 3勝1敗",
             "学習: 追い風"
           ],
           "form": {
@@ -123386,7 +123564,7 @@
       "tickets": [
         {
           "label": "2-5-1",
-          "score": 0.31,
+          "score": 0.2975,
           "cars": [
             2,
             5,
@@ -123396,7 +123574,7 @@
         },
         {
           "label": "2-5-3",
-          "score": 0.3023,
+          "score": 0.2895,
           "cars": [
             2,
             5,
@@ -123406,7 +123584,7 @@
         },
         {
           "label": "2-1-3",
-          "score": 0.2498,
+          "score": 0.2432,
           "cars": [
             2,
             1,
@@ -123416,7 +123594,7 @@
         },
         {
           "label": "2-1-5",
-          "score": 0.2471,
+          "score": 0.2391,
           "cars": [
             2,
             1,
@@ -123426,7 +123604,7 @@
         },
         {
           "label": "2-3-1",
-          "score": 0.2439,
+          "score": 0.2371,
           "cars": [
             2,
             3,
@@ -123436,7 +123614,7 @@
         },
         {
           "label": "2-3-5",
-          "score": 0.2352,
+          "score": 0.2268,
           "cars": [
             2,
             3,
@@ -123446,7 +123624,7 @@
         },
         {
           "label": "1-3-2",
-          "score": 0.2183,
+          "score": 0.2256,
           "cars": [
             1,
             3,
@@ -123456,7 +123634,7 @@
         },
         {
           "label": "1-2-3",
-          "score": 0.2029,
+          "score": 0.2043,
           "cars": [
             1,
             2,
@@ -123471,7 +123649,7 @@
             2,
             1
           ],
-          "score": 0.1833,
+          "score": 0.1955,
           "label": "2-1",
           "suji": false,
           "bet_type": "exacta"
@@ -123481,7 +123659,7 @@
             2,
             5
           ],
-          "score": 0.1587,
+          "score": 0.1596,
           "label": "2-5",
           "suji": true,
           "bet_type": "exacta"
@@ -123491,7 +123669,7 @@
             2,
             3
           ],
-          "score": 0.1412,
+          "score": 0.1519,
           "label": "2-3",
           "suji": false,
           "bet_type": "exacta"
@@ -123501,7 +123679,7 @@
             2,
             4
           ],
-          "score": 0.0872,
+          "score": 0.0887,
           "label": "2-4",
           "suji": false,
           "bet_type": "exacta"
@@ -123509,18 +123687,18 @@
       ],
       "value": null,
       "hit_estimate": {
-        "exacta": 0.1707,
-        "trifecta": 0.0979
+        "exacta": 0.1653,
+        "trifecta": 0.0968
       },
       "confidence": {
-        "label": "本命",
-        "rank": 3,
-        "reason": "本命確率34.5%、2番手との差16.1pt。本命が抜けている。"
+        "label": "順当",
+        "rank": 2,
+        "reason": "本命確率32.2%。本命中心で相手を絞る。"
       },
       "scenario": {
         "headline": "2青木瑞樹が本線。前で動いてライン2-5を残す展開を重視。",
         "flow": "細切れ戦(4分戦以上)。短いラインの主導権争いで展開が乱れやすい一戦です。 2青木瑞樹が前で動き、5北村信明が追走する形。 後ろのコメント: 5「青木君。」 先行争いが長引かなければ、番手以降も車券圏に残る想定です。",
-        "watch": "対抗は1橋本壮史。1着確率差は約16.1ポイントです。",
+        "watch": "対抗は1橋本壮史。1着確率差は約12.7ポイントです。",
         "upset": "崩れるなら6下井竜の主導権取り、またはライン分断で番手が離れるケース。",
         "pattern": "細切れ戦",
         "sequence": [
@@ -123567,7 +123745,7 @@
               "name": "橋本壮史",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.1833,
+              "probability": 0.1955,
               "player_id": "015517"
             },
             {
@@ -123575,7 +123753,7 @@
               "name": "小林令",
               "style": "追",
               "comment": "橋本さん。",
-              "probability": 0.1412,
+              "probability": 0.1519,
               "player_id": "015092"
             }
           ],
@@ -123591,7 +123769,7 @@
               "name": "青木瑞樹",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.3447,
+              "probability": 0.3224,
               "player_id": "015725"
             },
             {
@@ -123599,7 +123777,7 @@
               "name": "北村信明",
               "style": "追",
               "comment": "青木君。",
-              "probability": 0.1221,
+              "probability": 0.1228,
               "player_id": "014327"
             }
           ],
@@ -123615,7 +123793,7 @@
               "name": "坂本周輝",
               "style": "両",
               "comment": "単騎で前々。",
-              "probability": 0.0872,
+              "probability": 0.0887,
               "player_id": "014792"
             }
           ],
@@ -123631,7 +123809,7 @@
               "name": "下井竜",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.0697,
+              "probability": 0.0661,
               "player_id": "015453"
             },
             {
@@ -123639,7 +123817,7 @@
               "name": "竹澤浩司",
               "style": "両",
               "comment": "下井君。",
-              "probability": 0.0518,
+              "probability": 0.0528,
               "player_id": "014090"
             }
           ],
@@ -123781,16 +123959,16 @@
             "two_rate": 25.0,
             "three_rate": 35.0
           },
-          "win_probability": 0.1833,
-          "model_score": 10.134,
+          "win_probability": 0.1955,
+          "model_score": 10.335,
           "reasons": [
             "競走得点上位",
             "バック数あり",
             "前検日談話: 不安大",
+            "前走後談話: 不安大",
             "EX攻撃力100%",
             "先頭3着内48%",
-            "当所3着内67%",
-            "逃げ有利バンク(333m)"
+            "当所3着内67%"
           ],
           "player_id": "015517",
           "profile": {
@@ -123967,16 +124145,16 @@
             "two_rate": 43.7,
             "three_rate": 53.1
           },
-          "win_probability": 0.3447,
-          "model_score": 12.66,
+          "win_probability": 0.3224,
+          "model_score": 12.336,
           "reasons": [
             "競走得点上位",
             "勝率高め",
             "バック数あり",
-            "前走後談話: 上向き",
             "EX攻撃力100%",
             "直近3着内多い",
-            "先頭勝率23%"
+            "先頭勝率23%",
+            "バック数最強ライン(穴目)"
           ],
           "player_id": "015725",
           "profile": {
@@ -124149,15 +124327,14 @@
             "two_rate": 33.3,
             "three_rate": 58.3
           },
-          "win_probability": 0.1412,
-          "model_score": 9.091,
+          "win_probability": 0.1519,
+          "model_score": 9.325,
           "reasons": [
             "競走得点上位",
-            "前走後談話: 不安大",
             "EX攻撃力100%",
             "番手3着内61%",
             "当所3着内57%",
-            "対坂本周輝 2勝2敗",
+            "対北村信明 3勝1敗",
             "学習: 追い風"
           ],
           "player_id": "015092",
@@ -124322,8 +124499,8 @@
             "two_rate": 31.2,
             "three_rate": 37.5
           },
-          "win_probability": 0.0872,
-          "model_score": 7.162,
+          "win_probability": 0.0887,
+          "model_score": 7.174,
           "reasons": [
             "印: 連下",
             "競走得点上位",
@@ -124502,8 +124679,8 @@
             "two_rate": 35.6,
             "three_rate": 53.5
           },
-          "win_probability": 0.1221,
-          "model_score": 8.508,
+          "win_probability": 0.1228,
+          "model_score": 8.474,
           "reasons": [
             "印: 単穴",
             "競走得点上位",
@@ -124690,16 +124867,16 @@
             "two_rate": 18.0,
             "three_rate": 27.2
           },
-          "win_probability": 0.0697,
-          "model_score": 6.269,
+          "win_probability": 0.0661,
+          "model_score": 5.995,
           "reasons": [
             "競走得点上位",
             "バック数あり",
+            "前走後談話: 不安含み",
             "EX攻撃力100%",
             "先頭3着内60%",
             "当所3着内50%",
-            "逃げ有利バンク(333m)",
-            "ミッドナイト先行"
+            "逃げ有利バンク(333m)"
           ],
           "player_id": "015453",
           "profile": {
@@ -124872,8 +125049,8 @@
             "two_rate": 22.5,
             "three_rate": 32.2
           },
-          "win_probability": 0.0518,
-          "model_score": 5.083,
+          "win_probability": 0.0528,
+          "model_score": 5.097,
           "reasons": [
             "競走得点上位",
             "バック数あり",
@@ -124881,7 +125058,7 @@
             "当所3着内60%",
             "逃げ有利バンク(333m)",
             "ミッドナイト先行",
-            "連携実績 下井竜と2戦1回3着内"
+            "対下井竜 0勝1敗"
           ],
           "player_id": "014090",
           "profile": {
@@ -126759,8 +126936,8 @@
         {
           "car_no": 2,
           "name": "石塚慶一郎",
-          "probability": 0.2624,
-          "score": 11.932,
+          "probability": 0.2647,
+          "score": 11.941,
           "mark": "",
           "style": "両",
           "comment": "自力自在。",
@@ -126818,8 +126995,8 @@
         {
           "car_no": 1,
           "name": "山本伸一",
-          "probability": 0.2071,
-          "score": 10.986,
+          "probability": 0.2131,
+          "score": 11.074,
           "mark": "",
           "style": "両",
           "comment": "石塚君。",
@@ -126868,7 +127045,7 @@
         {
           "car_no": 3,
           "name": "佐藤壮志",
-          "probability": 0.2019,
+          "probability": 0.2032,
           "score": 10.884,
           "mark": "",
           "style": "逃",
@@ -126891,11 +127068,11 @@
           "reasons": [
             "競走得点上位",
             "バック数あり",
-            "前走後談話: 不安含み",
             "EX攻撃力100%",
             "直近3着内多い",
             "先頭3着内46%",
-            "当所3着内50%"
+            "当所3着内50%",
+            "バック数最強ライン(穴目)"
           ],
           "form": {
             "label": "好調",
@@ -126929,7 +127106,7 @@
       "tickets": [
         {
           "label": "2-1-3",
-          "score": 0.2492,
+          "score": 0.2527,
           "cars": [
             2,
             1,
@@ -126939,7 +127116,7 @@
         },
         {
           "label": "2-1-5",
-          "score": 0.2362,
+          "score": 0.2376,
           "cars": [
             2,
             1,
@@ -126949,7 +127126,7 @@
         },
         {
           "label": "2-3-1",
-          "score": 0.2218,
+          "score": 0.2242,
           "cars": [
             2,
             3,
@@ -126959,7 +127136,7 @@
         },
         {
           "label": "1-3-2",
-          "score": 0.2138,
+          "score": 0.2179,
           "cars": [
             1,
             3,
@@ -126969,7 +127146,7 @@
         },
         {
           "label": "3-1-2",
-          "score": 0.2125,
+          "score": 0.2154,
           "cars": [
             3,
             1,
@@ -126989,7 +127166,7 @@
         },
         {
           "label": "1-2-3",
-          "score": 0.2006,
+          "score": 0.2044,
           "cars": [
             1,
             2,
@@ -126999,7 +127176,7 @@
         },
         {
           "label": "3-2-1",
-          "score": 0.1987,
+          "score": 0.2008,
           "cars": [
             3,
             2,
@@ -127014,7 +127191,7 @@
             2,
             1
           ],
-          "score": 0.232,
+          "score": 0.2387,
           "label": "2-1",
           "suji": true,
           "bet_type": "exacta"
@@ -127024,7 +127201,7 @@
             2,
             3
           ],
-          "score": 0.2019,
+          "score": 0.2032,
           "label": "2-3",
           "suji": false,
           "bet_type": "exacta"
@@ -127034,7 +127211,7 @@
             2,
             5
           ],
-          "score": 0.1193,
+          "score": 0.108,
           "label": "2-5",
           "suji": false,
           "bet_type": "exacta"
@@ -127044,7 +127221,7 @@
             2,
             7
           ],
-          "score": 0.0888,
+          "score": 0.0893,
           "label": "2-7",
           "suji": false,
           "bet_type": "exacta"
@@ -127052,18 +127229,18 @@
       ],
       "value": null,
       "hit_estimate": {
-        "exacta": 0.1455,
-        "trifecta": 0.0884
+        "exacta": 0.1499,
+        "trifecta": 0.0899
       },
       "confidence": {
         "label": "混戦",
         "rank": 1,
-        "reason": "本命確率26.2%で割れ気味。"
+        "reason": "本命確率26.5%で割れ気味。"
       },
       "scenario": {
         "headline": "2石塚慶一郎が本線。前で動いてライン2-1を残す展開を重視。",
         "flow": "細切れ戦(4分戦以上)。短いラインの主導権争いで展開が乱れやすい一戦です。 2石塚慶一郎が前で動き、1山本伸一が追走する形。 後ろのコメント: 1「石塚君。」 先行争いが長引かなければ、番手以降も車券圏に残る想定です。",
-        "watch": "対抗は1山本伸一。1着確率差は約5.5ポイントです。",
+        "watch": "対抗は1山本伸一。1着確率差は約5.2ポイントです。",
         "upset": "崩れるなら7吉田昌司の主導権取り、またはライン分断で番手が離れるケース。",
         "pattern": "細切れ戦",
         "sequence": [
@@ -127110,7 +127287,7 @@
               "name": "石塚慶一郎",
               "style": "両",
               "comment": "自力自在。",
-              "probability": 0.2624,
+              "probability": 0.2647,
               "player_id": "015541"
             },
             {
@@ -127118,7 +127295,7 @@
               "name": "山本伸一",
               "style": "両",
               "comment": "石塚君。",
-              "probability": 0.2071,
+              "probability": 0.2131,
               "player_id": "014886"
             }
           ],
@@ -127134,7 +127311,7 @@
               "name": "佐藤壮志",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.2019,
+              "probability": 0.2032,
               "player_id": "015749"
             },
             {
@@ -127142,7 +127319,7 @@
               "name": "小酒大勇",
               "style": "追",
               "comment": "佐藤君。",
-              "probability": 0.056,
+              "probability": 0.0572,
               "player_id": "014929"
             }
           ],
@@ -127158,7 +127335,7 @@
               "name": "齋藤雄行",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.1193,
+              "probability": 0.108,
               "player_id": "015616"
             },
             {
@@ -127182,7 +127359,7 @@
               "name": "吉田昌司",
               "style": "逃",
               "comment": "単騎で。",
-              "probability": 0.0888,
+              "probability": 0.0893,
               "player_id": "015161"
             }
           ],
@@ -127316,8 +127493,8 @@
             "two_rate": 38.0,
             "three_rate": 52.3
           },
-          "win_probability": 0.2071,
-          "model_score": 10.986,
+          "win_probability": 0.2131,
+          "model_score": 11.074,
           "reasons": [
             "競走得点上位",
             "直近3着内多い",
@@ -127504,8 +127681,8 @@
             "two_rate": 43.7,
             "three_rate": 62.5
           },
-          "win_probability": 0.2624,
-          "model_score": 11.932,
+          "win_probability": 0.2647,
+          "model_score": 11.941,
           "reasons": [
             "競走得点上位",
             "勝率高め",
@@ -127693,16 +127870,16 @@
             "two_rate": 39.2,
             "three_rate": 50.0
           },
-          "win_probability": 0.2019,
+          "win_probability": 0.2032,
           "model_score": 10.884,
           "reasons": [
             "競走得点上位",
             "バック数あり",
-            "前走後談話: 不安含み",
             "EX攻撃力100%",
             "直近3着内多い",
             "先頭3着内46%",
-            "当所3着内50%"
+            "当所3着内50%",
+            "バック数最強ライン(穴目)"
           ],
           "player_id": "015749",
           "profile": {
@@ -127876,13 +128053,12 @@
             "three_rate": 33.3
           },
           "win_probability": 0.0644,
-          "model_score": 6.315,
+          "model_score": 6.286,
           "reasons": [
             "印: 連下",
             "競走得点上位",
             "直近3着内多い",
             "当所3着内50%",
-            "連携実績 齋藤雄行と2戦2回3着内",
             "対齋藤雄行 1勝1敗",
             "学習: 割引"
           ],
@@ -128065,8 +128241,8 @@
             "two_rate": 23.7,
             "three_rate": 47.6
           },
-          "win_probability": 0.1193,
-          "model_score": 8.778,
+          "win_probability": 0.108,
+          "model_score": 8.355,
           "reasons": [
             "競走得点上位",
             "バック数あり",
@@ -128247,16 +128423,16 @@
             "two_rate": 7.1,
             "three_rate": 21.4
           },
-          "win_probability": 0.056,
-          "model_score": 5.754,
+          "win_probability": 0.0572,
+          "model_score": 5.811,
           "reasons": [
             "競走得点上位",
             "前検日談話: 上向き",
-            "前走後談話: 不安含み",
             "EX攻撃力100%",
             "番手勝率27%",
             "バック数最強ライン(穴目)",
-            "対吉田昌司 0勝1敗"
+            "対吉田昌司 0勝1敗",
+            "学習: 割引"
           ],
           "player_id": "014929",
           "profile": {
@@ -128429,8 +128605,8 @@
             "two_rate": 40.0,
             "three_rate": 52.0
           },
-          "win_probability": 0.0888,
-          "model_score": 7.599,
+          "win_probability": 0.0893,
+          "model_score": 7.596,
           "reasons": [
             "競走得点上位",
             "バック数あり",
@@ -130294,8 +130470,8 @@
         {
           "car_no": 3,
           "name": "塩島嵩一朗",
-          "probability": 0.2656,
-          "score": 11.362,
+          "probability": 0.2666,
+          "score": 11.388,
           "mark": "",
           "style": "逃",
           "comment": "自力。",
@@ -130354,8 +130530,8 @@
         {
           "car_no": 4,
           "name": "和泉尚吾",
-          "probability": 0.1954,
-          "score": 10.134,
+          "probability": 0.1996,
+          "score": 10.231,
           "mark": "",
           "style": "両",
           "comment": "自力自在。",
@@ -130414,8 +130590,8 @@
         {
           "car_no": 1,
           "name": "西村光太",
-          "probability": 0.1758,
-          "score": 9.711,
+          "probability": 0.1701,
+          "score": 9.591,
           "mark": "",
           "style": "追",
           "comment": "皿屋さん。",
@@ -130465,7 +130641,7 @@
       "tickets": [
         {
           "label": "3-4-1",
-          "score": 0.2172,
+          "score": 0.2181,
           "cars": [
             3,
             4,
@@ -130475,7 +130651,7 @@
         },
         {
           "label": "3-4-2",
-          "score": 0.2147,
+          "score": 0.2173,
           "cars": [
             3,
             4,
@@ -130485,7 +130661,7 @@
         },
         {
           "label": "3-1-4",
-          "score": 0.2144,
+          "score": 0.2139,
           "cars": [
             3,
             1,
@@ -130495,7 +130671,7 @@
         },
         {
           "label": "3-2-4",
-          "score": 0.2094,
+          "score": 0.2123,
           "cars": [
             3,
             2,
@@ -130505,7 +130681,7 @@
         },
         {
           "label": "3-1-2",
-          "score": 0.2091,
+          "score": 0.209,
           "cars": [
             3,
             1,
@@ -130515,7 +130691,7 @@
         },
         {
           "label": "3-2-1",
-          "score": 0.2066,
+          "score": 0.2081,
           "cars": [
             3,
             2,
@@ -130524,21 +130700,21 @@
           "suji": false
         },
         {
-          "label": "4-1-3",
-          "score": 0.2001,
+          "label": "2-1-3",
+          "score": 0.2031,
           "cars": [
-            4,
+            2,
             1,
             3
           ],
-          "suji": false
+          "suji": true
         },
         {
-          "label": "4-2-3",
-          "score": 0.1946,
+          "label": "4-1-3",
+          "score": 0.2008,
           "cars": [
             4,
-            2,
+            1,
             3
           ],
           "suji": false
@@ -130550,7 +130726,7 @@
             3,
             4
           ],
-          "score": 0.1954,
+          "score": 0.1996,
           "label": "3-4",
           "suji": false,
           "bet_type": "exacta"
@@ -130560,7 +130736,7 @@
             3,
             1
           ],
-          "score": 0.1758,
+          "score": 0.1701,
           "label": "3-1",
           "suji": false,
           "bet_type": "exacta"
@@ -130570,7 +130746,7 @@
             3,
             2
           ],
-          "score": 0.1578,
+          "score": 0.1642,
           "label": "3-2",
           "suji": false,
           "bet_type": "exacta"
@@ -130580,7 +130756,7 @@
             3,
             5
           ],
-          "score": 0.126,
+          "score": 0.1193,
           "label": "3-5",
           "suji": true,
           "bet_type": "exacta"
@@ -130588,18 +130764,18 @@
       ],
       "value": null,
       "hit_estimate": {
-        "exacta": 0.1342,
-        "trifecta": 0.0839
+        "exacta": 0.1344,
+        "trifecta": 0.0854
       },
       "confidence": {
         "label": "混戦",
         "rank": 1,
-        "reason": "本命確率26.6%で割れ気味。"
+        "reason": "本命確率26.7%で割れ気味。"
       },
       "scenario": {
         "headline": "3塩島嵩一朗が本線。前で動いてライン3-5を残す展開を重視。",
         "flow": "細切れ戦(4分戦以上)。短いラインの主導権争いで展開が乱れやすい一戦です。 3塩島嵩一朗が前で動き、5伊勢崎彰大が追走する形。 後ろのコメント: 5「塩島君。」 先行争いが長引かなければ、番手以降も車券圏に残る想定です。",
-        "watch": "対抗は4和泉尚吾。1着確率差は約7.0ポイントです。",
+        "watch": "対抗は4和泉尚吾。1着確率差は約6.7ポイントです。",
         "upset": "崩れるなら4和泉尚吾の主導権取り、またはライン分断で番手が離れるケース。",
         "pattern": "細切れ戦",
         "sequence": [
@@ -130645,7 +130821,7 @@
               "name": "和泉尚吾",
               "style": "両",
               "comment": "自力自在。",
-              "probability": 0.1954,
+              "probability": 0.1996,
               "player_id": "015468"
             },
             {
@@ -130653,7 +130829,7 @@
               "name": "西岡拓朗",
               "style": "追",
               "comment": "和泉君。",
-              "probability": 0.0708,
+              "probability": 0.0701,
               "player_id": "014617"
             }
           ],
@@ -130669,7 +130845,7 @@
               "name": "皿屋豊",
               "style": "両",
               "comment": "自力。",
-              "probability": 0.1578,
+              "probability": 0.1642,
               "player_id": "015179"
             },
             {
@@ -130677,7 +130853,7 @@
               "name": "西村光太",
               "style": "追",
               "comment": "皿屋さん。",
-              "probability": 0.1758,
+              "probability": 0.1701,
               "player_id": "014537"
             }
           ],
@@ -130693,7 +130869,7 @@
               "name": "塩島嵩一朗",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.2656,
+              "probability": 0.2666,
               "player_id": "015807"
             },
             {
@@ -130701,7 +130877,7 @@
               "name": "伊勢崎彰大",
               "style": "追",
               "comment": "塩島君。",
-              "probability": 0.0969,
+              "probability": 0.0918,
               "player_id": "013410"
             }
           ],
@@ -130717,7 +130893,7 @@
               "name": "谷津田将吾",
               "style": "追",
               "comment": "決めず。",
-              "probability": 0.0376,
+              "probability": 0.0375,
               "player_id": "013537"
             }
           ],
@@ -130851,8 +131027,8 @@
             "two_rate": 34.4,
             "three_rate": 51.7
           },
-          "win_probability": 0.1758,
-          "model_score": 9.711,
+          "win_probability": 0.1701,
+          "model_score": 9.591,
           "reasons": [
             "競走得点上位",
             "番手勝率15%",
@@ -131039,8 +131215,8 @@
             "two_rate": 17.8,
             "three_rate": 25.0
           },
-          "win_probability": 0.1578,
-          "model_score": 9.279,
+          "win_probability": 0.1642,
+          "model_score": 9.449,
           "reasons": [
             "競走得点上位",
             "バック数あり",
@@ -131229,8 +131405,8 @@
             "two_rate": 32.3,
             "three_rate": 41.1
           },
-          "win_probability": 0.2656,
-          "model_score": 11.362,
+          "win_probability": 0.2666,
+          "model_score": 11.388,
           "reasons": [
             "競走得点上位",
             "バック数あり",
@@ -131419,8 +131595,8 @@
             "two_rate": 25.8,
             "three_rate": 45.1
           },
-          "win_probability": 0.1954,
-          "model_score": 10.134,
+          "win_probability": 0.1996,
+          "model_score": 10.231,
           "reasons": [
             "競走得点上位",
             "バック数あり",
@@ -131601,8 +131777,8 @@
             "two_rate": 26.6,
             "three_rate": 46.6
           },
-          "win_probability": 0.0969,
-          "model_score": 7.328,
+          "win_probability": 0.0918,
+          "model_score": 7.124,
           "reasons": [
             "競走得点上位",
             "当所3着内52%",
@@ -131780,8 +131956,8 @@
             "two_rate": 10.0,
             "three_rate": 33.3
           },
-          "win_probability": 0.0708,
-          "model_score": 6.075,
+          "win_probability": 0.0701,
+          "model_score": 6.047,
           "reasons": [
             "競走得点上位",
             "前検日談話: 上向き",
@@ -131961,7 +132137,7 @@
             "two_rate": 8.0,
             "three_rate": 16.0
           },
-          "win_probability": 0.0376,
+          "win_probability": 0.0375,
           "model_score": 3.546,
           "reasons": [
             "競走得点上位",
@@ -133821,8 +133997,8 @@
         {
           "car_no": 3,
           "name": "緒方将樹",
-          "probability": 0.3015,
-          "score": 12.041,
+          "probability": 0.3043,
+          "score": 12.047,
           "mark": "",
           "style": "逃",
           "comment": "伊藤君。",
@@ -133872,8 +134048,8 @@
         {
           "car_no": 1,
           "name": "伊藤颯馬",
-          "probability": 0.2436,
-          "score": 11.188,
+          "probability": 0.2392,
+          "score": 11.083,
           "mark": "",
           "style": "逃",
           "comment": "自力。",
@@ -133932,8 +134108,8 @@
         {
           "car_no": 2,
           "name": "中川勝貴",
-          "probability": 0.1276,
-          "score": 8.601,
+          "probability": 0.1268,
+          "score": 8.545,
           "mark": "",
           "style": "追",
           "comment": "初連係の竹内さん",
@@ -133946,6 +134122,7 @@
           },
           "reasons": [
             "競走得点上位",
+            "前走後談話: 不安大",
             "番手3着内48%",
             "対加倉正義 2勝0敗"
           ],
@@ -133975,7 +134152,7 @@
       "tickets": [
         {
           "label": "1-3-2",
-          "score": 0.2455,
+          "score": 0.2438,
           "cars": [
             1,
             3,
@@ -133985,7 +134162,7 @@
         },
         {
           "label": "1-3-5",
-          "score": 0.2442,
+          "score": 0.2429,
           "cars": [
             1,
             3,
@@ -133995,7 +134172,7 @@
         },
         {
           "label": "3-1-2",
-          "score": 0.2426,
+          "score": 0.2427,
           "cars": [
             3,
             1,
@@ -134005,7 +134182,7 @@
         },
         {
           "label": "3-1-5",
-          "score": 0.2414,
+          "score": 0.2418,
           "cars": [
             3,
             1,
@@ -134015,7 +134192,7 @@
         },
         {
           "label": "3-2-1",
-          "score": 0.2262,
+          "score": 0.2268,
           "cars": [
             3,
             2,
@@ -134025,7 +134202,7 @@
         },
         {
           "label": "3-5-1",
-          "score": 0.2238,
+          "score": 0.2252,
           "cars": [
             3,
             5,
@@ -134035,7 +134212,7 @@
         },
         {
           "label": "1-2-3",
-          "score": 0.2175,
+          "score": 0.2152,
           "cars": [
             1,
             2,
@@ -134045,7 +134222,7 @@
         },
         {
           "label": "1-5-3",
-          "score": 0.215,
+          "score": 0.2135,
           "cars": [
             1,
             5,
@@ -134060,7 +134237,7 @@
             3,
             1
           ],
-          "score": 0.2436,
+          "score": 0.2392,
           "label": "3-1",
           "suji": false,
           "bet_type": "exacta"
@@ -134070,7 +134247,7 @@
             3,
             2
           ],
-          "score": 0.1276,
+          "score": 0.1268,
           "label": "3-2",
           "suji": false,
           "bet_type": "exacta"
@@ -134080,7 +134257,7 @@
             3,
             5
           ],
-          "score": 0.1192,
+          "score": 0.121,
           "label": "3-5",
           "suji": false,
           "bet_type": "exacta"
@@ -134090,7 +134267,7 @@
             3,
             6
           ],
-          "score": 0.0983,
+          "score": 0.0985,
           "label": "3-6",
           "suji": false,
           "bet_type": "exacta"
@@ -134098,18 +134275,18 @@
       ],
       "value": null,
       "hit_estimate": {
-        "exacta": 0.1602,
-        "trifecta": 0.092
+        "exacta": 0.1601,
+        "trifecta": 0.0919
       },
       "confidence": {
         "label": "順当",
         "rank": 2,
-        "reason": "本命確率30.1%。本命中心で相手を絞る。"
+        "reason": "本命確率30.4%。本命中心で相手を絞る。"
       },
       "scenario": {
         "headline": "3緒方将樹は番手/追走からの差しが中心。1伊藤颯馬が形を作れるかが鍵。",
         "flow": "3分戦。 ライン1-3-7の前が主導権を取れば、3緒方将樹の差し込みが見えます。早めに踏み合うと外のまくりを受けるリスク。",
-        "watch": "対抗は1伊藤颯馬。1着確率差は約5.8ポイントです。",
+        "watch": "対抗は1伊藤颯馬。1着確率差は約6.5ポイントです。",
         "upset": "崩れるなら5竹内雄作の主導権取り、またはライン分断で番手が離れるケース。",
         "pattern": "3分戦",
         "sequence": [
@@ -134152,7 +134329,7 @@
               "name": "伊藤颯馬",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.2436,
+              "probability": 0.2392,
               "player_id": "015390"
             },
             {
@@ -134160,7 +134337,7 @@
               "name": "緒方将樹",
               "style": "逃",
               "comment": "伊藤君。",
-              "probability": 0.3015,
+              "probability": 0.3043,
               "player_id": "015476"
             },
             {
@@ -134168,7 +134345,7 @@
               "name": "加倉正義",
               "style": "追",
               "comment": "九州３番手。",
-              "probability": 0.0289,
+              "probability": 0.0292,
               "player_id": "012478"
             }
           ],
@@ -134184,7 +134361,7 @@
               "name": "竹内雄作",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.1192,
+              "probability": 0.121,
               "player_id": "014752"
             },
             {
@@ -134192,7 +134369,7 @@
               "name": "中川勝貴",
               "style": "追",
               "comment": "初連係の竹内さん",
-              "probability": 0.1276,
+              "probability": 0.1268,
               "player_id": "015104"
             }
           ],
@@ -134208,7 +134385,7 @@
               "name": "熊崎麻人",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.0983,
+              "probability": 0.0985,
               "player_id": "015697"
             },
             {
@@ -134358,8 +134535,8 @@
             "two_rate": 31.2,
             "three_rate": 50.0
           },
-          "win_probability": 0.2436,
-          "model_score": 11.188,
+          "win_probability": 0.2392,
+          "model_score": 11.083,
           "reasons": [
             "競走得点上位",
             "バック数あり",
@@ -134540,10 +134717,11 @@
             "two_rate": 41.6,
             "three_rate": 58.3
           },
-          "win_probability": 0.1276,
-          "model_score": 8.601,
+          "win_probability": 0.1268,
+          "model_score": 8.545,
           "reasons": [
             "競走得点上位",
+            "前走後談話: 不安大",
             "番手3着内48%",
             "対加倉正義 2勝0敗"
           ],
@@ -134712,8 +134890,8 @@
             "two_rate": 34.3,
             "three_rate": 46.8
           },
-          "win_probability": 0.3015,
-          "model_score": 12.041,
+          "win_probability": 0.3043,
+          "model_score": 12.047,
           "reasons": [
             "競走得点上位",
             "バック数あり",
@@ -134894,7 +135072,7 @@
             "three_rate": 44.4
           },
           "win_probability": 0.081,
-          "model_score": 6.784,
+          "model_score": 6.751,
           "reasons": [
             "競走得点上位",
             "対伊藤颯馬 1勝1敗",
@@ -135079,8 +135257,8 @@
             "two_rate": 17.8,
             "three_rate": 32.1
           },
-          "win_probability": 0.1192,
-          "model_score": 8.33,
+          "win_probability": 0.121,
+          "model_score": 8.357,
           "reasons": [
             "競走得点上位",
             "バック数あり",
@@ -135269,8 +135447,8 @@
             "two_rate": 16.6,
             "three_rate": 41.6
           },
-          "win_probability": 0.0983,
-          "model_score": 7.558,
+          "win_probability": 0.0985,
+          "model_score": 7.534,
           "reasons": [
             "競走得点上位",
             "バック数あり",
@@ -135449,11 +135627,11 @@
             "two_rate": 0.0,
             "three_rate": 12.9
           },
-          "win_probability": 0.0289,
-          "model_score": 2.665,
+          "win_probability": 0.0292,
+          "model_score": 2.674,
           "reasons": [
             "競走得点上位",
-            "対竹内雄作 0勝2敗",
+            "対中川勝貴 0勝2敗",
             "学習: 割引"
           ],
           "player_id": "012478",
@@ -137344,8 +137522,8 @@
         {
           "car_no": 2,
           "name": "晝田宗一郎",
-          "probability": 0.2916,
-          "score": 11.926,
+          "probability": 0.2811,
+          "score": 11.757,
           "mark": "",
           "style": "逃",
           "comment": "自力。",
@@ -137404,8 +137582,8 @@
         {
           "car_no": 1,
           "name": "筒井敦史",
-          "probability": 0.2295,
-          "score": 10.968,
+          "probability": 0.2351,
+          "score": 11.042,
           "mark": "",
           "style": "追",
           "comment": "晝田君。",
@@ -137454,8 +137632,8 @@
         {
           "car_no": 3,
           "name": "寺沼拓摩",
-          "probability": 0.1418,
-          "score": 9.042,
+          "probability": 0.144,
+          "score": 9.081,
           "mark": "",
           "style": "両",
           "comment": "自力。",
@@ -137509,7 +137687,7 @@
       "tickets": [
         {
           "label": "2-1-3",
-          "score": 0.2637,
+          "score": 0.2598,
           "cars": [
             2,
             1,
@@ -137519,7 +137697,7 @@
         },
         {
           "label": "2-1-4",
-          "score": 0.2622,
+          "score": 0.2589,
           "cars": [
             2,
             1,
@@ -137529,7 +137707,7 @@
         },
         {
           "label": "2-3-1",
-          "score": 0.2231,
+          "score": 0.2191,
           "cars": [
             2,
             3,
@@ -137539,7 +137717,7 @@
         },
         {
           "label": "2-4-1",
-          "score": 0.2204,
+          "score": 0.2175,
           "cars": [
             2,
             4,
@@ -137549,7 +137727,7 @@
         },
         {
           "label": "1-3-2",
-          "score": 0.2125,
+          "score": 0.2147,
           "cars": [
             1,
             3,
@@ -137558,34 +137736,34 @@
           "suji": false
         },
         {
-          "label": "1-2-3",
-          "score": 0.2115,
+          "label": "1-4-2",
+          "score": 0.213,
           "cars": [
             1,
-            2,
-            3
-          ],
-          "suji": false
-        },
-        {
-          "label": "1-2-4",
-          "score": 0.2102,
-          "cars": [
-            1,
-            2,
-            4
+            4,
+            2
           ],
           "suji": false
         },
         {
           "label": "3-4-2",
-          "score": 0.2098,
+          "score": 0.2118,
           "cars": [
             3,
             4,
             2
           ],
           "suji": true
+        },
+        {
+          "label": "1-2-3",
+          "score": 0.2117,
+          "cars": [
+            1,
+            2,
+            3
+          ],
+          "suji": false
         }
       ],
       "exacta": [
@@ -137594,7 +137772,7 @@
             2,
             1
           ],
-          "score": 0.257,
+          "score": 0.2633,
           "label": "2-1",
           "suji": true,
           "bet_type": "exacta"
@@ -137604,7 +137782,7 @@
             2,
             3
           ],
-          "score": 0.1418,
+          "score": 0.144,
           "label": "2-3",
           "suji": false,
           "bet_type": "exacta"
@@ -137614,7 +137792,7 @@
             2,
             4
           ],
-          "score": 0.1323,
+          "score": 0.1384,
           "label": "2-4",
           "suji": false,
           "bet_type": "exacta"
@@ -137624,7 +137802,7 @@
             2,
             6
           ],
-          "score": 0.1069,
+          "score": 0.1019,
           "label": "2-6",
           "suji": false,
           "bet_type": "exacta"
@@ -137632,18 +137810,18 @@
       ],
       "value": null,
       "hit_estimate": {
-        "exacta": 0.1528,
-        "trifecta": 0.0913
+        "exacta": 0.1482,
+        "trifecta": 0.0902
       },
       "confidence": {
-        "label": "順当",
-        "rank": 2,
-        "reason": "本命確率29.2%。本命中心で相手を絞る。"
+        "label": "混戦",
+        "rank": 1,
+        "reason": "本命確率28.1%で割れ気味。"
       },
       "scenario": {
         "headline": "2晝田宗一郎が本線。前で動いてライン2-1-5を残す展開を重視。",
         "flow": "3分戦。 2晝田宗一郎が前で動き、1筒井敦史、5明田春喜が追走する形。 後ろのコメント: 1「晝田君。」 / 5「岡山勢へ。」 先行争いが長引かなければ、番手以降も車券圏に残る想定です。",
-        "watch": "対抗は1筒井敦史。1着確率差は約6.2ポイントです。",
+        "watch": "対抗は1筒井敦史。1着確率差は約4.6ポイントです。",
         "upset": "崩れるなら6西岡利起の主導権取り、またはライン分断で番手が離れるケース。",
         "pattern": "3分戦",
         "sequence": [
@@ -137687,7 +137865,7 @@
               "name": "晝田宗一郎",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.2916,
+              "probability": 0.2811,
               "player_id": "015373"
             },
             {
@@ -137695,7 +137873,7 @@
               "name": "筒井敦史",
               "style": "追",
               "comment": "晝田君。",
-              "probability": 0.2295,
+              "probability": 0.2351,
               "player_id": "013737"
             },
             {
@@ -137703,7 +137881,7 @@
               "name": "明田春喜",
               "style": "追",
               "comment": "岡山勢へ。",
-              "probability": 0.0681,
+              "probability": 0.0691,
               "player_id": "013976"
             }
           ],
@@ -137719,7 +137897,7 @@
               "name": "寺沼拓摩",
               "style": "両",
               "comment": "自力。",
-              "probability": 0.1418,
+              "probability": 0.144,
               "player_id": "015349"
             },
             {
@@ -137727,7 +137905,7 @@
               "name": "末木浩二",
               "style": "両",
               "comment": "寺沼君。",
-              "probability": 0.1323,
+              "probability": 0.1384,
               "player_id": "015093"
             }
           ],
@@ -137743,7 +137921,7 @@
               "name": "西岡利起",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.1069,
+              "probability": 0.1019,
               "player_id": "015823"
             },
             {
@@ -137751,7 +137929,7 @@
               "name": "山口泰生",
               "style": "追",
               "comment": "初連係の西岡君。",
-              "probability": 0.0296,
+              "probability": 0.0303,
               "player_id": "014028"
             }
           ],
@@ -137885,8 +138063,8 @@
             "two_rate": 44.8,
             "three_rate": 62.0
           },
-          "win_probability": 0.2295,
-          "model_score": 10.968,
+          "win_probability": 0.2351,
+          "model_score": 11.042,
           "reasons": [
             "競走得点上位",
             "勝率高め",
@@ -138073,8 +138251,8 @@
             "two_rate": 46.4,
             "three_rate": 60.7
           },
-          "win_probability": 0.2916,
-          "model_score": 11.926,
+          "win_probability": 0.2811,
+          "model_score": 11.757,
           "reasons": [
             "競走得点上位",
             "バック数あり",
@@ -138263,8 +138441,8 @@
             "two_rate": 21.4,
             "three_rate": 35.7
           },
-          "win_probability": 0.1418,
-          "model_score": 9.042,
+          "win_probability": 0.144,
+          "model_score": 9.081,
           "reasons": [
             "競走得点上位",
             "バック数あり",
@@ -138439,8 +138617,8 @@
             "two_rate": 13.3,
             "three_rate": 20.0
           },
-          "win_probability": 0.1323,
-          "model_score": 8.765,
+          "win_probability": 0.1384,
+          "model_score": 8.923,
           "reasons": [
             "競走得点上位",
             "バック数あり",
@@ -138619,8 +138797,8 @@
             "two_rate": 35.4,
             "three_rate": 45.1
           },
-          "win_probability": 0.0681,
-          "model_score": 6.11,
+          "win_probability": 0.0691,
+          "model_score": 6.146,
           "reasons": [
             "印: 連下",
             "競走得点上位",
@@ -138806,8 +138984,8 @@
             "two_rate": 21.4,
             "three_rate": 32.1
           },
-          "win_probability": 0.1069,
-          "model_score": 7.913,
+          "win_probability": 0.1019,
+          "model_score": 7.697,
           "reasons": [
             "競走得点上位",
             "バック数あり",
@@ -138988,8 +139166,8 @@
             "two_rate": 0.0,
             "three_rate": 0.0
           },
-          "win_probability": 0.0296,
-          "model_score": 2.776,
+          "win_probability": 0.0303,
+          "model_score": 2.853,
           "reasons": [
             "競走得点上位",
             "バック数最強ライン(穴目)",
@@ -140862,8 +141040,8 @@
         {
           "car_no": 1,
           "name": "齋木翔多",
-          "probability": 0.4105,
-          "score": 12.79,
+          "probability": 0.4206,
+          "score": 12.912,
           "mark": "",
           "style": "逃",
           "comment": "自力自在。",
@@ -140922,8 +141100,8 @@
         {
           "car_no": 2,
           "name": "尾形鉄馬",
-          "probability": 0.1717,
-          "score": 9.304,
+          "probability": 0.16,
+          "score": 9.045,
           "mark": "",
           "style": "追",
           "comment": "伊東君。",
@@ -140970,8 +141148,8 @@
         {
           "car_no": 3,
           "name": "伊東翔貴",
-          "probability": 0.1309,
-          "score": 8.217,
+          "probability": 0.1329,
+          "score": 8.303,
           "mark": "",
           "style": "逃",
           "comment": "自力。",
@@ -140997,7 +141175,7 @@
             "当所3着内53%",
             "逃げ有利バンク(333m)",
             "ミッドナイト先行",
-            "対中村昌弘 1勝1敗"
+            "対尾形鉄馬 0勝2敗"
           ],
           "form": {
             "label": "好調",
@@ -141027,7 +141205,7 @@
       "tickets": [
         {
           "label": "1-2-3",
-          "score": 0.2791,
+          "score": 0.2813,
           "cars": [
             1,
             2,
@@ -141036,8 +141214,18 @@
           "suji": false
         },
         {
+          "label": "1-3-2",
+          "score": 0.2775,
+          "cars": [
+            1,
+            3,
+            2
+          ],
+          "suji": false
+        },
+        {
           "label": "1-2-5",
-          "score": 0.2756,
+          "score": 0.2769,
           "cars": [
             1,
             2,
@@ -141046,28 +141234,8 @@
           "suji": false
         },
         {
-          "label": "1-3-2",
-          "score": 0.2734,
-          "cars": [
-            1,
-            3,
-            2
-          ],
-          "suji": false
-        },
-        {
-          "label": "1-5-2",
-          "score": 0.2663,
-          "cars": [
-            1,
-            5,
-            2
-          ],
-          "suji": false
-        },
-        {
           "label": "1-3-5",
-          "score": 0.2641,
+          "score": 0.2692,
           "cars": [
             1,
             3,
@@ -141076,8 +141244,18 @@
           "suji": false
         },
         {
+          "label": "1-5-2",
+          "score": 0.2686,
+          "cars": [
+            1,
+            5,
+            2
+          ],
+          "suji": false
+        },
+        {
           "label": "1-5-3",
-          "score": 0.2605,
+          "score": 0.2648,
           "cars": [
             1,
             5,
@@ -141087,7 +141265,7 @@
         },
         {
           "label": "3-2-1",
-          "score": 0.2165,
+          "score": 0.2155,
           "cars": [
             3,
             2,
@@ -141097,7 +141275,7 @@
         },
         {
           "label": "2-1-3",
-          "score": 0.2135,
+          "score": 0.2107,
           "cars": [
             2,
             1,
@@ -141112,74 +141290,74 @@
             1,
             2
           ],
-          "score": 0.1717,
+          "score": 0.16,
           "label": "1-2",
           "suji": false,
           "bet_type": "exacta",
           "live_odds": 3.3,
-          "hit_prob": 0.1196,
-          "ev": 0.39
+          "hit_prob": 0.1161,
+          "ev": 0.38
         },
         {
           "cars": [
             1,
             3
           ],
-          "score": 0.1309,
+          "score": 0.1329,
           "label": "1-3",
           "suji": false,
           "bet_type": "exacta",
           "live_odds": 10.0,
-          "hit_prob": 0.0912,
-          "ev": 0.91
-        },
-        {
-          "cars": [
-            1,
-            5
-          ],
-          "score": 0.1058,
-          "label": "1-5",
-          "suji": false,
-          "bet_type": "exacta",
-          "live_odds": 19.9,
-          "hit_prob": 0.0737,
-          "ev": 1.47
+          "hit_prob": 0.0965,
+          "ev": 0.96
         },
         {
           "cars": [
             1,
             4
           ],
-          "score": 0.1036,
+          "score": 0.1065,
           "label": "1-4",
           "suji": true,
           "bet_type": "exacta",
           "live_odds": 2.7,
-          "hit_prob": 0.0644,
-          "ev": 0.17
+          "hit_prob": 0.069,
+          "ev": 0.19
+        },
+        {
+          "cars": [
+            1,
+            5
+          ],
+          "score": 0.1014,
+          "label": "1-5",
+          "suji": false,
+          "bet_type": "exacta",
+          "live_odds": 19.9,
+          "hit_prob": 0.0736,
+          "ev": 1.46
         }
       ],
       "value": {
         "label": "1-5",
         "odds": 19.9,
-        "prob": 0.0737,
-        "ev": 1.47,
+        "prob": 0.0736,
+        "ev": 1.46,
         "taken_at": "2026-09-14T23:05:22+09:00"
       },
       "hit_estimate": {
-        "exacta": 0.2107,
-        "trifecta": 0.1229
+        "exacta": 0.2126,
+        "trifecta": 0.1214
       },
       "confidence": {
         "label": "本命",
         "rank": 3,
-        "reason": "本命確率41.0%、2番手との差23.9pt。本命が抜けている。"
+        "reason": "本命確率42.1%、2番手との差26.1pt。本命が抜けている。"
       },
       "scenario": {
         "headline": "1齋木翔多が本線。前で動いてライン1-4-6を残す展開を重視。",
         "flow": "3分戦。 1齋木翔多が前で動き、4土屋裕二、6佐藤真一が追走する形。 後ろのコメント: 4「齋木君。」 / 6「地元勢へ。」 先行争いが長引かなければ、番手以降も車券圏に残る想定です。",
-        "watch": "対抗は2尾形鉄馬。1着確率差は約23.9ポイントです。",
+        "watch": "対抗は2尾形鉄馬。1着確率差は約26.1ポイントです。",
         "upset": "崩れるなら5塩崎隼秀の主導権取り、またはライン分断で番手が離れるケース。",
         "pattern": "3分戦",
         "sequence": [
@@ -141223,7 +141401,7 @@
               "name": "齋木翔多",
               "style": "逃",
               "comment": "自力自在。",
-              "probability": 0.4105,
+              "probability": 0.4206,
               "player_id": "015354"
             },
             {
@@ -141231,7 +141409,7 @@
               "name": "土屋裕二",
               "style": "追",
               "comment": "齋木君。",
-              "probability": 0.0925,
+              "probability": 0.0951,
               "player_id": "013420"
             },
             {
@@ -141239,7 +141417,7 @@
               "name": "佐藤真一",
               "style": "追",
               "comment": "地元勢へ。",
-              "probability": 0.0493,
+              "probability": 0.0499,
               "player_id": "013245"
             }
           ],
@@ -141255,7 +141433,7 @@
               "name": "伊東翔貴",
               "style": "逃",
               "comment": "自力。",
-              "probability": 0.1309,
+              "probability": 0.1329,
               "player_id": "014800"
             },
             {
@@ -141263,7 +141441,7 @@
               "name": "尾形鉄馬",
               "style": "追",
               "comment": "伊東君。",
-              "probability": 0.1717,
+              "probability": 0.16,
               "player_id": "015036"
             }
           ],
@@ -141279,7 +141457,7 @@
               "name": "塩崎隼秀",
               "style": "両",
               "comment": "自力自在。",
-              "probability": 0.1058,
+              "probability": 0.1014,
               "player_id": "015646"
             },
             {
@@ -141287,7 +141465,7 @@
               "name": "中村昌弘",
               "style": "追",
               "comment": "塩崎君。",
-              "probability": 0.0392,
+              "probability": 0.0402,
               "player_id": "013436"
             }
           ],
@@ -141429,8 +141607,8 @@
             "two_rate": 28.0,
             "three_rate": 48.0
           },
-          "win_probability": 0.4105,
-          "model_score": 12.79,
+          "win_probability": 0.4206,
+          "model_score": 12.912,
           "reasons": [
             "競走得点上位",
             "バック数あり",
@@ -141611,8 +141789,8 @@
             "two_rate": 30.0,
             "three_rate": 50.0
           },
-          "win_probability": 0.1717,
-          "model_score": 9.304,
+          "win_probability": 0.16,
+          "model_score": 9.045,
           "reasons": [
             "競走得点上位",
             "前検日談話: 不安大",
@@ -141797,8 +141975,8 @@
             "two_rate": 21.7,
             "three_rate": 34.7
           },
-          "win_probability": 0.1309,
-          "model_score": 8.217,
+          "win_probability": 0.1329,
+          "model_score": 8.303,
           "reasons": [
             "競走得点上位",
             "バック数あり",
@@ -141806,7 +141984,7 @@
             "当所3着内53%",
             "逃げ有利バンク(333m)",
             "ミッドナイト先行",
-            "対中村昌弘 1勝1敗"
+            "対尾形鉄馬 0勝2敗"
           ],
           "player_id": "014800",
           "profile": {
@@ -141975,13 +142153,14 @@
             "two_rate": 10.0,
             "three_rate": 25.0
           },
-          "win_probability": 0.0925,
-          "model_score": 6.83,
+          "win_probability": 0.0951,
+          "model_score": 6.964,
           "reasons": [
             "印: 単穴",
             "競走得点上位",
             "番手勝率17%",
-            "対尾形鉄馬 0勝2敗"
+            "対尾形鉄馬 0勝2敗",
+            "学習: 追い風"
           ],
           "player_id": "013420",
           "profile": {
@@ -142162,8 +142341,8 @@
             "two_rate": 25.9,
             "three_rate": 29.6
           },
-          "win_probability": 0.1058,
-          "model_score": 7.367,
+          "win_probability": 0.1014,
+          "model_score": 7.223,
           "reasons": [
             "競走得点上位",
             "バック数あり",
@@ -142344,8 +142523,8 @@
             "two_rate": 0.0,
             "three_rate": 33.3
           },
-          "win_probability": 0.0493,
-          "model_score": 4.314,
+          "win_probability": 0.0499,
+          "model_score": 4.384,
           "reasons": [
             "競走得点上位",
             "対伊東翔貴 0勝1敗",
@@ -142516,12 +142695,12 @@
             "two_rate": 13.3,
             "three_rate": 16.6
           },
-          "win_probability": 0.0392,
-          "model_score": 3.395,
+          "win_probability": 0.0402,
+          "model_score": 3.52,
           "reasons": [
             "競走得点上位",
             "前検日談話: 不安含み",
-            "連携実績 塩崎隼秀と3戦1回3着内",
+            "連携実績 塩崎隼秀と2戦1回3着内",
             "対尾形鉄馬 0勝3敗",
             "学習: 割引"
           ],
@@ -144398,8 +144577,8 @@
         {
           "car_no": 1,
           "name": "簗田一輝",
-          "probability": 0.2342,
-          "score": 12.858,
+          "probability": 0.2326,
+          "score": 12.774,
           "mark": "",
           "style": "両",
           "comment": "単騎で自力自在。",
@@ -144455,8 +144634,8 @@
         {
           "car_no": 2,
           "name": "阿部力也",
-          "probability": 0.1946,
-          "score": 12.117,
+          "probability": 0.2004,
+          "score": 12.178,
           "mark": "",
           "style": "追",
           "comment": "嵯峨君。",
@@ -144469,10 +144648,8 @@
           },
           "reasons": [
             "競走得点上位",
-            "前走後談話: 不安含み",
             "直近3着内多い",
             "番手勝率29%",
-            "連携実績 嵯峨昇喜郎と2戦2回3着内",
             "対嵯峨昇喜郎 5勝0敗",
             "学習: 追い風"
           ],
@@ -144505,80 +144682,58 @@
           "player_id": "014794"
         },
         {
-          "car_no": 5,
-          "name": "嵯峨昇喜郎",
-          "probability": 0.161,
-          "score": 11.359,
+          "car_no": 6,
+          "name": "小川真太郎",
+          "probability": 0.1638,
+          "score": 11.372,
           "mark": "",
           "style": "両",
-          "comment": "自力。",
+          "comment": "前々。",
           "emotion": {
             "tone": "中立",
-            "score": 0.4,
-            "buckets": {
-              "intent": 0.4
-            },
-            "hits": [
-              {
-                "phrase": "自力",
-                "weight": 0.4,
-                "bucket": "intent"
-              }
-            ],
-            "summary": "戦法意図は見えますが、状態評価は控えめです。"
+            "score": 0.0,
+            "buckets": {},
+            "hits": [],
+            "summary": "コメントだけでは強弱を決めにくいです。"
           },
           "reasons": [
             "競走得点上位",
-            "バック数あり",
+            "勝率高め",
             "EX攻撃力100%",
+            "ちぎられ率30%",
             "直近3着内多い",
-            "先頭3着内53%",
-            "当所3着内61%",
+            "先頭勝率19%",
             "逃げ有利バンク(333m)"
           ],
           "form": {
             "label": "好調",
             "finishes": [
-              4,
-              2,
               3,
               1,
               1,
-              2,
-              5,
-              5,
               3,
-              4,
+              5,
               1,
-              2
+              1,
+              4
             ],
-            "top3_rate": 0.5,
-            "avg_finish": 3.3,
-            "score_delta": 1.0,
-            "official_delta": -0.18,
-            "score_now": 109.62,
-            "score_recent": 109.44,
-            "races": 12
+            "top3_rate": 0.667,
+            "avg_finish": 2.5,
+            "score_delta": 1.8,
+            "official_delta": -1.04,
+            "score_now": 108.33,
+            "score_recent": 107.29,
+            "races": 8
           },
           "term": null,
           "class_move": null,
-          "player_id": "015235"
+          "player_id": "015063"
         }
       ],
       "tickets": [
         {
-          "label": "1-2-5",
-          "score": 0.1987,
-          "cars": [
-            1,
-            2,
-            5
-          ],
-          "suji": false
-        },
-        {
           "label": "1-2-6",
-          "score": 0.1982,
+          "score": 0.1999,
           "cars": [
             1,
             2,
@@ -144587,62 +144742,72 @@
           "suji": false
         },
         {
-          "label": "1-5-2",
-          "score": 0.1939,
+          "label": "1-2-5",
+          "score": 0.1982,
           "cars": [
             1,
-            5,
-            2
+            2,
+            5
           ],
           "suji": false
         },
         {
           "label": "1-6-2",
-          "score": 0.193,
+          "score": 0.1947,
           "cars": [
             1,
             6,
+            2
+          ],
+          "suji": false
+        },
+        {
+          "label": "2-6-1",
+          "score": 0.1943,
+          "cars": [
+            2,
+            6,
+            1
+          ],
+          "suji": false
+        },
+        {
+          "label": "1-5-2",
+          "score": 0.1915,
+          "cars": [
+            1,
+            5,
             2
           ],
           "suji": false
         },
         {
           "label": "2-5-1",
-          "score": 0.1905,
+          "score": 0.1908,
           "cars": [
             2,
             5,
             1
-          ],
-          "suji": false
-        },
-        {
-          "label": "2-6-1",
-          "score": 0.1895,
-          "cars": [
-            2,
-            6,
-            1
-          ],
-          "suji": false
-        },
-        {
-          "label": "1-5-6",
-          "score": 0.1887,
-          "cars": [
-            1,
-            5,
-            6
           ],
           "suji": false
         },
         {
           "label": "1-6-5",
-          "score": 0.1883,
+          "score": 0.1879,
           "cars": [
             1,
             6,
             5
+          ],
+          "suji": false
+        },
+        {
+          "label": "1-5-6",
+          "score": 0.1863,
+          "cars": [
+            1,
+            5,
+            6
           ],
           "suji": false
         }
@@ -144653,74 +144818,74 @@
             1,
             2
           ],
-          "score": 0.1946,
+          "score": 0.2004,
           "label": "1-2",
           "suji": false,
           "bet_type": "exacta",
           "live_odds": 6.4,
-          "hit_prob": 0.0595,
-          "ev": 0.38
-        },
-        {
-          "cars": [
-            1,
-            5
-          ],
-          "score": 0.161,
-          "label": "1-5",
-          "suji": false,
-          "bet_type": "exacta",
-          "live_odds": 33.8,
-          "hit_prob": 0.0492,
-          "ev": 1.66
+          "hit_prob": 0.0607,
+          "ev": 0.39
         },
         {
           "cars": [
             1,
             6
           ],
-          "score": 0.1579,
+          "score": 0.1638,
           "label": "1-6",
           "suji": false,
           "bet_type": "exacta",
           "live_odds": 15.5,
-          "hit_prob": 0.0483,
-          "ev": 0.75
+          "hit_prob": 0.0496,
+          "ev": 0.77
         },
         {
           "cars": [
             1,
-            4
+            5
           ],
-          "score": 0.0888,
-          "label": "1-4",
+          "score": 0.1523,
+          "label": "1-5",
           "suji": false,
           "bet_type": "exacta",
-          "live_odds": 18.1,
-          "hit_prob": 0.0272,
-          "ev": 0.49
+          "live_odds": 33.8,
+          "hit_prob": 0.0462,
+          "ev": 1.56
+        },
+        {
+          "cars": [
+            1,
+            7
+          ],
+          "score": 0.0873,
+          "label": "1-7",
+          "suji": false,
+          "bet_type": "exacta",
+          "live_odds": 27.2,
+          "hit_prob": 0.0265,
+          "ev": 0.72
         }
       ],
       "value": {
         "label": "1-5",
         "odds": 33.8,
-        "prob": 0.0492,
-        "ev": 1.66,
+        "prob": 0.0462,
+        "ev": 1.56,
         "taken_at": "2026-09-14T23:05:24+09:00"
       },
       "hit_estimate": {
-        "exacta": 0.1088,
-        "trifecta": 0.0619
+        "exacta": 0.1104,
+        "trifecta": 0.0629
       },
       "confidence": {
         "label": "混戦",
         "rank": 1,
-        "reason": "本命確率23.4%で割れ気味。"
+        "reason": "本命確率23.3%で割れ気味。"
       },
       "scenario": {
         "headline": "1簗田一輝は単騎でも総合評価上位。混戦の好位取りを評価。",
         "flow": "細切れ戦(4分戦以上)。短いラインの主導権争いで展開が乱れやすい一戦です。 固定の援護は薄いので、隊列が緩んだ瞬間に仕掛ける形が理想です。",
-        "watch": "対抗は2阿部力也。1着確率差は約4.0ポイントです。",
+        "watch": "対抗は2阿部力也。1着確率差は約3.2ポイントです。",
         "upset": "崩れるなら7脇本勇希の主導権取り、またはライン分断で番手が離れるケース。",
         "pattern": "細切れ戦",
         "sequence": [
@@ -144733,7 +144898,7 @@
       "comment_signals": [
         "1簗田一輝: 「単騎で自力自在。」 戦法意図は見えますが、状態評価は控えめです。",
         "2阿部力也: 「嵯峨君。」 コメントだけでは強弱を決めにくいです。",
-        "5嵯峨昇喜郎: 「自力。」 戦法意図は見えますが、状態評価は控えめです。",
+        "6小川真太郎: 「前々。」 コメントだけでは強弱を決めにくいです。",
         "ライン6-3: 6小川真太郎を先頭に、3園田匠が続く並び。 後ろのコメント: 3「小川君。」",
         "ライン5-2: 5嵯峨昇喜郎が前で動き、2阿部力也が追走する形。 後ろのコメント: 2「嵯峨君。」",
         "ライン1: 1簗田一輝は単騎気味。自分で動くか、好位を拾う競走になりそうです。",
@@ -144766,7 +144931,7 @@
               "name": "小川真太郎",
               "style": "両",
               "comment": "前々。",
-              "probability": 0.1579,
+              "probability": 0.1638,
               "player_id": "015063"
             },
             {
@@ -144774,7 +144939,7 @@
               "name": "園田匠",
               "style": "追",
               "comment": "小川君。",
-              "probability": 0.0785,
+              "probability": 0.0852,
               "player_id": "013894"
             }
           ],
@@ -144790,7 +144955,7 @@
               "name": "嵯峨昇喜郎",
               "style": "両",
               "comment": "自力。",
-              "probability": 0.161,
+              "probability": 0.1523,
               "player_id": "015235"
             },
             {
@@ -144798,7 +144963,7 @@
               "name": "阿部力也",
               "style": "追",
               "comment": "嵯峨君。",
-              "probability": 0.1946,
+              "probability": 0.2004,
               "player_id": "014794"
             }
           ],
@@ -144814,7 +144979,7 @@
               "name": "簗田一輝",
               "style": "両",
               "comment": "単騎で自力自在。",
-              "probability": 0.2342,
+              "probability": 0.2326,
               "player_id": "015051"
             }
           ],
@@ -144830,7 +144995,7 @@
               "name": "脇本勇希",
               "style": "逃",
               "comment": "自力自在。",
-              "probability": 0.0851,
+              "probability": 0.0873,
               "player_id": "015362"
             },
             {
@@ -144838,7 +145003,7 @@
               "name": "東口善朋",
               "style": "追",
               "comment": "脇本君。",
-              "probability": 0.0888,
+              "probability": 0.0785,
               "player_id": "013730"
             }
           ],
@@ -144980,8 +145145,8 @@
             "two_rate": 48.0,
             "three_rate": 64.0
           },
-          "win_probability": 0.2342,
-          "model_score": 12.858,
+          "win_probability": 0.2326,
+          "model_score": 12.774,
           "reasons": [
             "競走得点上位",
             "直近3着内多い",
@@ -145159,14 +145324,12 @@
             "two_rate": 36.0,
             "three_rate": 60.0
           },
-          "win_probability": 0.1946,
-          "model_score": 12.117,
+          "win_probability": 0.2004,
+          "model_score": 12.178,
           "reasons": [
             "競走得点上位",
-            "前走後談話: 不安含み",
             "直近3着内多い",
             "番手勝率29%",
-            "連携実績 嵯峨昇喜郎と2戦2回3着内",
             "対嵯峨昇喜郎 5勝0敗",
             "学習: 追い風"
           ],
@@ -145341,8 +145504,8 @@
             "two_rate": 27.2,
             "three_rate": 42.4
           },
-          "win_probability": 0.0785,
-          "model_score": 8.487,
+          "win_probability": 0.0852,
+          "model_score": 8.755,
           "reasons": [
             "競走得点上位",
             "直近3着内多い",
@@ -145522,16 +145685,15 @@
             "two_rate": 22.7,
             "three_rate": 31.8
           },
-          "win_probability": 0.0888,
-          "model_score": 8.981,
+          "win_probability": 0.0785,
+          "model_score": 8.428,
           "reasons": [
             "競走得点上位",
-            "前走後談話: 上向き",
             "番手勝率16%",
             "当所3着内50%",
             "バック数最強ライン(穴目)",
-            "連携実績 脇本勇希と2戦1回3着内",
-            "対脇本勇希 2勝3敗"
+            "対脇本勇希 2勝3敗",
+            "学習: 割引"
           ],
           "player_id": "013730",
           "profile": {
@@ -145705,8 +145867,8 @@
             "two_rate": 35.6,
             "three_rate": 53.5
           },
-          "win_probability": 0.161,
-          "model_score": 11.359,
+          "win_probability": 0.1523,
+          "model_score": 11.079,
           "reasons": [
             "競走得点上位",
             "バック数あり",
@@ -145887,8 +146049,8 @@
             "two_rate": 47.0,
             "three_rate": 76.4
           },
-          "win_probability": 0.1579,
-          "model_score": 11.281,
+          "win_probability": 0.1638,
+          "model_score": 11.372,
           "reasons": [
             "競走得点上位",
             "勝率高め",
@@ -146073,8 +146235,8 @@
             "two_rate": 25.0,
             "three_rate": 39.2
           },
-          "win_probability": 0.0851,
-          "model_score": 8.808,
+          "win_probability": 0.0873,
+          "model_score": 8.852,
           "reasons": [
             "競走得点上位",
             "バック数あり",
@@ -148193,7 +148355,10 @@
           "score": 0.1421,
           "label": "3-5",
           "suji": true,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 1.6,
+          "hit_prob": 0.1798,
+          "ev": 0.29
         },
         {
           "cars": [
@@ -148203,7 +148368,10 @@
           "score": 0.0801,
           "label": "3-1",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 7.6,
+          "hit_prob": 0.1135,
+          "ev": 0.86
         },
         {
           "cars": [
@@ -148213,7 +148381,10 @@
           "score": 0.0693,
           "label": "3-4",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 12.5,
+          "hit_prob": 0.0982,
+          "ev": 1.23
         },
         {
           "cars": [
@@ -148223,10 +148394,19 @@
           "score": 0.0604,
           "label": "3-7",
           "suji": false,
-          "bet_type": "exacta"
+          "bet_type": "exacta",
+          "live_odds": 33.0,
+          "hit_prob": 0.0856,
+          "ev": 2.82
         }
       ],
-      "value": null,
+      "value": {
+        "label": "3-7",
+        "odds": 33.0,
+        "prob": 0.0856,
+        "ev": 2.82,
+        "taken_at": "2026-09-15T10:49:33+09:00"
+      },
       "hit_estimate": {
         "exacta": 0.2934,
         "trifecta": 0.1604
@@ -155005,9 +155185,9 @@
   "learning_status": {
     "races": 4929,
     "entries": 33217,
-    "result_races": 4584,
-    "result_entries": 31914,
-    "predictions": 4799,
+    "result_races": 4585,
+    "result_entries": 31921,
+    "predictions": 4780,
     "documents": 15
   }
 }
